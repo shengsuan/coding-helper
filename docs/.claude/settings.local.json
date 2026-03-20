@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which glow:*)",
+      "Bash(glow README.md)",
+      "Bash(glow /Users/bytedance/code/open-ark/README.md)",
+      "Bash(mkdir -p /Users/bytedance/code/open-ark/docs/.claude/skills/glow && rm /Users/bytedance/code/open-ark/docs/.claude/skills/glow.md)"
+    ]
+  }
+}

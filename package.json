@@ -1,0 +1,58 @@
+{
+  "name": "@coohu/coding-helper",
+  "version": "1.2.7",
+  "description": "Lite Plan / Pro Plan Coding Plan Helper for managing OpenCode and Claude Code",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "coding-helper": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc && cp -r src/locales dist/",
+    "dev": "tsx watch src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist",
+    "preuninstall": "node -e \"import('./dist/lib/tea-tracker.js').then(m=>m.track('uninstall')).catch(()=>{})\"",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "cli",
+    "coding",
+    "helper",
+    "volcano",
+    "byteplus",
+    "opencode"
+  ],
+  "author": {
+    "name": "Vol"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "@inquirer/prompts": "^8.3.0",
+    "@types/figlet": "^1.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "figlet": "^1.10.0",
+    "gradient-string": "^3.0.0",
+    "inquirer": "^9.2.12",
+    "js-yaml": "^4.1.0",
+    "ora": "^8.0.1",
+    "terminal-link": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
+  }
+}
