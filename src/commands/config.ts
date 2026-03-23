@@ -31,9 +31,9 @@ export async function configCommand(args: string[]): Promise<void> {
             name: 'planId',
             message: '选择要配置的套餐:',
             choices: [
-              { name: 'Lite Plan', value: 'cp_test_lite' },
-              { name: 'Pro Plan', value: 'cp_test_pro' },
-              { name: 'Enterprise Plan', value: 'cp_test_enterprise' },
+              { name: 'Lite Plan', value: 'ssy_cp_lite' },
+              { name: 'Pro Plan', value: 'ssy_cp_pro' },
+              { name: 'Enterprise Plan', value: 'ssy_cp_enterprise' },
               { name: 'Pay as You Go', value: 'pay_as_you_go' },
             ]
           }

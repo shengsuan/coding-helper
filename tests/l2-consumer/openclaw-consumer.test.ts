@@ -30,8 +30,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { OpenClawManager } from '../../src/lib/openclaw-manager.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 // ─── OpenClaw consumer simulation helpers ───────────────────────
@@ -119,7 +119,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('should produce a valid provider structure consumable by OpenClaw', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const provider = config.models.providers['cp_test_lite'];
+      const provider = config.models.providers['ssy_cp_lite'];
 
       // OpenClaw expects these exact fields
       expect(provider.baseUrl).toBeTypeOf('string');
@@ -132,7 +132,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('should produce models with required fields (id, name, contextWindow, maxTokens)', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       for (const model of models) {
         expect(model.id, `${model.id} should have id`).toBeTypeOf('string');
@@ -149,7 +149,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('should produce valid input arrays per OpenClaw zod schema', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       for (const model of models) {
         if (model.input !== undefined) {
@@ -164,7 +164,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('modelSupportsVision should return true for image-capable models', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       const arkCode = models.find((m: any) => m.id === 'anthropic/claude-sonnet-4.6');
       expect(modelSupportsVision(arkCode)).toBe(true);
@@ -176,7 +176,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('modelSupportsVision should return false for text-only models', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       const glm = models.find((m: any) => m.id === 'glm-4.7');
       expect(modelSupportsVision(glm)).toBe(false);
@@ -189,7 +189,7 @@ describe('OpenClaw Consumer Simulation', () => {
     it('Pro Plan models should not support vision (all text-only)', () => {
       manager.loadPlanConfig(BYTEPLUS, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_pro'].models;
+      const models = config.models.providers['ssy_cp_pro'].models;
 
       for (const model of models) {
         expect(
@@ -209,7 +209,7 @@ describe('OpenClaw Consumer Simulation', () => {
       expect(allowedSet).not.toBeNull();
 
       for (const m of VOLCANO.models) {
-        const ref = `cp_test_lite/${m.id}`;
+        const ref = `ssy_cp_lite/${m.id}`;
         expect(
           allowedSet!.has(ref),
           `${ref} should be in allowlist for /model switching`,
@@ -234,10 +234,10 @@ describe('OpenClaw Consumer Simulation', () => {
       const allowedSet = buildAllowedModelSet(config.agents?.defaults?.models);
 
       for (const m of VOLCANO.models) {
-        expect(allowedSet!.has(`cp_test_lite/${m.id}`)).toBe(true);
+        expect(allowedSet!.has(`ssy_cp_lite/${m.id}`)).toBe(true);
       }
       for (const m of BYTEPLUS.models) {
-        expect(allowedSet!.has(`cp_test_pro/${m.id}`)).toBe(true);
+        expect(allowedSet!.has(`ssy_cp_pro/${m.id}`)).toBe(true);
       }
     });
   });
@@ -250,7 +250,7 @@ describe('OpenClaw Consumer Simulation', () => {
       // Simulate new session with no override
       const result = resolveActiveModel(config, {});
       expect(result).toEqual({
-        provider: 'cp_test_lite',
+        provider: 'ssy_cp_lite',
         model: 'kimi-k2.5',
         source: 'config-primary',
       });
@@ -263,12 +263,12 @@ describe('OpenClaw Consumer Simulation', () => {
       // Simulate session where user ran /model glm-4.7
       const sessionEntry = {
         modelOverride: 'glm-4.7',
-        providerOverride: 'cp_test_lite',
+        providerOverride: 'ssy_cp_lite',
       };
 
       const result = resolveActiveModel(config, sessionEntry);
       expect(result).toEqual({
-        provider: 'cp_test_lite',
+        provider: 'ssy_cp_lite',
         model: 'glm-4.7',
         source: 'session-override',
       });
@@ -288,7 +288,7 @@ describe('OpenClaw Consumer Simulation', () => {
       // Session override should win
       const result = resolveActiveModel(config, entry);
       expect(result!.model).toBe('doubao-seed-code');
-      expect(result!.provider).toBe('cp_test_lite');
+      expect(result!.provider).toBe('ssy_cp_lite');
       expect(result!.source).toBe('session-override');
     });
 
@@ -320,7 +320,7 @@ describe('OpenClaw Consumer Simulation', () => {
       const auth = mockFs._readJson(AUTH_PATH) as any;
 
       // OpenClaw expects profiles.<planId>:default with type and key
-      const profile = auth.profiles['cp_test_lite:default'];
+      const profile = auth.profiles['ssy_cp_lite:default'];
       expect(profile).toBeDefined();
       expect(profile.type).toBe('api_key');
       expect(profile.key).toBeTypeOf('string');
@@ -335,7 +335,7 @@ describe('OpenClaw Consumer Simulation', () => {
 
       const resolved = resolveDefaultModel(config);
       expect(resolved).not.toBeNull();
-      expect(resolved!.provider).toBe('cp_test_lite');
+      expect(resolved!.provider).toBe('ssy_cp_lite');
       expect(resolved!.model).toBe('glm-4.7');
     });
 

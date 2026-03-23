@@ -11,9 +11,9 @@ export interface PlanConfig {
 export interface Config {
   lang: string;
   plans: {
-    "cp_test_lite"?: PlanConfig;
-    "cp_test_pro"?: PlanConfig;
-    "cp_test_enterprise"?: PlanConfig;
+    "ssy_cp_lite"?: PlanConfig;
+    "ssy_cp_pro"?: PlanConfig;
+    "ssy_cp_enterprise"?: PlanConfig;
     "pay_as_you_go"?: PlanConfig;
   };
 }
@@ -119,9 +119,9 @@ export class Settings {
   }
 
   hasAnyConfig(): boolean {
-    return !!(this.config.plans?.['cp_test_lite']?.api_key 
-      || this.config.plans?.['cp_test_pro']?.api_key
-      || this.config.plans?.['cp_test_enterprise']?.api_key
+    return !!(this.config.plans?.['ssy_cp_lite']?.api_key 
+      || this.config.plans?.['ssy_cp_pro']?.api_key
+      || this.config.plans?.['ssy_cp_enterprise']?.api_key
       || this.config.plans?.['pay_as_you_go']?.api_key
     );
   }

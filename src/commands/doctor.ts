@@ -62,8 +62,8 @@ export async function doctorCommand(): Promise<void> {
 
   console.log(chalk.bold('\n⚙️  ' + i18n.t('doctor.config_status') + ':'));
 
-  const volcenginePlanConfig = configManager.getPlanConfig('cp_test_lite');
-  const byteplusPlanConfig = configManager.getPlanConfig('cp_test_pro');
+  const volcenginePlanConfig = configManager.getPlanConfig('ssy_cp_lite');
+  const byteplusPlanConfig = configManager.getPlanConfig('ssy_cp_pro');
 
   if (volcenginePlanConfig?.api_key) {
     console.log(chalk.green(`  ✓ Lite Plan API Key: ${volcenginePlanConfig.api_key.slice(0, 6)}…`));
@@ -80,7 +80,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🤖 Claude Code 配置:'));
   const claudeDetected = claudeIntegration.detectCurrentConfig();
   if (claudeDetected.plan) {
-    const ccPlanName = claudeDetected.plan === 'cp_test_lite' ? 'Lite Plan' : 'Pro Plan';
+    const ccPlanName = claudeDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
     console.log(chalk.green(`  ✓ 当前套餐: ${ccPlanName}`));
     if (claudeDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${claudeDetected.apiKey.slice(0, 6)}…`));
@@ -92,7 +92,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n📋 OpenCode 配置:'));
   const detectedConfig = openCodeManager.detectCurrentConfig();
   if (detectedConfig.plan) {
-    const planName = detectedConfig.plan === 'cp_test_lite' ? 'Lite Plan' : 'Pro Plan';
+    const planName = detectedConfig.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
     console.log(chalk.green(`  ✓ 当前套餐: ${planName}`));
     if (detectedConfig.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${detectedConfig.apiKey.slice(0, 6)}…`));
@@ -104,7 +104,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🦞 OpenClaw 配置:'));
   const openclawDetected = openClawManager.detectCurrentConfig();
   if (openclawDetected.plan) {
-    const ocPlanName = openclawDetected.plan === 'cp_test_lite' ? 'Lite Plan' : 'Pro Plan';
+    const ocPlanName = openclawDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
     console.log(chalk.green(`  ✓ 当前套餐: ${ocPlanName}`));
     if (openclawDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${openclawDetected.apiKey.slice(0, 6)}…`));
@@ -116,7 +116,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🤖 Nanobot 配置:'));
   const nanobotDetected = nanobotManager.detectCurrentConfig();
   if (nanobotDetected.plan) {
-    const nbPlanName = nanobotDetected.plan === 'cp_test_lite' ? 'Lite Plan' : 'Pro Plan';
+    const nbPlanName = nanobotDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
     console.log(chalk.green(`  ✓ 当前套餐: ${nbPlanName}`));
     if (nanobotDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${nanobotDetected.apiKey.slice(0, 6)}…`));
@@ -128,7 +128,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🧬 ZeroClaw 配置:'));
   const zeroclawDetected = zeroClawManager.detectCurrentConfig();
   if (zeroclawDetected.plan) {
-    const zcPlanName = zeroclawDetected.plan === 'cp_test_lite' ? 'Lite Plan' : 'Pro Plan';
+    const zcPlanName = zeroclawDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
     console.log(chalk.green(`  ✓ 当前套餐: ${zcPlanName}`));
     if (zeroclawDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${zeroclawDetected.apiKey.slice(0, 6)}…`));

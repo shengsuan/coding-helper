@@ -24,13 +24,13 @@ interface DetectedConfig {
 }
 
 const PLAN_TO_ZEROCLAW: Record<string, { apiBase: string }> = {
-  "cp_test_lite": { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' },
-  "cp_test_pro": { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' }
+  "ssy_cp_lite": { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' },
+  "ssy_cp_pro": { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' }
 };
 
 const PLAN_TO_LEGACY_PROFILE: Record<string, string> = {
-  "cp_test_lite": 'volcengine-coding-plan',
-  "cp_test_pro": 'byteplus-coding-plan'
+  "ssy_cp_lite": 'volcengine-coding-plan',
+  "ssy_cp_pro": 'byteplus-coding-plan'
 };
 
 export class ZeroClawManager {

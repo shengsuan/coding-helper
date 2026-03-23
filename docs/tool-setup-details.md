@@ -6,8 +6,8 @@
 
 | 计划 | ID | OpenAI 兼容端点 | Anthropic 兼容端点 |
 |---|---|---|---|
-| 胜算云 | `cp_test_lite` | `https://router.shengsuanyun.com/api/cp/v1` | `https://ark.cn-beijing.volces.com/api/coding` |
-| Pro Plan | `cp_test_pro` | `https://router.shengsuanyun.com/api/cp/v1` | `https://ark.ap-southeast.bytepluses.com/api/coding` |
+| 胜算云 | `ssy_cp_lite` | `https://router.shengsuanyun.com/api/cp/v1` | `https://ark.cn-beijing.volces.com/api/coding` |
+| Pro Plan | `ssy_cp_pro` | `https://router.shengsuanyun.com/api/cp/v1` | `https://ark.ap-southeast.bytepluses.com/api/coding` |
 
 各计划可用模型：
 
@@ -169,9 +169,9 @@ MCP 服务器配置结构：
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "cp_test_lite/ark-code-latest",
+  "model": "ssy_cp_lite/ark-code-latest",
   "provider": {
-    "cp_test_lite": {
+    "ssy_cp_lite": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Lite Plan",
       "options": {
@@ -234,7 +234,7 @@ MCP 服务器配置结构：
 | 键 | 值 | 说明 |
 |---|---|---|
 | `$schema` | `https://opencode.ai/config.json` | 始终设置。 |
-| `model` | `<planId>/<modelId>` | 格式包含 provider 前缀（如 `cp_test_lite/ark-code-latest`）。未指定时默认使用计划中的第一个模型。 |
+| `model` | `<planId>/<modelId>` | 格式包含 provider 前缀（如 `ssy_cp_lite/ark-code-latest`）。未指定时默认使用计划中的第一个模型。 |
 | `provider.<planId>.npm` | `@ai-sdk/openai-compatible` | 始终为此 SDK 包。 |
 | `provider.<planId>.name` | `plan.name` | 人类可读名称（如 `"Lite Plan"`、`"Pro Plan"`）。 |
 | `provider.<planId>.options.baseURL` | `plan.baseUrl` | **OpenAI 兼容**端点（`/api/coding/v3`）。 |
@@ -250,14 +250,14 @@ MCP 服务器配置结构：
 ### 卸载行为（`unloadPlanConfig`）
 
 - 如果指定了 `planId`：仅移除该计划的 provider 条目（API Key 随 provider 一起删除）
-- 如果未指定 `planId`：同时移除 `cp_test_lite` 和 `cp_test_pro` 的 provider 条目
-- 如果当前激活的 `model` 以被移除计划的 ID 开头（如 `cp_test_lite/...`），也会删除 `model` 键
+- 如果未指定 `planId`：同时移除 `ssy_cp_lite` 和 `ssy_cp_pro` 的 provider 条目
+- 如果当前激活的 `model` 以被移除计划的 ID 开头（如 `ssy_cp_lite/...`），也会删除 `model` 键
 - 如果没有 provider 剩余，则删除整个 `provider` 键
 - 同时清理旧版 `auth.json` 中的残留条目（如果存在）
 
 ### 检测（`detectCurrentConfig`）
 
-优先从 `model` 字段中提取当前激活的计划 ID（格式 `<planId>/<modelId>`），然后从 `provider.options.apiKey` 读取 API Key。如果不存在，兜底读取旧版 `auth.json`。仅当 `model` 不存在时，才按 `cp_test_lite`、`cp_test_pro` 顺序扫描 `provider` 作为兜底。
+优先从 `model` 字段中提取当前激活的计划 ID（格式 `<planId>/<modelId>`），然后从 `provider.options.apiKey` 读取 API Key。如果不存在，兜底读取旧版 `auth.json`。仅当 `model` 不存在时，才按 `ssy_cp_lite`、`ssy_cp_pro` 顺序扫描 `provider` 作为兜底。
 
 ---
 
@@ -283,7 +283,7 @@ MCP 服务器配置结构：
 {
   "models": {
     "providers": {
-      "cp_test_lite": {
+      "ssy_cp_lite": {
         "baseUrl": "https://router.shengsuanyun.com/api/cp/v1",
         "apiKey": "<apiKey>",
         "api": "openai-completions",
@@ -357,18 +357,18 @@ MCP 服务器配置结构：
   "agents": {
     "defaults": {
       "model": {
-        "primary": "cp_test_lite/ark-code-latest"
+        "primary": "ssy_cp_lite/ark-code-latest"
       },
       "models": {
-        "cp_test_lite/ark-code-latest": {},
-        "cp_test_lite/doubao-seed-code": {},
-        "cp_test_lite/glm-4.7": {},
-        "cp_test_lite/deepseek-v3.2": {},
-        "cp_test_lite/doubao-seed-2.0-code": {},
-        "cp_test_lite/doubao-seed-2.0-pro": {},
-        "cp_test_lite/doubao-seed-2.0-lite": {},
-        "cp_test_lite/minimax-m2.5": {},
-        "cp_test_lite/kimi-k2.5": {}
+        "ssy_cp_lite/ark-code-latest": {},
+        "ssy_cp_lite/doubao-seed-code": {},
+        "ssy_cp_lite/glm-4.7": {},
+        "ssy_cp_lite/deepseek-v3.2": {},
+        "ssy_cp_lite/doubao-seed-2.0-code": {},
+        "ssy_cp_lite/doubao-seed-2.0-pro": {},
+        "ssy_cp_lite/doubao-seed-2.0-lite": {},
+        "ssy_cp_lite/minimax-m2.5": {},
+        "ssy_cp_lite/kimi-k2.5": {}
       }
     }
   }
@@ -401,7 +401,7 @@ MCP 服务器配置结构：
 ```json
 {
   "agent:main:main": {
-    "providerOverride": "cp_test_lite",
+    "providerOverride": "ssy_cp_lite",
     "modelOverride": "ark-code-latest",
     "updatedAt": 1773202685139,
     "...其他字段保留不变"
@@ -433,7 +433,7 @@ sessions.json (modelOverride)  >  openclaw.json (model.primary)
 ```json
 {
   "profiles": {
-    "cp_test_lite:default": {
+    "ssy_cp_lite:default": {
       "type": "api_key",
       "key": "<apiKey>"
     }
@@ -443,7 +443,7 @@ sessions.json (modelOverride)  >  openclaw.json (model.primary)
 
 | 键 | 值 | 说明 |
 |---|---|---|
-| Profile 键名 | `<planId>:default` | 格式为 `planId:default`（如 `cp_test_lite:default`）。 |
+| Profile 键名 | `<planId>:default` | 格式为 `planId:default`（如 `ssy_cp_lite:default`）。 |
 | `type` | `"api_key"` | 始终为此值（注意下划线 — 与 OpenCode 的 `"api"` 不同）。 |
 | `key` | API Key | 与 provider 配置中存储的相同。 |
 
@@ -609,7 +609,7 @@ agents.defaults.model.primary (全局配置)
 
 ### 检测（`detectCurrentConfig`）
 
-优先从 `agents.defaults.model.primary` 中提取当前激活的计划 ID（格式 `<planId>/<modelId>`），然后从 `auth-profiles.json` 中查找对应的 API Key。仅当 `primary` 不存在时，才按 `cp_test_lite`、`cp_test_pro` 顺序扫描 `models.providers` 作为兜底。
+优先从 `agents.defaults.model.primary` 中提取当前激活的计划 ID（格式 `<planId>/<modelId>`），然后从 `auth-profiles.json` 中查找对应的 API Key。仅当 `primary` 不存在时，才按 `ssy_cp_lite`、`ssy_cp_pro` 顺序扫描 `models.providers` 作为兜底。
 
 ---
 
@@ -659,13 +659,13 @@ TOML 文件使用 `@iarna/toml` 包进行解析/序列化。
 
 ```typescript
 const PLAN_TO_ZEROCLAW = {
-  cp_test_lite: { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' },
-  cp_test_pro: { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' }
+  ssy_cp_lite: { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' },
+  ssy_cp_pro: { apiBase: 'https://router.shengsuanyun.com/api/cp/v1' }
 };
 
 const PLAN_TO_LEGACY_PROFILE = {
-  cp_test_lite: 'volcengine-coding-plan',
-  cp_test_pro: 'byteplus-coding-plan'
+  ssy_cp_lite: 'volcengine-coding-plan',
+  ssy_cp_pro: 'byteplus-coding-plan'
 };
 ```
 
@@ -718,12 +718,12 @@ Nanobot 有两种配置格式。Manager 会自动检测使用哪种：
 
 ```typescript
 const PLAN_TO_NANOBOT = {
-  cp_test_lite: {
+  ssy_cp_lite: {
     providerName: 'volcengineCodingPlan',        // providers 对象中的键名
     agentProvider: 'volcengine_coding_plan',       // agents.defaults.provider 的值
     apiBase: 'https://router.shengsuanyun.com/api/cp/v1'
   },
-  cp_test_pro: {
+  ssy_cp_pro: {
     providerName: 'byteplusCodingPlan',
     agentProvider: 'byteplus_coding_plan',
     apiBase: 'https://router.shengsuanyun.com/api/cp/v1'
@@ -842,8 +842,8 @@ const PLAN_TO_NANOBOT = {
 | 工具 | 格式 | 示例 |
 |---|---|---|
 | Claude Code | 裸字符串 | `doubao-seed-code` |
-| OpenCode | `planId/modelId` | `cp_test_lite/ark-code-latest` |
-| OpenClaw | `planId/modelId` | `cp_test_lite/ark-code-latest` |
+| OpenCode | `planId/modelId` | `ssy_cp_lite/ark-code-latest` |
+| OpenClaw | `planId/modelId` | `ssy_cp_lite/ark-code-latest` |
 | ZeroClaw | 裸字符串 | `ark-code-latest` |
 | Nanobot | 裸字符串 | `ark-code-latest` |
 
@@ -912,8 +912,8 @@ const PLAN_TO_NANOBOT = {
 | 工具 | Provider 标识符风格 | 示例 |
 |---|---|---|
 | Claude Code | 不适用（使用环境变量） | — |
-| OpenCode | Plan ID | `cp_test_lite` |
-| OpenClaw | Plan ID | `cp_test_lite` |
+| OpenCode | Plan ID | `ssy_cp_lite` |
+| OpenClaw | Plan ID | `ssy_cp_lite` |
 | ZeroClaw | `custom:<url>` 字符串 | `custom:https://router.shengsuanyun.com/api/cp/v1` |
 | Nanobot（新版） | 驼峰键名 / 下划线引用 | `volcengineCodingPlan`（键）/ `volcengine_coding_plan`（引用） |
 | Nanobot（旧版） | 固定字符串 | `custom` |

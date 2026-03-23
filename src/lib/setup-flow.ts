@@ -117,9 +117,9 @@ export class SetupFlow {
       this.resetScreen();
       this.printSectionHeader(locale.t('ui.select_plan'));
 
-      const litePlanConfig = settings.getPlanConfig('cp_test_lite');
-      const proPlanConfig = settings.getPlanConfig('cp_test_pro');
-      const enterprisePlanConfig = settings.getPlanConfig('cp_test_enterprise');
+      const litePlanConfig = settings.getPlanConfig('ssy_cp_lite');
+      const proPlanConfig = settings.getPlanConfig('ssy_cp_pro');
+      const enterprisePlanConfig = settings.getPlanConfig('ssy_cp_enterprise');
       const goPlanConfig = settings.getPlanConfig('pay_as_you_go');
 
       const planAction = await select({
@@ -128,17 +128,17 @@ export class SetupFlow {
           {
             name: '[Lite Plan] ' + locale.t('ui.plan_lite') +
               (litePlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'cp_test_lite' as const
+            value: 'ssy_cp_lite' as const
           },
           {
             name: '[Pro Plan] ' + locale.t('ui.plan_pro') +
               (proPlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'cp_test_pro' as const
+            value: 'ssy_cp_pro' as const
           },
           {
             name: '[Enterprise Plan] ' + locale.t('ui.plan_enterprise') +
               (enterprisePlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'cp_test_enterprise' as const
+            value: 'ssy_cp_enterprise' as const
           },
           {
             name: '[Pay as You Go] ' + locale.t('ui.plan_go') +
@@ -160,9 +160,9 @@ export class SetupFlow {
       } else if (planAction === 'skip') {
         return;
       } else if (planAction === 'both') {
-        await this.configApiKey('cp_test_lite');
-        await this.configApiKey('cp_test_pro');
-        await this.configApiKey('cp_test_enterprise');
+        await this.configApiKey('ssy_cp_lite');
+        await this.configApiKey('ssy_cp_pro');
+        await this.configApiKey('ssy_cp_enterprise');
         await this.configApiKey('pay_as_you_go');
         return;
       } else {
@@ -398,14 +398,14 @@ export class SetupFlow {
         chalk.cyan('    ◆ ') + chalk.white('OpenCode') +
         chalk.gray('     — Open-source coding tool')
       );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Nanobot') +
-        chalk.gray('      — AI agent framework')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('ZeroClaw') +
-        chalk.gray('     — AI gateway')
-      );
+      // console.log(
+      //   chalk.cyan('    ◆ ') + chalk.white('Nanobot') +
+      //   chalk.gray('      — AI agent framework')
+      // );
+      // console.log(
+      //   chalk.cyan('    ◆ ') + chalk.white('ZeroClaw') +
+      //   chalk.gray('     — AI gateway')
+      // );
       console.log();
 
       // Promo banner
@@ -421,17 +421,17 @@ export class SetupFlow {
       // Status display
       console.log(
         chalk.gray('  精简计划: ') +
-        (currentCfg.plans?.['cp_test_lite']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['cp_test_lite'].api_key.slice(0, 6) + '…)')
+        (currentCfg.plans?.['ssy_cp_lite']?.api_key
+          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_lite'].api_key.slice(0, 6) + '…)')
           : chalk.red('✗')) +
         chalk.gray('  专业计划: ') +
-        (currentCfg.plans?.['cp_test_pro']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['cp_test_pro'].api_key.slice(0, 6) + '…)')
+        (currentCfg.plans?.['ssy_cp_pro']?.api_key
+          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_pro'].api_key.slice(0, 6) + '…)')
           : chalk.red('✗')) + 
 
         chalk.gray('  企业计划: ') +
-        (currentCfg.plans?.['cp_test_enterprise']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['cp_test_enterprise'].api_key.slice(0, 6) + '…)')
+        (currentCfg.plans?.['ssy_cp_enterprise']?.api_key
+          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_enterprise'].api_key.slice(0, 6) + '…)')
           : chalk.red('✗')) +
         chalk.gray('  按量付费: ') +
         (currentCfg.plans?.['pay_as_you_go']?.api_key
@@ -498,9 +498,9 @@ export class SetupFlow {
       this.resetScreen();
       this.printSectionHeader(`${tool.displayName} ${locale.t('ui.main_menu_title')}`);
 
-      const litePlanConfig = settings.getPlanConfig('cp_test_lite');
-      const proPlanConfig = settings.getPlanConfig('cp_test_pro');
-      const enterprisePlanConfig = settings.getPlanConfig('cp_test_enterprise');
+      const litePlanConfig = settings.getPlanConfig('ssy_cp_lite');
+      const proPlanConfig = settings.getPlanConfig('ssy_cp_pro');
+      const enterprisePlanConfig = settings.getPlanConfig('ssy_cp_enterprise');
       const goPlanConfig = settings.getPlanConfig('pay_as_you_go');
 
       const detectedConfig = this.detectToolConfig(toolName);
@@ -528,10 +528,10 @@ export class SetupFlow {
       console.log(chalk.yellow.bold(`📋 ${tool.displayName} ` + locale.t('ui.current_config_status') + ':'));
       if (detectedConfig.plan) {
         let planName = locale.t('ui.plan_lite')
-        if(detectedConfig.plan === 'cp_test_pro'){
+        if(detectedConfig.plan === 'ssy_cp_pro'){
           planName = locale.t('ui.plan_pro')
         }
-        if(detectedConfig.plan === 'cp_test_enterprise'){
+        if(detectedConfig.plan === 'ssy_cp_enterprise'){
           planName = locale.t('ui.plan_enterprise')
         }
         if(detectedConfig.plan === 'pay_as_you_go'){
@@ -549,7 +549,7 @@ export class SetupFlow {
       const choices: Array<{ name: string; value: string }> = [];
 
       if (litePlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'cp_test_lite';
+        const isActive = detectedConfig.plan === 'ssy_cp_lite';
         choices.push({
           name: `${isActive ? '🔄' : '📥'} 设置 Lite Plan 配置到 ${tool.displayName}`,
           value: 'load_lite-plan'
@@ -557,7 +557,7 @@ export class SetupFlow {
       }
 
       if (proPlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'cp_test_pro';
+        const isActive = detectedConfig.plan === 'ssy_cp_pro';
         choices.push({
           name: `${isActive ? '🔄' : '📥'} 设置 Pro Plan 配置到 ${tool.displayName}`,
           value: 'load_pro-plan'
@@ -565,7 +565,7 @@ export class SetupFlow {
       }
 
       if (enterprisePlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'cp_test_enterprise';
+        const isActive = detectedConfig.plan === 'ssy_cp_enterprise';
         choices.push({
           name: `${isActive ? '🔄' : '📥'} 设置 Enterprise Plan 配置到 ${tool.displayName}`,
           value: 'load_enterprise-plan'
@@ -604,11 +604,11 @@ export class SetupFlow {
       } else if (action === 'back') {
         return;
       } else if (action === 'load_lite-plan') {
-        await this.loadPlanConfig(toolName, 'cp_test_lite');
+        await this.loadPlanConfig(toolName, 'ssy_cp_lite');
       } else if (action === 'load_pro-plan') {
-        await this.loadPlanConfig(toolName, 'cp_test_pro');
+        await this.loadPlanConfig(toolName, 'ssy_cp_pro');
       } else if (action === 'load_enterprise-plan') {
-        await this.loadPlanConfig(toolName, 'cp_test_enterprise');
+        await this.loadPlanConfig(toolName, 'ssy_cp_enterprise');
       } else if (action === 'pay_as_you_go') {
         await this.loadPlanConfig(toolName, 'pay_as_you_go');
       } else if (action === 'unload') {

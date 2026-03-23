@@ -11,6 +11,7 @@ interface ApiModel {
         input?: string;
         output?: string;
     };
+    support_apis?:string[];
 }
 
 export async function getModels(url: string): Promise<Model[]> {
@@ -33,6 +34,7 @@ export async function getModels(url: string): Promise<Model[]> {
                 id: it.api_name,
                 contextLength: it.context_window,
                 maxTokens: it.max_tokens,
+                support_apis: it.support_apis || [],
                 ...(hasModalities && { modalities: { input, output } })
             };
         });

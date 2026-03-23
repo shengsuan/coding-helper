@@ -105,17 +105,22 @@ export class ClaudeIntegration {
     const currentEnv = currentSettings.env || {};
     const { ANTHROPIC_API_KEY: _, ...cleanedEnv } = currentEnv;
 
-    const defaultModel = model || "doubao-seed-code";
+    let defaultModel = "anthropic/claude-sonnet-4.5";
+    if(plan.id == "ssy_cp_lite") defaultModel = "anthropic/claude-haiku-4.5";
+    if(plan.id == "ssy_cp_pro") defaultModel = "anthropic/claude-sonnet-4.6";
+    if(plan.id == "ssy_cp_enterprise") defaultModel = "anthropic/claude-opus-4.6";
 
     const planConfig: ClaudeCodeSettings = {
       ...currentSettings,
       env: {
         ...cleanedEnv,
         ANTHROPIC_AUTH_TOKEN: apiKey,
-        ANTHROPIC_BASE_URL: plan.anthropicBaseUrl,
+        ANTHROPIC_BASE_URL: plan.baseUrl,
         ANTHROPIC_MODEL: defaultModel,
         API_TIMEOUT_MS: "3000000",
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: 1,
+        CLAUDE_CODE_ATTRIBUTION_HEADER: 0,
+        CC_CP_SSY: plan.id,
       },
     };
 
@@ -228,21 +233,18 @@ export class ClaudeIntegration {
   detectCurrentConfig(): DetectedConfig {
     try {
       const currentSettings = this.getSettings();
-      if (!currentSettings.env || !currentSettings.env.ANTHROPIC_AUTH_TOKEN) {
+      if (!currentSettings.env || !currentSettings.env.CC_CP_SSY) {
         return { plan: null, apiKey: null };
       }
-
+      const cpid = currentSettings.env.CC_CP_SSY
       const apiKey = currentSettings.env.ANTHROPIC_AUTH_TOKEN as string;
-      const baseUrl = currentSettings.env.ANTHROPIC_BASE_URL as string;
-
       let plan: string | null = null;
-      for (const [planId, planConfig] of Object.entries(PLANS)) {
-        if (planConfig.anthropicBaseUrl === baseUrl) {
+      for (const [planId] of Object.entries(PLANS)) {
+        if (planId === cpid) {
           plan = planId;
           break;
         }
       }
-
       return { plan, apiKey };
     } catch {
       return { plan: null, apiKey: null };

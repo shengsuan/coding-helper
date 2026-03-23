@@ -45,12 +45,12 @@ interface NanobotPlanMapping {
 }
 
 const PLAN_TO_NANOBOT: Record<string, NanobotPlanMapping> = {
-  "cp_test_lite": {
+  "ssy_cp_lite": {
     providerName: 'volcengineCodingPlan',
     agentProvider: 'volcengine_coding_plan',
     apiBase: 'https://router.shengsuanyun.com/api/cp/v1'
   },
-  "cp_test_pro": {
+  "ssy_cp_pro": {
     providerName: 'byteplusCodingPlan',
     agentProvider: 'byteplus_coding_plan',
     apiBase: 'https://router.shengsuanyun.com/api/cp/v1'

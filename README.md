@@ -20,9 +20,9 @@ CLI tool for configuring [胜算云](https://shengsuanyun.com/) Coding Plan API 
 
 | 方案 / Plan | 模型 / Models |
 |-------------|--------------|---------------|
-| **精简计划 / cp_test_lite** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 |
-| **专业计划 / cp_test_pro** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
-| **企业计划 / cp_test_enterprise** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
+| **精简计划 / ssy_cp_lite** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 |
+| **专业计划 / ssy_cp_pro** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
+| **企业计划 / ssy_cp_enterprise** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
 | **按量付费 / pay_as_you_go** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, 
 
 ## 环境要求 / Requirements
@@ -80,11 +80,11 @@ coding-helper lang set en_US         # 设为英文 / Set to English
 
 # 认证 / Authentication
 coding-helper auth show                         # 查看认证状态 / Show auth status
-coding-helper auth cp_test_lite <token>         # 设置胜算云 API Key / Set Lite Plan API key
-coding-helper auth cp_test_pro <token>          # 设置 Pro Plan API Key / Set Pro Plan API key
-coding-helper auth cp_test_enterprise <token>   # 设置胜算云 API Key / Set Lite Plan API key
+coding-helper auth ssy_cp_lite <token>         # 设置胜算云 API Key / Set Lite Plan API key
+coding-helper auth ssy_cp_pro <token>          # 设置 Pro Plan API Key / Set Pro Plan API key
+coding-helper auth ssy_cp_enterprise <token>   # 设置胜算云 API Key / Set Lite Plan API key
 coding-helper auth pay_as_you_go <token>        # 设置 Pro Plan API Key / Set Pro Plan API key
-coding-helper auth revoke cp_test_lite          # 撤销已保存的 API Key / Revoke a saved API key
+coding-helper auth revoke ssy_cp_lite          # 撤销已保存的 API Key / Revoke a saved API key
 coding-helper auth reload opencode              # 重新加载配置到工具 / Reload config into a tool
 
 # 诊断 / Diagnostics

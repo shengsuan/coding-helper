@@ -14,7 +14,7 @@ interface OpenClawModel {
 
 interface OpenClawProvider {
   baseUrl: string;
-  apiKey: string;
+  apiKey?: string;
   api: string;
   models: OpenClawModel[];
 }
@@ -34,6 +34,7 @@ interface OpenClawConfig {
 }
 
 interface AuthProfile {
+  provider: string;
   type: string;
   key: string;
 }
@@ -61,16 +62,11 @@ interface SessionEntry {
 type SessionStore = Record<string, SessionEntry>;
 
 export class OpenClawManager {
+  mainPath = join( homedir(),".openclaw","agents","main");
+  private modelsPath = join(this.mainPath, "agent", "models.json");
   private configPath = join(homedir(), ".openclaw", "openclaw.json");
-  private authPath = join(homedir(), ".openclaw", "auth-profiles.json");
-  private sessionsPath = join(
-    homedir(),
-    ".openclaw",
-    "agents",
-    "main",
-    "sessions",
-    "sessions.json",
-  );
+  private authPath = join(this.mainPath, "agent", "auth-profiles.json");
+  private sessionsPath = join(this.mainPath, "sessions","sessions.json");
 
   private ensureDir(filePath: string): void {
     const dir = dirname(filePath);
@@ -90,6 +86,28 @@ export class OpenClawManager {
       logger.logError("OpenClawManager.getConfig", error);
     }
     return null;
+  }
+
+  getModels(): { providers?:Record<string, OpenClawProvider>} | null {
+    try {
+      if (existsSync(this.modelsPath)) {
+        const content = readFileSync(this.modelsPath, "utf-8");
+        return JSON.parse(content);
+      }
+    } catch (error) {
+      console.warn("Failed to read OpenClaw config:", error);
+      logger.logError("OpenClawManager.getConfig", error);
+    }
+    return null;
+  }
+
+  private saveModels(models: { providers?:Record<string, OpenClawProvider>}): void {
+    try {
+      this.ensureDir(this.modelsPath);
+      writeFileSync(this.modelsPath, JSON.stringify(models, null, 2), "utf-8");
+    } catch (error) {
+      throw new Error(`Failed to save OpenClaw config: ${error}`);
+    }
   }
 
   private getAuthConfig(): AuthProfilesConfig | null {
@@ -177,18 +195,23 @@ export class OpenClawManager {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
-    const models: OpenClawModel[] = plan.models.map((m) => {
+    const models: OpenClawModel[] = []
+    for(const m of plan.models){
+      const input = m.modalities?.input?.filter(
+        (item) => item === "text" || item === "image"
+      );
+      if (m.contextLength <1 || m.maxTokens<1 || !input?.length){
+        continue
+      }
       const entry: OpenClawModel = {
         id: m.id,
         name: m.id,
         contextWindow: m.contextLength,
         maxTokens: m.maxTokens,
       };
-      if (m.modalities?.input) {
-        entry.input = m.modalities.input;
-      }
-      return entry;
-    });
+      entry.input = input;
+      models.push(entry);
+    }
 
     const provider: OpenClawProvider = {
       baseUrl: plan.baseUrl,
@@ -269,12 +292,20 @@ export class OpenClawManager {
         ...(currentAuth.profiles || {}),
         [profileKey]: {
           type: "api_key",
+          provider: plan.id,
           key: apiKey,
         },
       },
     };
-
+    const currentModels :{ providers? :Record<string, OpenClawProvider>} = this.getModels() || {}
+    const newModels = {
+      providers:{
+        ...currentModels.providers,
+        ...providers
+      }
+    }
     this.saveConfig(newConfig);
+    this.saveModels(newModels);
     this.saveAuthConfig(newAuth);
     this.updateSessionOverrides(plan.id, selectedModel);
   }
@@ -287,8 +318,10 @@ export class OpenClawManager {
       if (planId) {
         delete currentConfig.models.providers[planId];
       } else {
-        delete currentConfig.models.providers["cp_test_lite"];
-        delete currentConfig.models.providers["cp_test_pro"];
+        delete currentConfig.models.providers["ssy_cp_lite"];
+        delete currentConfig.models.providers["ssy_cp_pro"];
+        delete currentConfig.models.providers["ssy_cp_enterprise"];
+        delete currentConfig.models.providers["pay_as_you_go"];
       }
 
       if (Object.keys(currentConfig.models.providers).length === 0) {
@@ -313,8 +346,10 @@ export class OpenClawManager {
       if (planId) {
         delete currentAuth.profiles[`${planId}:default`];
       } else {
-        delete currentAuth.profiles["cp_test_lite:default"];
-        delete currentAuth.profiles["cp_test_pro:default"];
+        delete currentAuth.profiles["ssy_cp_lite:default"];
+        delete currentAuth.profiles["ssy_cp_pro:default"];
+        delete currentAuth.profiles["ssy_cp_enterprise:default"];
+        delete currentAuth.profiles["pay_as_you_go:default"];
       }
 
       if (Object.keys(currentAuth.profiles).length === 0) {
@@ -346,7 +381,7 @@ export class OpenClawManager {
       }
 
       // Fallback: return the first configured plan
-      for (const planId of ["cp_test_lite", "cp_test_pro"]) {
+      for (const planId of ["ssy_cp_lite", "ssy_cp_pro"]) {
         if (config.models.providers[planId]) {
           const profileKey = `${planId}:default`;
           const apiKey = auth?.profiles?.[profileKey]?.key || null;

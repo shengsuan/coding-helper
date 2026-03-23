@@ -28,8 +28,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { OpenCodeIntegration } from '../../src/lib/opencode-integration.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 // ─── OpenCode consumer simulation helpers ───────────────────────
@@ -127,7 +127,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('should produce valid provider consumable by OpenCode', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const provider = config.provider['cp_test_lite'];
+      const provider = config.provider['ssy_cp_lite'];
 
       const errors = validateProviderStructure(provider);
       expect(errors, `Provider validation errors: ${errors.join(', ')}`).toEqual([]);
@@ -137,7 +137,7 @@ describe('OpenCode Consumer Simulation', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
 
-      expect(config.provider['cp_test_lite'].npm).toBe('@ai-sdk/openai-compatible');
+      expect(config.provider['ssy_cp_lite'].npm).toBe('@ai-sdk/openai-compatible');
     });
 
     it('apiKey in options should be passthrough for Authorization header', () => {
@@ -145,7 +145,7 @@ describe('OpenCode Consumer Simulation', () => {
       const config = mockFs._readJson(CONFIG_PATH) as any;
 
       // OpenCode @ai-sdk/openai-compatible passes options.apiKey as Bearer token
-      const apiKey = config.provider['cp_test_lite'].options.apiKey;
+      const apiKey = config.provider['ssy_cp_lite'].options.apiKey;
       expect(apiKey).toBe(API_KEY);
       expect(apiKey).not.toContain('Bearer'); // SDK adds Bearer prefix itself
     });
@@ -158,7 +158,7 @@ describe('OpenCode Consumer Simulation', () => {
 
       const parsed = parseModelRef(config.model);
       expect(parsed).not.toBeNull();
-      expect(parsed!.provider).toBe('cp_test_lite');
+      expect(parsed!.provider).toBe('ssy_cp_lite');
       expect(parsed!.model).toBe('kimi-k2.5');
     });
 
@@ -184,7 +184,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('all modalities should pass OpenCode zod schema', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.provider['cp_test_lite'].models;
+      const models = config.provider['ssy_cp_lite'].models;
 
       for (const [id, model] of Object.entries(models) as [string, any][]) {
         expect(
@@ -197,7 +197,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('Pro Plan modalities should also pass schema', () => {
       integration.loadPlanConfig(BYTEPLUS, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.provider['cp_test_pro'].models;
+      const models = config.provider['ssy_cp_pro'].models;
 
       for (const [id, model] of Object.entries(models) as [string, any][]) {
         expect(
@@ -212,7 +212,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('image-capable model should produce capabilities.input.image=true', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const arkCode = config.provider['cp_test_lite'].models['anthropic/claude-sonnet-4.6'];
+      const arkCode = config.provider['ssy_cp_lite'].models['anthropic/claude-sonnet-4.6'];
 
       const caps = mapModalitiesToCapabilities(arkCode.modalities);
       expect(caps.input.text).toBe(true);
@@ -224,7 +224,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('text-only model should produce capabilities.input.image=false', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const glm = config.provider['cp_test_lite'].models['glm-4.7'];
+      const glm = config.provider['ssy_cp_lite'].models['glm-4.7'];
 
       const caps = mapModalitiesToCapabilities(glm.modalities);
       expect(caps.input.text).toBe(true);
@@ -234,7 +234,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('model without modalities should default to text-only', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const deepseek = config.provider['cp_test_lite'].models['deepseek-v3.2'];
+      const deepseek = config.provider['ssy_cp_lite'].models['deepseek-v3.2'];
 
       const caps = mapModalitiesToCapabilities(deepseek.modalities);
       expect(caps.input.text).toBe(true);
@@ -250,7 +250,7 @@ describe('OpenCode Consumer Simulation', () => {
 
       const modelsWithImage = ['anthropic/claude-sonnet-4.6', 'doubao-seed-code', 'kimi-k2.5'];
       for (const id of modelsWithImage) {
-        const model = config.provider['cp_test_lite'].models[id];
+        const model = config.provider['ssy_cp_lite'].models[id];
         if (!model) continue;
         const caps = mapModalitiesToCapabilities(model.modalities);
         expect(
@@ -266,7 +266,7 @@ describe('OpenCode Consumer Simulation', () => {
 
       const textOnlyModels = ['glm-4.7', 'deepseek-v3.2'];
       for (const id of textOnlyModels) {
-        const model = config.provider['cp_test_lite'].models[id];
+        const model = config.provider['ssy_cp_lite'].models[id];
         if (!model) continue;
         const caps = mapModalitiesToCapabilities(model.modalities);
         expect(
@@ -280,7 +280,7 @@ describe('OpenCode Consumer Simulation', () => {
       integration.loadPlanConfig(BYTEPLUS, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
 
-      for (const [id, model] of Object.entries(config.provider['cp_test_pro'].models) as [string, any][]) {
+      for (const [id, model] of Object.entries(config.provider['ssy_cp_pro'].models) as [string, any][]) {
         const caps = mapModalitiesToCapabilities(model.modalities);
         expect(
           wouldRejectImageInput(caps),
@@ -294,7 +294,7 @@ describe('OpenCode Consumer Simulation', () => {
     it('all models should have positive context and output limits', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.provider['cp_test_lite'].models;
+      const models = config.provider['ssy_cp_lite'].models;
 
       for (const [id, model] of Object.entries(models) as [string, any][]) {
         expect(model.limit, `${id} should have limit`).toBeDefined();
@@ -312,8 +312,8 @@ describe('OpenCode Consumer Simulation', () => {
       const config = mockFs._readJson(CONFIG_PATH) as any;
 
       // ark-code-latest: Volcano has image, Pro Plan doesn't
-      const volcArkCode = config.provider['cp_test_lite'].models['anthropic/claude-sonnet-4.6'];
-      const bpArkCode = config.provider['cp_test_pro'].models['anthropic/claude-sonnet-4.6'];
+      const volcArkCode = config.provider['ssy_cp_lite'].models['anthropic/claude-sonnet-4.6'];
+      const bpArkCode = config.provider['ssy_cp_pro'].models['anthropic/claude-sonnet-4.6'];
 
       const volcCaps = mapModalitiesToCapabilities(volcArkCode.modalities);
       const bpCaps = mapModalitiesToCapabilities(bpArkCode.modalities);

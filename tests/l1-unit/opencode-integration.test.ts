@@ -22,8 +22,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { OpenCodeIntegration } from '../../src/lib/opencode-integration.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 describe('OpenCodeIntegration', () => {
@@ -48,21 +48,21 @@ describe('OpenCodeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.model).toBe(`cp_test_lite/${VOLCANO.models[0].id}`);
+      expect(config.model).toBe(`ssy_cp_lite/${VOLCANO.models[0].id}`);
     });
 
     it('should use specified model when provided', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY, 'kimi-k2.5');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.model).toBe('cp_test_lite/kimi-k2.5');
+      expect(config.model).toBe('ssy_cp_lite/kimi-k2.5');
     });
 
     it('should write provider with correct structure', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const provider = config.provider['cp_test_lite'];
+      const provider = config.provider['ssy_cp_lite'];
 
       expect(provider.npm).toBe('@ai-sdk/openai-compatible');
       expect(provider.name).toBe(VOLCANO.name);
@@ -74,7 +74,7 @@ describe('OpenCodeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.provider['cp_test_lite'].options.apiKey).toBe(API_KEY);
+      expect(config.provider['ssy_cp_lite'].options.apiKey).toBe(API_KEY);
 
       // auth.json should NOT be written
       expect(mockFs._store.has(LEGACY_AUTH_PATH)).toBe(false);
@@ -84,7 +84,7 @@ describe('OpenCodeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.provider['cp_test_lite'].models;
+      const models = config.provider['ssy_cp_lite'].models;
 
       for (const planModel of VOLCANO.models) {
         const written = models[planModel.id];
@@ -99,7 +99,7 @@ describe('OpenCodeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.provider['cp_test_lite'].models;
+      const models = config.provider['ssy_cp_lite'].models;
 
       // ark-code-latest has modalities
       expect(models['anthropic/claude-sonnet-4.6'].modalities).toEqual({
@@ -140,27 +140,27 @@ describe('OpenCodeIntegration', () => {
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.theme).toBe('catppuccin');
       expect(config.provider['other-provider']).toBeDefined();
-      expect(config.provider['cp_test_lite']).toBeDefined();
+      expect(config.provider['ssy_cp_lite']).toBeDefined();
     });
 
     it('should handle Pro Plan plan', () => {
       integration.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.model).toBe(`cp_test_pro/${BYTEPLUS.models[0].id}`);
-      expect(config.provider['cp_test_pro'].options.baseURL).toBe(BYTEPLUS.baseUrl);
+      expect(config.model).toBe(`ssy_cp_pro/${BYTEPLUS.models[0].id}`);
+      expect(config.provider['ssy_cp_pro'].options.baseURL).toBe(BYTEPLUS.baseUrl);
     });
 
     it('should have different modalities for same model across plans', () => {
       // Volcano: ark-code-latest has image input
       integration.loadPlanConfig(VOLCANO, 'key-1');
       let config = mockFs._readJson(CONFIG_PATH) as any;
-      const volcModalities = config.provider['cp_test_lite'].models['anthropic/claude-sonnet-4.6'].modalities;
+      const volcModalities = config.provider['ssy_cp_lite'].models['anthropic/claude-sonnet-4.6'].modalities;
 
       // Pro Plan: ark-code-latest has text-only input
       integration.loadPlanConfig(BYTEPLUS, 'key-2');
       config = mockFs._readJson(CONFIG_PATH) as any;
-      const bpModalities = config.provider['cp_test_pro'].models['anthropic/claude-sonnet-4.6'].modalities;
+      const bpModalities = config.provider['ssy_cp_pro'].models['anthropic/claude-sonnet-4.6'].modalities;
 
       // They should differ (volcano supports image, byteplus doesn't)
       expect(volcModalities.input).toContain('image');
@@ -176,14 +176,14 @@ describe('OpenCodeIntegration', () => {
     });
 
     it('should remove specified plan provider', () => {
-      integration.unloadPlanConfig('cp_test_lite');
+      integration.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.provider?.['cp_test_lite']).toBeUndefined();
+      expect(config.provider?.['ssy_cp_lite']).toBeUndefined();
     });
 
     it('should clear model when it references removed plan', () => {
-      integration.unloadPlanConfig('cp_test_lite');
+      integration.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.model).toBeUndefined();
@@ -194,21 +194,21 @@ describe('OpenCodeIntegration', () => {
       integration.unloadPlanConfig();
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.provider?.['cp_test_lite']).toBeUndefined();
-      expect(config.provider?.['cp_test_pro']).toBeUndefined();
+      expect(config.provider?.['ssy_cp_lite']).toBeUndefined();
+      expect(config.provider?.['ssy_cp_pro']).toBeUndefined();
     });
 
     it('should clean up legacy auth.json entries', () => {
       // Seed a legacy auth file with two entries so the file gets re-saved
       mockFs._seed(LEGACY_AUTH_PATH, JSON.stringify({
-        'cp_test_lite': { type: 'api', key: 'old-key' },
+        'ssy_cp_lite': { type: 'api', key: 'old-key' },
         'other-entry': { type: 'api', key: 'other-key' },
       }));
 
-      integration.unloadPlanConfig('cp_test_lite');
+      integration.unloadPlanConfig('ssy_cp_lite');
 
       const auth = mockFs._readJson(LEGACY_AUTH_PATH) as any;
-      expect(auth['cp_test_lite']).toBeUndefined();
+      expect(auth['ssy_cp_lite']).toBeUndefined();
       expect(auth['other-entry']).toBeDefined(); // preserved
     });
   });
@@ -225,7 +225,7 @@ describe('OpenCodeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = integration.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -234,14 +234,14 @@ describe('OpenCodeIntegration', () => {
 
       // Remove apiKey from options, add to legacy auth
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      delete config.provider['cp_test_lite'].options.apiKey;
+      delete config.provider['ssy_cp_lite'].options.apiKey;
       mockFs._seed(CONFIG_PATH, JSON.stringify(config));
       mockFs._seed(LEGACY_AUTH_PATH, JSON.stringify({
-        'cp_test_lite': { type: 'api', key: 'legacy-key' },
+        'ssy_cp_lite': { type: 'api', key: 'legacy-key' },
       }));
 
       const result = integration.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe('legacy-key');
     });
 
@@ -253,7 +253,7 @@ describe('OpenCodeIntegration', () => {
       mockFs._seed(CONFIG_PATH, JSON.stringify(config));
 
       const result = integration.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
     });
   });
 });

@@ -21,8 +21,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { NanobotManager } from '../../src/lib/nanobot-manager.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 /** Seed a new-version nanobot config (has named providers) */
@@ -151,7 +151,7 @@ describe('NanobotManager', () => {
     });
 
     it('should clear apiKey and apiBase but keep provider key', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       // Key should still exist (to preserve new-nanobot detection)
@@ -161,7 +161,7 @@ describe('NanobotManager', () => {
     });
 
     it('should clear agents.defaults model and provider', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.agents.defaults.model).toBeUndefined();
@@ -195,7 +195,7 @@ describe('NanobotManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -204,7 +204,7 @@ describe('NanobotManager', () => {
       manager.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_pro');
+      expect(result.plan).toBe('ssy_cp_pro');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -213,7 +213,7 @@ describe('NanobotManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -227,14 +227,14 @@ describe('NanobotManager', () => {
       mockFs._seed(CONFIG_PATH, JSON.stringify(config));
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
     it('should return null after unload', () => {
       seedNewNanobot();
       manager.loadPlanConfig(VOLCANO, API_KEY);
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const result = manager.detectCurrentConfig();
       // apiKey is cleared to '', so detection should fail

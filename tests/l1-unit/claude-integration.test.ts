@@ -22,8 +22,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { ClaudeIntegration } from '../../src/lib/claude-integration.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 describe('ClaudeIntegration', () => {
@@ -164,7 +164,7 @@ describe('ClaudeIntegration', () => {
       integration.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = integration.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -172,7 +172,7 @@ describe('ClaudeIntegration', () => {
       integration.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const result = integration.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_pro');
+      expect(result.plan).toBe('ssy_cp_pro');
       expect(result.apiKey).toBe(API_KEY);
     });
   });

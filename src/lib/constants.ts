@@ -12,6 +12,7 @@ export interface Model {
   contextLength: number;
   maxTokens: number;
   modalities?: ModelModalities;
+  support_apis?:string[];
 }
 
 export interface Plan {
@@ -26,8 +27,8 @@ export interface Plan {
 }
 
 export const PLANS: Record<string, Plan> = {
-  "cp_test_lite": {
-    id: "cp_test_lite",
+  "ssy_cp_lite": {
+    id: "ssy_cp_lite",
     name: "Lite Plan",
     name_zh: "精简计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
@@ -50,8 +51,8 @@ export const PLANS: Record<string, Plan> = {
       },
     ],
   },
-  "cp_test_pro": {
-    id: "cp_test_pro",
+  "ssy_cp_pro": {
+    id: "ssy_cp_pro",
     name: "Pro Plan",
     name_zh: "专业计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
@@ -73,8 +74,8 @@ export const PLANS: Record<string, Plan> = {
       },
     ],
   },
-  "cp_test_enterprise": {
-    id: "cp_test_enterprise",
+  "ssy_cp_enterprise": {
+    id: "ssy_cp_enterprise",
     name: "Enterprise Plan",
     name_zh: "企业计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
@@ -174,32 +175,32 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "OpenCode",
     runtime: "node",
   },
-  nanobot: {
-    name: "nanobot",
-    command: "nanobot",
-    installCommand: "pip install nanobot-ai",
-    configPath: join(homedir(), ".nanobot", "config.json"),
-    displayName: "Nanobot",
-    runtime: "python",
-    minPythonVersion: "3.11",
-  },
-  zeroclaw: {
-    name: "zeroclaw",
-    command: "zeroclaw",
-    installCommand: "brew install zeroclaw",
-    configPath: join(homedir(), ".zeroclaw", "config.toml"),
-    displayName: "ZeroClaw",
-    runtime: "node",
-  },
+  // nanobot: {
+  //   name: "nanobot",
+  //   command: "nanobot",
+  //   installCommand: "pip install nanobot-ai",
+  //   configPath: join(homedir(), ".nanobot", "config.json"),
+  //   displayName: "Nanobot",
+  //   runtime: "python",
+  //   minPythonVersion: "3.11",
+  // },
+  // zeroclaw: {
+  //   name: "zeroclaw",
+  //   command: "zeroclaw",
+  //   installCommand: "brew install zeroclaw",
+  //   configPath: join(homedir(), ".zeroclaw", "config.toml"),
+  //   displayName: "ZeroClaw",
+  //   runtime: "node",
+  // },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");
 export const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
 
 export const API_KEY_URLS = {
-  "cp_test_lite": "https://console.shengsuanyun.com/user/keys",
-  "cp_test_pro": "https://console.shengsuanyun.com/user/keys",
-  "cp_test_enterprise": "https://console.shengsuanyun.com/user/keys",
+  "ssy_cp_lite": "https://console.shengsuanyun.com/user/keys",
+  "ssy_cp_pro": "https://console.shengsuanyun.com/user/keys",
+  "ssy_cp_enterprise": "https://console.shengsuanyun.com/user/keys",
   "pay_as_you_go": "https://console.shengsuanyun.com/user/keys",
 };
 

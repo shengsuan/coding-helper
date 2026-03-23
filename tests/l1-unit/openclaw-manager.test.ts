@@ -27,8 +27,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { OpenClawManager } from '../../src/lib/openclaw-manager.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 describe('OpenClawManager', () => {
@@ -48,17 +48,17 @@ describe('OpenClawManager', () => {
       const config = mockFs._readJson(CONFIG_PATH) as Record<string, unknown>;
       const providers = (config.models as any).providers;
 
-      expect(providers['cp_test_lite']).toBeDefined();
-      expect(providers['cp_test_lite'].baseUrl).toBe(VOLCANO.baseUrl);
-      expect(providers['cp_test_lite'].apiKey).toBe(API_KEY);
-      expect(providers['cp_test_lite'].api).toBe('openai-completions');
+      expect(providers['ssy_cp_lite']).toBeDefined();
+      expect(providers['ssy_cp_lite'].baseUrl).toBe(VOLCANO.baseUrl);
+      expect(providers['ssy_cp_lite'].apiKey).toBe(API_KEY);
+      expect(providers['ssy_cp_lite'].api).toBe('openai-completions');
     });
 
     it('should write all plan models with correct fields', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       expect(models).toHaveLength(VOLCANO.models.length);
 
@@ -75,7 +75,7 @@ describe('OpenClawManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      const models = config.models.providers['cp_test_lite'].models;
+      const models = config.models.providers['ssy_cp_lite'].models;
 
       // ark-code-latest has modalities: { input: ["text", "image"] }
       const arkCode = models.find((m: any) => m.id === 'anthropic/claude-sonnet-4.6');
@@ -95,7 +95,7 @@ describe('OpenClawManager', () => {
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.agents.defaults.model.primary).toBe(
-        `cp_test_lite/${VOLCANO.models[0].id}`,
+        `ssy_cp_lite/${VOLCANO.models[0].id}`,
       );
     });
 
@@ -103,7 +103,7 @@ describe('OpenClawManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY, 'kimi-k2.5');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.agents.defaults.model.primary).toBe('cp_test_lite/kimi-k2.5');
+      expect(config.agents.defaults.model.primary).toBe('ssy_cp_lite/kimi-k2.5');
     });
 
     it('should write allowlist with all plan models', () => {
@@ -113,7 +113,7 @@ describe('OpenClawManager', () => {
       const allowlist = config.agents.defaults.models;
 
       for (const m of VOLCANO.models) {
-        const ref = `cp_test_lite/${m.id}`;
+        const ref = `ssy_cp_lite/${m.id}`;
         expect(allowlist[ref], `allowlist should contain ${ref}`).toEqual({});
       }
     });
@@ -122,7 +122,7 @@ describe('OpenClawManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const auth = mockFs._readJson(AUTH_PATH) as any;
-      expect(auth.profiles['cp_test_lite:default']).toEqual({
+      expect(auth.profiles['ssy_cp_lite:default']).toEqual({
         type: 'api_key',
         key: API_KEY,
       });
@@ -145,7 +145,7 @@ describe('OpenClawManager', () => {
       const entry = sessions['agent:main:main'];
 
       expect(entry.modelOverride).toBe('glm-4.7');
-      expect(entry.providerOverride).toBe('cp_test_lite');
+      expect(entry.providerOverride).toBe('ssy_cp_lite');
       expect(entry.model).toBeUndefined();        // cleared
       expect(entry.modelProvider).toBeUndefined(); // cleared
       expect(entry.contextTokens).toBeUndefined(); // cleared
@@ -177,7 +177,7 @@ describe('OpenClawManager', () => {
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.someCustomSetting).toBe(true);
       expect(config.models.providers['my-other-provider']).toBeDefined();
-      expect(config.models.providers['cp_test_lite']).toBeDefined();
+      expect(config.models.providers['ssy_cp_lite']).toBeDefined();
     });
 
     it('should deduplicate providers with same domain', () => {
@@ -197,20 +197,20 @@ describe('OpenClawManager', () => {
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.models.providers['custom-volc']).toBeUndefined();
-      expect(config.models.providers['cp_test_lite']).toBeDefined();
+      expect(config.models.providers['ssy_cp_lite']).toBeDefined();
     });
 
     it('should handle Pro Plan plan correctly', () => {
       manager.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.models.providers['cp_test_pro'].baseUrl).toBe(BYTEPLUS.baseUrl);
+      expect(config.models.providers['ssy_cp_pro'].baseUrl).toBe(BYTEPLUS.baseUrl);
       expect(config.agents.defaults.model.primary).toBe(
-        `cp_test_pro/${BYTEPLUS.models[0].id}`,
+        `ssy_cp_pro/${BYTEPLUS.models[0].id}`,
       );
 
       const auth = mockFs._readJson(AUTH_PATH) as any;
-      expect(auth.profiles['cp_test_pro:default'].key).toBe(API_KEY);
+      expect(auth.profiles['ssy_cp_pro:default'].key).toBe(API_KEY);
     });
 
     it('should handle switching from one plan to another', () => {
@@ -221,10 +221,10 @@ describe('OpenClawManager', () => {
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       // Both providers should exist
-      expect(config.models.providers['cp_test_lite']).toBeDefined();
-      expect(config.models.providers['cp_test_pro']).toBeDefined();
+      expect(config.models.providers['ssy_cp_lite']).toBeDefined();
+      expect(config.models.providers['ssy_cp_pro']).toBeDefined();
       // model.primary should point to the latest
-      expect(config.agents.defaults.model.primary).toBe('cp_test_pro/kimi-k2.5');
+      expect(config.agents.defaults.model.primary).toBe('ssy_cp_pro/kimi-k2.5');
     });
   });
 
@@ -236,21 +236,21 @@ describe('OpenClawManager', () => {
     });
 
     it('should remove specified plan provider', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.models?.providers?.['cp_test_lite']).toBeUndefined();
+      expect(config.models?.providers?.['ssy_cp_lite']).toBeUndefined();
     });
 
     it('should remove auth profile', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const auth = mockFs._readJson(AUTH_PATH) as any;
-      expect(auth.profiles?.['cp_test_lite:default']).toBeUndefined();
+      expect(auth.profiles?.['ssy_cp_lite:default']).toBeUndefined();
     });
 
     it('should clear model.primary when it references removed plan', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
       expect(config.agents?.defaults?.model?.primary).toBeUndefined();
@@ -261,17 +261,17 @@ describe('OpenClawManager', () => {
       manager.unloadPlanConfig();
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.models?.providers?.['cp_test_lite']).toBeUndefined();
-      expect(config.models?.providers?.['cp_test_pro']).toBeUndefined();
+      expect(config.models?.providers?.['ssy_cp_lite']).toBeUndefined();
+      expect(config.models?.providers?.['ssy_cp_pro']).toBeUndefined();
     });
 
     it('should preserve other plan when only one is removed', () => {
       manager.loadPlanConfig(BYTEPLUS, 'key-2', 'kimi-k2.5');
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = mockFs._readJson(CONFIG_PATH) as any;
-      expect(config.models.providers['cp_test_pro']).toBeDefined();
-      expect(config.agents.defaults.model.primary).toBe('cp_test_pro/kimi-k2.5');
+      expect(config.models.providers['ssy_cp_pro']).toBeDefined();
+      expect(config.agents.defaults.model.primary).toBe('ssy_cp_pro/kimi-k2.5');
     });
   });
 
@@ -287,7 +287,7 @@ describe('OpenClawManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -295,7 +295,7 @@ describe('OpenClawManager', () => {
       manager.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_pro');
+      expect(result.plan).toBe('ssy_cp_pro');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -308,7 +308,7 @@ describe('OpenClawManager', () => {
       mockFs._seed(CONFIG_PATH, JSON.stringify(config));
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
     });
   });
 });

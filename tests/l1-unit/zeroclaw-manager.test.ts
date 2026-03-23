@@ -22,8 +22,8 @@ vi.mock('../../src/utils/logger.js', () => ({
 import { ZeroClawManager } from '../../src/lib/zeroclaw-manager.js';
 import { PLANS } from '../../src/lib/constants.js';
 
-const VOLCANO = PLANS['cp_test_lite'];
-const BYTEPLUS = PLANS['cp_test_pro'];
+const VOLCANO = PLANS['ssy_cp_lite'];
+const BYTEPLUS = PLANS['ssy_cp_pro'];
 const API_KEY = 'test-api-key-12345';
 
 /** Seed a minimal onboarded config so loadPlanConfig won't throw */
@@ -135,7 +135,7 @@ describe('ZeroClawManager', () => {
     });
 
     it('should remove default_provider, default_model, api_key', () => {
-      manager.unloadPlanConfig('cp_test_lite');
+      manager.unloadPlanConfig('ssy_cp_lite');
 
       const config = readConfig();
       expect(config.default_provider).toBeUndefined();
@@ -144,7 +144,7 @@ describe('ZeroClawManager', () => {
     });
 
     it('should not modify config if plan does not match', () => {
-      manager.unloadPlanConfig('cp_test_pro');
+      manager.unloadPlanConfig('ssy_cp_pro');
 
       // Volcano config should still be intact (byteplus was never loaded)
       const config = readConfig();
@@ -174,7 +174,7 @@ describe('ZeroClawManager', () => {
       manager.loadPlanConfig(VOLCANO, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe(API_KEY);
     });
 
@@ -183,7 +183,7 @@ describe('ZeroClawManager', () => {
       manager.loadPlanConfig(BYTEPLUS, API_KEY);
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_pro');
+      expect(result.plan).toBe('ssy_cp_pro');
     });
 
     it('should detect from legacy profile name', () => {
@@ -195,7 +195,7 @@ describe('ZeroClawManager', () => {
       });
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_lite');
+      expect(result.plan).toBe('ssy_cp_lite');
       expect(result.apiKey).toBe('legacy-key');
     });
 
@@ -208,7 +208,7 @@ describe('ZeroClawManager', () => {
       });
 
       const result = manager.detectCurrentConfig();
-      expect(result.plan).toBe('cp_test_pro');
+      expect(result.plan).toBe('ssy_cp_pro');
       expect(result.apiKey).toBe('found-key');
     });
   });

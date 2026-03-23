@@ -26,8 +26,8 @@ export async function authCommand(args: string[]): Promise<void> {
           name: "selectedPlan",
           message: "选择要删除 API Key 的套餐:",
           choices: [
-            { name: "Lite Plan (国内)", value: "cp_test_lite" },
-            { name: "Pro Plan (海外)", value: "cp_test_pro" },
+            { name: "Lite Plan (国内)", value: "ssy_cp_lite" },
+            { name: "Pro Plan (海外)", value: "ssy_cp_pro" },
           ],
         },
       ]);
@@ -58,7 +58,7 @@ export async function authCommand(args: string[]): Promise<void> {
     }
 
     const config = configManager.getConfig();
-    if (!config.plans?.["cp_test_lite"]?.api_key && !config.plans?.["cp_test_pro"]?.api_key) {
+    if (!config.plans?.["ssy_cp_lite"]?.api_key && !config.plans?.["ssy_cp_pro"]?.api_key) {
       console.log(chalk.red("请先配置 API Key"));
       return;
     }
@@ -71,13 +71,13 @@ export async function authCommand(args: string[]): Promise<void> {
         choices: [
           {
             name: "Lite Plan (国内)",
-            value: "cp_test_lite",
-            disabled: !config.plans?.["cp_test_lite"]?.api_key,
+            value: "ssy_cp_lite",
+            disabled: !config.plans?.["ssy_cp_lite"]?.api_key,
           },
           {
             name: "Pro Plan (海外)",
-            value: "cp_test_pro",
-            disabled: !config.plans?.["cp_test_pro"]?.api_key,
+            value: "ssy_cp_pro",
+            disabled: !config.plans?.["ssy_cp_pro"]?.api_key,
           },
         ].filter((c) => !c.disabled),
       },
@@ -173,8 +173,8 @@ export async function authCommand(args: string[]): Promise<void> {
 function showAuthStatus(): void {
   console.log(chalk.bold("\n" + i18n.t("auth.show_status") + ":\n"));
 
-  const volcenginePlanConfig = configManager.getPlanConfig("cp_test_lite");
-  const byteplusPlanConfig = configManager.getPlanConfig("cp_test_pro");
+  const volcenginePlanConfig = configManager.getPlanConfig("ssy_cp_lite");
+  const byteplusPlanConfig = configManager.getPlanConfig("ssy_cp_pro");
 
   console.log(chalk.gray("Lite Plan (国内):"));
   if (volcenginePlanConfig?.api_key) {
@@ -206,7 +206,7 @@ function showAuthStatus(): void {
   const detectedConfig = openCodeManager.detectCurrentConfig();
   if (detectedConfig.plan) {
     const planName =
-      detectedConfig.plan === "cp_test_lite" ? "Lite Plan" : "Pro Plan";
+      detectedConfig.plan === "ssy_cp_lite" ? "Lite Plan" : "Pro Plan";
     console.log(chalk.green(`  ✓ 已配置: ${planName}`));
     if (detectedConfig.apiKey) {
       console.log(
@@ -222,7 +222,7 @@ function showAuthStatus(): void {
   const openClawConfig = openClawManager.detectCurrentConfig();
   if (openClawConfig.plan) {
     const planName =
-      openClawConfig.plan === "cp_test_lite" ? "Lite Plan" : "Pro Plan";
+      openClawConfig.plan === "ssy_cp_lite" ? "Lite Plan" : "Pro Plan";
     console.log(chalk.green(`  ✓ 已配置: ${planName}`));
     if (openClawConfig.apiKey) {
       console.log(

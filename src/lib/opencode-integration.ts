@@ -164,8 +164,8 @@ export class OpenCodeIntegration {
       if (planId) {
         delete currentConfig.provider[planId];
       } else {
-        delete currentConfig.provider["cp_test_lite"];
-        delete currentConfig.provider["cp_test_pro"];
+        delete currentConfig.provider["ssy_cp_lite"];
+        delete currentConfig.provider["ssy_cp_pro"];
       }
 
       if (Object.keys(currentConfig.provider).length === 0) {
@@ -191,8 +191,8 @@ export class OpenCodeIntegration {
       if (planId) {
         delete currentAuth[planId];
       } else {
-        delete currentAuth["cp_test_lite"];
-        delete currentAuth["cp_test_pro"];
+        delete currentAuth["ssy_cp_lite"];
+        delete currentAuth["ssy_cp_pro"];
       }
       if (Object.keys(currentAuth).length > 0) {
         this.saveAuthConfig(currentAuth);
@@ -223,7 +223,7 @@ export class OpenCodeIntegration {
       }
 
       // Fallback: return the first configured plan
-      for (const planId of ["cp_test_lite", "cp_test_pro"]) {
+      for (const planId of ["ssy_cp_lite", "ssy_cp_pro"]) {
         const provider = config.provider[planId];
         if (provider) {
           const apiKey =

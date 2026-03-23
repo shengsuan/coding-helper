@@ -78,7 +78,7 @@ export class Command {
         authCommand(["reload", tool].filter(Boolean) as string[]),
       );
 
-    cmd.argument("[plan]", "cp_test_lite | cp_test_pro | cp_test_enterprise | pay_as_you_go")
+    cmd.argument("[plan]", "ssy_cp_lite | ssy_cp_pro | ssy_cp_enterprise | pay_as_you_go")
       .argument("[token]", "API token")
       .action(async (plan?: string, token?: string) => {
         const args = [plan, token].filter(Boolean) as string[];
@@ -133,8 +133,8 @@ export class Command {
           ex("coding-helper lang show", "Show current language"),
           ex("coding-helper lang set en_US", "Set language"),
           ex("coding-helper auth show", "Show auth status"),
-          ex("coding-helper auth cp_test_lite <key>", "Set ShengSuanYun Coding plan API key"),
-          ex("coding-helper auth revoke cp_test_lite", "Revoke API key"),
+          ex("coding-helper auth ssy_cp_lite <key>", "Set ShengSuanYun Coding plan API key"),
+          ex("coding-helper auth revoke ssy_cp_lite", "Revoke API key"),
           ex("coding-helper doctor", "Run health check"),
         ].join("\n") +
         "\n",
