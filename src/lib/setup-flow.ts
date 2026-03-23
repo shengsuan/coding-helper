@@ -23,10 +23,10 @@ const require = createRequire(import.meta.url);
 const { version: PKG_VERSION } = require('../../package.json');
 
 const arkGradient = gradient([
-  { color: '#4facfe', pos: 0 },
+  { color: '#033e71', pos: 0 },
   { color: '#6a5af9', pos: 0.4 },
   { color: '#a855f7', pos: 0.7 },
-  { color: '#f472b6', pos: 1 },
+  { color: '#eb7733', pos: 1 },
 ]);
 
 const theme = {
@@ -126,22 +126,22 @@ export class SetupFlow {
         message: '🌟 ' + locale.t('ui.select_plan'),
         choices: [
           {
-            name: '[Lite Plan] ' + locale.t('ui.plan_global') +
+            name: '[Lite Plan] ' + locale.t('ui.plan_lite') +
               (litePlanConfig?.api_key ? chalk.green(' ✓') : ''),
             value: 'cp_test_lite' as const
           },
           {
-            name: '[Pro Plan] ' + locale.t('ui.plan_china') +
+            name: '[Pro Plan] ' + locale.t('ui.plan_pro') +
               (proPlanConfig?.api_key ? chalk.green(' ✓') : ''),
             value: 'cp_test_pro' as const
           },
           {
-            name: '[Enterprise Plan] ' + locale.t('ui.plan_global') +
+            name: '[Enterprise Plan] ' + locale.t('ui.plan_enterprise') +
               (enterprisePlanConfig?.api_key ? chalk.green(' ✓') : ''),
             value: 'cp_test_enterprise' as const
           },
           {
-            name: '[Pay as You Go] ' + locale.t('ui.plan_china') +
+            name: '[Pay as You Go] ' + locale.t('ui.plan_go') +
               (goPlanConfig?.api_key ? chalk.green(' ✓') : ''),
             value: 'pay_as_you_go' as const
           },
@@ -162,6 +162,8 @@ export class SetupFlow {
       } else if (planAction === 'both') {
         await this.configApiKey('cp_test_lite');
         await this.configApiKey('cp_test_pro');
+        await this.configApiKey('cp_test_enterprise');
+        await this.configApiKey('pay_as_you_go');
         return;
       } else {
         await this.configApiKey(planAction);
@@ -260,12 +262,13 @@ export class SetupFlow {
 
   private async selectModel(planId: string): Promise<void> {
     const plan = PLANS[planId];
+    const models = await plan.getModels || plan.models
     if (!plan) return;
 
     this.resetScreen();
     this.printSectionHeader(locale.t('ui.select_model') + ` - ${plan.name_zh}`);
 
-    const modelChoices = plan.models.map(model => ({
+    const modelChoices = models.map(model => ({
       name: `${model.id} (${Math.floor(model.contextLength / 1000)}K)`,
       value: model.id
     }));
@@ -274,6 +277,7 @@ export class SetupFlow {
       message: locale.t('ui.select_default_model'),
       choices: modelChoices,
       default: plan.models[0].id,
+      pageSize: 10,
       theme,
     });
 
@@ -405,14 +409,14 @@ export class SetupFlow {
       console.log();
 
       // Promo banner
-      const promoLinkDisplay = locale.t('ui.promo_link_display');
-      const promoLinkUrl = locale.t('ui.promo_link_url');
-      const codingPlanLink = terminalLink(promoLinkDisplay, promoLinkUrl, { fallback: () => promoLinkDisplay });
-      const promoBox = chalk.bgHex('#ff6a00').black.bold(
-        ` 🔥 ${locale.t('ui.promo_buy')} Coding Plan → ${codingPlanLink} `
-      );
-      console.log(`  ${promoBox}`);
-      console.log();
+      // const promoLinkDisplay = locale.t('ui.promo_link_display');
+      // const promoLinkUrl = locale.t('ui.promo_link_url');
+      // const codingPlanLink = terminalLink(promoLinkDisplay, promoLinkUrl, { fallback: () => promoLinkDisplay });
+      // const promoBox = chalk.bgHex('#ff6a00').black.bold(
+      //   ` 🔥 ${locale.t('ui.promo_buy')} Coding Plan → ${codingPlanLink} `
+      // );
+      // console.log(`  ${promoBox}`);
+      // console.log();
 
       // Status display
       console.log(
@@ -523,9 +527,16 @@ export class SetupFlow {
 
       console.log(chalk.yellow.bold(`📋 ${tool.displayName} ` + locale.t('ui.current_config_status') + ':'));
       if (detectedConfig.plan) {
-        const planName = detectedConfig.plan === 'cp_test_lite'
-          ? locale.t('ui.plan_global')
-          : locale.t('ui.plan_china');
+        let planName = locale.t('ui.plan_lite')
+        if(detectedConfig.plan === 'cp_test_pro'){
+          planName = locale.t('ui.plan_pro')
+        }
+        if(detectedConfig.plan === 'cp_test_enterprise'){
+          planName = locale.t('ui.plan_enterprise')
+        }
+        if(detectedConfig.plan === 'pay_as_you_go'){
+          planName = locale.t('ui.plan_go')
+        }
         console.log(chalk.gray('  ' + locale.t('ui.config_plan') + ': ') + chalk.green(planName));
         if (detectedConfig.apiKey) {
           console.log(chalk.gray('  API Key: ') + chalk.gray(locale.t('ui.api_key_set') + ' (' + detectedConfig.apiKey.slice(0, 6) + '…)'));
@@ -540,7 +551,7 @@ export class SetupFlow {
       if (litePlanConfig?.api_key) {
         const isActive = detectedConfig.plan === 'cp_test_lite';
         choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置 Volcano 配置到 ${tool.displayName}`,
+          name: `${isActive ? '🔄' : '📥'} 设置 Lite Plan 配置到 ${tool.displayName}`,
           value: 'load_lite-plan'
         });
       }
@@ -564,8 +575,8 @@ export class SetupFlow {
       if (goPlanConfig?.api_key) {
         const isActive = detectedConfig.plan === 'pay_as_you_go';
         choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置按量付费配置到 ${tool.displayName}`,
-          value: 'load_go-plan'
+          name: `${isActive ? '🔄' : '📥'} 设置 按量付费 配置到 ${tool.displayName}`,
+          value: 'pay_as_you_go'
         });
       }
 
@@ -598,7 +609,7 @@ export class SetupFlow {
         await this.loadPlanConfig(toolName, 'cp_test_pro');
       } else if (action === 'load_enterprise-plan') {
         await this.loadPlanConfig(toolName, 'cp_test_enterprise');
-      } else if (action === 'load_fo-plan') {
+      } else if (action === 'pay_as_you_go') {
         await this.loadPlanConfig(toolName, 'pay_as_you_go');
       } else if (action === 'unload') {
         await this.unloadPlanConfig(toolName);
@@ -631,6 +642,7 @@ export class SetupFlow {
     const plan = PLANS[planId];
     const tool = SUPPORTED_TOOLS[toolName];
     if (!plan || !tool) return;
+    plan["models"] = await plan.getModels || plan.models;
 
     const config = settings.getPlanConfig(planId);
     if (!config?.api_key) {

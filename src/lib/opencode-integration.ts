@@ -115,6 +115,7 @@ export class OpenCodeIntegration {
     }
 
     const models: Record<string, OpenCodeModel> = {};
+    const lts = ["text", "audio", "image","video", "pdf"]
     for (const m of plan.models) {
       const entry: OpenCodeModel = {
         name: m.id,
@@ -123,9 +124,12 @@ export class OpenCodeIntegration {
           output: 4096,
         },
       };
-      if (m.modalities) {
-        entry.modalities = m.modalities;
+      const hasInvalidInput = m.modalities?.input?.some(mod => !lts.includes(mod));
+      const hasInvalidOutput = m.modalities?.output?.some(mod => !lts.includes(mod));
+      if (!m.modalities || hasInvalidInput || hasInvalidOutput) {
+        continue;
       }
+      entry.modalities = m.modalities;
       models[m.id] = entry;
     }
 

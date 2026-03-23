@@ -1,5 +1,6 @@
 import { join } from "path";
 import { homedir } from "os";
+import { getModels } from "./models.js";
 
 export interface ModelModalities {
   input: string[];
@@ -21,6 +22,7 @@ export interface Plan {
   anthropicBaseUrl: string;
   apiKeyName: string;
   models: Model[];
+  getModels?: Promise<Model[]>;
 }
 
 export const PLANS: Record<string, Plan> = {
@@ -31,6 +33,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://ark.cn-beijing.volces.com/api/coding",
     apiKeyName: "Lite Plan API Key",
+    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "bigmodel/glm-4.7",
@@ -54,6 +57,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
     apiKeyName: "Pro Plan API Key",
+    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "google/gemini-2.5-pro",
@@ -76,6 +80,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
     apiKeyName: "Enterprise Plan API Key",
+    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "google/gemini-2.5-pro",
@@ -98,6 +103,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/v1",
     anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
     apiKeyName: "ShengSuanYun API Key",
+    getModels: getModels("https://router.shengsuanyun.com/api/v1/models"),
     models: [
       {
         id: "google/gemini-3-pro-preview",
