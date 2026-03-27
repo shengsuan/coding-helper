@@ -8,22 +8,21 @@ CLI tool for configuring [胜算云](https://shengsuanyun.com/) Coding Plan API 
 
 ## 支持的工具 / Supported Tools
 
-| 工具 / Tool | 运行时 / Runtime | 说明 / Description |
-|-------------|-----------------|-------------------|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Node.js | Anthropic AI 编程助手 / AI coding assistant |
-| [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool |
-| [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |
-| [Nanobot](https://github.com/nanobot-ai/nanobot) | Python 3.11+ | AI 智能体框架 / AI agent framework |
-| [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw) | Node.js | AI 网关 / AI gateway |
+| 工具 / Tool | 运行时 / Runtime | 说明 / Description | 
+|-------------|-----------------|-------------------| 
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Node.js | Anthropic AI 编程助手 / AI coding assistant | 
+| [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool | 
+| [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
+
 
 ## 支持的方案 / Supported Plans
 
-| 方案 / Plan | 模型 / Models |
-|-------------|--------------|---------------|
-| **精简计划 / ssy_cp_lite** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 |
-| **专业计划 / ssy_cp_pro** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
-| **企业计划 / ssy_cp_enterprise** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 |
-| **按量付费 / pay_as_you_go** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, 
+| 方案 / Plan | 模型 / Models | 
+|-------------|-----------------------------| 
+| **精简计划 / ssy_cp_lite** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
+| **专业计划 / ssy_cp_pro** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
+| **企业计划 / ssy_cp_enterprise** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
+| **按量付费 / pay_as_you_go** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2 | 
 
 ## 环境要求 / Requirements
 
@@ -147,3 +146,11 @@ src/
 ## 许可证 / License
 
 MIT
+
+感谢这些开发者的贡献：
+
+<p align="left">
+  <a href="https://www.volcengine.com/docs/82379/1928261?lang=zh">
+  Ark Helper
+  </a>
+</p>
