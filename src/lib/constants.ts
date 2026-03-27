@@ -32,7 +32,7 @@ export const PLANS: Record<string, Plan> = {
     name: "Lite Plan",
     name_zh: "精简计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://ark.cn-beijing.volces.com/api/coding",
+    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Lite Plan API Key",
     getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
@@ -56,7 +56,7 @@ export const PLANS: Record<string, Plan> = {
     name: "Pro Plan",
     name_zh: "专业计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
+    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Pro Plan API Key",
     getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
@@ -79,7 +79,7 @@ export const PLANS: Record<string, Plan> = {
     name: "Enterprise Plan",
     name_zh: "企业计划",
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
+    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Enterprise Plan API Key",
     getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
@@ -102,7 +102,7 @@ export const PLANS: Record<string, Plan> = {
     name: "Pay as You Go",
     name_zh: "按量付费",
     baseUrl: "https://router.shengsuanyun.com/api/v1",
-    anthropicBaseUrl: "https://ark.ap-southeast.bytepluses.com/api/coding",
+    anthropicBaseUrl: "https://router.shengsuanyun.com/api",
     apiKeyName: "ShengSuanYun API Key",
     getModels: getModels("https://router.shengsuanyun.com/api/v1/models"),
     models: [

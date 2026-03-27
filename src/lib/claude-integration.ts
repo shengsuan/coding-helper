@@ -115,7 +115,7 @@ export class ClaudeIntegration {
       env: {
         ...cleanedEnv,
         ANTHROPIC_AUTH_TOKEN: apiKey,
-        ANTHROPIC_BASE_URL: plan.baseUrl,
+        ANTHROPIC_BASE_URL: plan.anthropicBaseUrl,
         ANTHROPIC_MODEL: defaultModel,
         API_TIMEOUT_MS: "3000000",
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: 1,
