@@ -1,6 +1,9 @@
 {
   "name": "@coohu/coding-helper",
-  "version": "1.2.7",
+  "version": "1.2.8",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Lite Plan / Pro Plan Coding Plan Helper for managing OpenCode and Claude Code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

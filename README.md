@@ -2,7 +2,7 @@
 
 一键配置 [胜算云](https://shengsuanyun.com/) Coding Plan API 凭证到多款 AI 编程工具的 CLI 工具。
 
-CLI tool for configuring [胜算云](https://shengsuanyun.com/) Coding Plan API credentials across multiple AI coding tools.
+CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan API credentials across multiple AI coding tools.
 
 ---
 
@@ -19,10 +19,10 @@ CLI tool for configuring [胜算云](https://shengsuanyun.com/) Coding Plan API 
 
 | 方案 / Plan | 模型 / Models | 
 |-------------|-----------------------------| 
-| **精简计划 / ssy_cp_lite** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
-| **专业计划 / ssy_cp_pro** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
-| **企业计划 / ssy_cp_enterprise** | ark-code-latest, doubao-seed-code, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
-| **按量付费 / pay_as_you_go** | ark-code-latest, doubao-seed-code, glm-4.7, deepseek-v3.2 | 
+| **精简计划 / ssy_cp_lite** | anthropic/claude-sonnet-4.5, anthropic/claude-haiku-4.5, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
+| **专业计划 / ssy_cp_pro** | openai/gpt-5.4, anthropic/claude-haiku-4.5, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
+| **企业计划 / ssy_cp_enterprise** | moonshot/kimi-k2.5, doubao-seed-code, glm-4.7, anthropic/claude-sonnet-4.6 | 
+| **按量付费 / pay_as_you_go** | anthropic/claude-opus-4.6, anthropic/claude-opus-4.5, deepseek-v3.2 | 
 
 ## 环境要求 / Requirements
 
