@@ -4,6 +4,7 @@ import inquirer from "inquirer";
 import ora from "ora";
 import terminalLink from "terminal-link";
 import { claudeIntegration } from "./claude-integration.js";
+import { picoclawManager } from "./picoclaw-manager.js";
 import { SUPPORTED_TOOLS, type Plan, type Tool } from "./constants.js";
 import { locale } from "./locale.js";
 import { nanobotManager } from "./nanobot-manager.js";
@@ -598,22 +599,24 @@ export class IntegrationRegistry {
     }
   }
 
-  loadPlanConfig(
+  async loadPlanConfig(
     toolName: string,
     plan: Plan,
     apiKey: string,
     model?: string,
-  ): void {
+  ): Promise<void> {
     if (toolName === "opencode") {
       openCodeIntegration.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "claude-code") {
-      claudeIntegration.loadPlanConfig(plan, apiKey, model);
+      await claudeIntegration.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "openclaw") {
       openClawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "nanobot") {
-      nanobotManager.loadPlanConfig(plan, apiKey, model);
+      await nanobotManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "zeroclaw") {
-      zeroClawManager.loadPlanConfig(plan, apiKey, model);
+      await zeroClawManager.loadPlanConfig(plan, apiKey, model);
+    } else if (toolName === "picoclaw") {
+      await picoclawManager.loadPlanConfig(plan, apiKey, model);
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
@@ -631,7 +634,9 @@ export class IntegrationRegistry {
       nanobotManager.unloadPlanConfig(planId);
     } else if (toolName === "zeroclaw") {
       zeroClawManager.unloadPlanConfig(planId);
-    } else {
+    } else if (toolName === "picoclaw") {
+      picoclawManager.unloadPlanConfig();
+    }else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
     trackToolEvent("unset", toolName);

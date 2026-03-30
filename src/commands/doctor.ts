@@ -9,6 +9,7 @@ import { zeroClawManager } from '../lib/zeroclaw-manager.js';
 import { claudeIntegration } from '../lib/claude-integration.js';
 import { openClawManager } from '../lib/openclaw-manager.js';
 import { SUPPORTED_TOOLS } from '../lib/constants.js';
+import { picoclawManager } from '../lib/picoclaw-manager.js';
 
 export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 ' + i18n.t('doctor.checking') + '\n'));
@@ -80,7 +81,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🤖 Claude Code 配置:'));
   const claudeDetected = claudeIntegration.detectCurrentConfig();
   if (claudeDetected.plan) {
-    const ccPlanName = claudeDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
+    const ccPlanName = getPlanDisplayName(claudeDetected.plan);
     console.log(chalk.green(`  ✓ 当前套餐: ${ccPlanName}`));
     if (claudeDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${claudeDetected.apiKey.slice(0, 6)}…`));
@@ -92,7 +93,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n📋 OpenCode 配置:'));
   const detectedConfig = openCodeManager.detectCurrentConfig();
   if (detectedConfig.plan) {
-    const planName = detectedConfig.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
+    const planName = getPlanDisplayName(detectedConfig.plan);
     console.log(chalk.green(`  ✓ 当前套餐: ${planName}`));
     if (detectedConfig.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${detectedConfig.apiKey.slice(0, 6)}…`));
@@ -104,7 +105,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🦞 OpenClaw 配置:'));
   const openclawDetected = openClawManager.detectCurrentConfig();
   if (openclawDetected.plan) {
-    const ocPlanName = openclawDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
+    const ocPlanName = getPlanDisplayName(openclawDetected.plan);
     console.log(chalk.green(`  ✓ 当前套餐: ${ocPlanName}`));
     if (openclawDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${openclawDetected.apiKey.slice(0, 6)}…`));
@@ -116,7 +117,7 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🤖 Nanobot 配置:'));
   const nanobotDetected = nanobotManager.detectCurrentConfig();
   if (nanobotDetected.plan) {
-    const nbPlanName = nanobotDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
+    const nbPlanName = getPlanDisplayName(nanobotDetected.plan);
     console.log(chalk.green(`  ✓ 当前套餐: ${nbPlanName}`));
     if (nanobotDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${nanobotDetected.apiKey.slice(0, 6)}…`));
@@ -128,10 +129,22 @@ export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold('\n🧬 ZeroClaw 配置:'));
   const zeroclawDetected = zeroClawManager.detectCurrentConfig();
   if (zeroclawDetected.plan) {
-    const zcPlanName = zeroclawDetected.plan === 'ssy_cp_lite' ? 'Lite Plan' : 'Pro Plan';
+    const zcPlanName = getPlanDisplayName(zeroclawDetected.plan);
     console.log(chalk.green(`  ✓ 当前套餐: ${zcPlanName}`));
     if (zeroclawDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${zeroclawDetected.apiKey.slice(0, 6)}…`));
+    }
+  } else {
+    console.log(chalk.gray('  ○ 未配置任何套餐'));
+  }
+
+  console.log(chalk.bold('\n🤖 Picoclaw 配置:'));
+  const picoclawDetected = picoclawManager.detectCurrentConfig();
+  if (picoclawDetected.plan) {
+    const pcPlanName = getPlanDisplayName(picoclawDetected.plan);
+    console.log(chalk.green(`  ✓ 当前套餐: ${pcPlanName}`));
+    if (picoclawDetected.apiKey) {
+      console.log(chalk.green(`  ✓ API Key: ${picoclawDetected.apiKey.slice(0, 6)}…`));
     }
   } else {
     console.log(chalk.gray('  ○ 未配置任何套餐'));
@@ -146,5 +159,20 @@ export async function doctorCommand(): Promise<void> {
     console.log(chalk.red.bold('\n❌ ' + i18n.t('doctor.issues_found') + '\n'));
     issues.forEach(issue => console.log(chalk.red('  • ' + issue)));
     console.log('');
+  }
+}
+
+function getPlanDisplayName(planId: string): string {
+  switch (planId) {
+    case 'ssy_cp_lite':
+      return 'Lite Plan';
+    case 'ssy_cp_pro':
+      return 'Pro Plan';
+    case 'ssy_cp_enterprise':
+      return 'Enterprise Plan';
+    case 'pay_as_you_go':
+      return '按使用量计费';
+    default:
+      return planId;
   }
 }

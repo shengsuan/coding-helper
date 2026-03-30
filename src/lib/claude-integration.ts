@@ -3,6 +3,7 @@ import { dirname, join } from "path";
 import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
+import { validateModelSupport } from "./model-selector.js";
 
 interface ClaudeCodeSettings {
   env?: Record<string, string | number>;
@@ -97,7 +98,7 @@ export class ClaudeIntegration {
     }
   }
 
-  loadPlanConfig(plan: Plan, apiKey: string, model?: string): void {
+  async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     this.ensureOnboardingCompleted();
     this.purgeConflictingEnvVars();
 
@@ -105,10 +106,13 @@ export class ClaudeIntegration {
     const currentEnv = currentSettings.env || {};
     const { ANTHROPIC_API_KEY: _, ...cleanedEnv } = currentEnv;
 
-    let defaultModel = "anthropic/claude-sonnet-4.5";
-    if(plan.id == "ssy_cp_lite") defaultModel = "anthropic/claude-haiku-4.5";
-    if(plan.id == "ssy_cp_pro") defaultModel = "anthropic/claude-sonnet-4.6";
-    if(plan.id == "ssy_cp_enterprise") defaultModel = "anthropic/claude-opus-4.6";
+    const models = await plan.getModels || plan.models;
+    const defaultModel = validateModelSupport(
+      models,
+      model || plan.models[0]?.id,
+      "/v1/messages",
+      "claude-code"
+    );
 
     const planConfig: ClaudeCodeSettings = {
       ...currentSettings,
@@ -137,7 +141,6 @@ export class ClaudeIntegration {
       logger.logError("ClaudeIntegration.ensureOnboardingCompleted", error);
     }
   }
-
 
   private purgeConflictingEnvVars(): void {
     if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_BASE_URL) {
@@ -310,5 +313,4 @@ export class ClaudeIntegration {
     }
   }
 }
-
 export const claudeIntegration = new ClaudeIntegration();

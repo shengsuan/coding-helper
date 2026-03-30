@@ -40,6 +40,7 @@ export async function getModels(url: string): Promise<Model[]> {
         });
 
         if (result.length > 0) {
+            result.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
             await save("ssy_models.json", result);
             return result;
         }

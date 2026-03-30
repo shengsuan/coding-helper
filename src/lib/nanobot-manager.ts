@@ -3,6 +3,7 @@ import { dirname, join } from 'path';
 import { homedir } from 'os';
 import { PLANS, type Plan } from './constants.js';
 import { logger } from '../utils/logger.js';
+import { validateModelSupport } from './model-selector.js';
 
 interface NanobotProviderConfig {
   apiKey: string;
@@ -89,7 +90,7 @@ export class NanobotManager {
     }
   }
 
-  loadPlanConfig(plan: Plan, apiKey: string, model?: string): void {
+  async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const mapping = PLAN_TO_NANOBOT[plan.id];
     if (!mapping) {
       throw new Error(`Unsupported plan for Nanobot: ${plan.id}`);
@@ -98,22 +99,23 @@ export class NanobotManager {
     const currentConfig = this.getConfig() || {};
     const existingProviders = currentConfig.providers || {};
 
-    // 新版 nanobot 初始化时会预置 volcengineCodingPlan/byteplusCodingPlan；
-    // 检测到任意一个新版 key 即认定为新版 nanobot，否则只能写入 "custom" 槽位
     const isNewNanobot = Object.values(PLAN_TO_NANOBOT).some(
       m => m.providerName in existingProviders
     );
     const activeProviderName = isNewNanobot ? mapping.providerName : LEGACY_PROVIDER_NAME;
-    // 新版写入时清理残留的 custom 条目；老版写入时清理残留的新版条目
     const obsoleteProviderName = isNewNanobot ? LEGACY_PROVIDER_NAME : mapping.providerName;
 
     const updatedProviders = { ...existingProviders };
     delete updatedProviders[obsoleteProviderName];
     updatedProviders[activeProviderName] = { apiKey, apiBase: mapping.apiBase };
 
-    const selectedModel = model || plan.models[0].id;
-    // 新版：model 不带 provider 前缀（如 "ark-code-latest"），provider 字段使用 snake_case 名称
-    // 老版：model 不带前缀（如 "ark-code-latest"），provider 字段使用 "custom"
+    const models = await plan.getModels || plan.models;
+    const selectedModel = validateModelSupport(
+      models,
+      model || plan.models[0]?.id,
+      "/v1/chat/completions",
+      "nanobot"
+    );
     const nanobotModel = selectedModel;
     const nanobotProvider = isNewNanobot ? mapping.agentProvider : LEGACY_PROVIDER_NAME;
 

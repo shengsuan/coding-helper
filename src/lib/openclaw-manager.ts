@@ -3,6 +3,7 @@ import { dirname, join } from "path";
 import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
+import { validateModelSupport } from "./model-selector.js";
 
 interface OpenClawModel {
   id: string;
@@ -195,6 +196,13 @@ export class OpenClawManager {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
+    const selectedModelId = validateModelSupport(
+      plan.models,
+      model || plan.models[0]?.id,
+      "/v1/chat/completions",
+      "openclaw"
+    );
+
     const models: OpenClawModel[] = []
     for(const m of plan.models){
       const input = m.modalities?.input?.filter(
@@ -220,7 +228,7 @@ export class OpenClawManager {
       models,
     };
 
-    const selectedModel = model || plan.models[0].id;
+    const selectedModel = selectedModelId;
 
     // Clean up old custom providers sharing the same domain (e.g. from openclaw onboard)
     const providers = { ...(currentConfig.models?.providers || {}) };

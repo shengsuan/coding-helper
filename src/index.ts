@@ -5,6 +5,7 @@ export { OpenCodeIntegration, openCodeIntegration } from "./lib/opencode-integra
 export { OpenClawManager, openClawManager } from "./lib/openclaw-manager.js";
 export { NanobotManager, nanobotManager } from "./lib/nanobot-manager.js";
 export { ClaudeIntegration, claudeIntegration } from "./lib/claude-integration.js";
+export { PicoclawManager, picoclawManager } from "./lib/picoclaw-manager.js";
 export { checkCredential } from "./lib/auth-checker.js";
 export { locale } from "./lib/locale.js";
 export { PLANS, SUPPORTED_TOOLS, API_KEY_URLS } from "./lib/constants.js";

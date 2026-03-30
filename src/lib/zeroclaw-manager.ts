@@ -4,6 +4,7 @@ import { homedir } from 'os';
 import * as toml from '@iarna/toml';
 import { PLANS, type Plan } from './constants.js';
 import { logger } from '../utils/logger.js';
+import { validateModelSupport } from './model-selector.js';
 
 interface ZeroClawConfig {
   api_key?: string;
@@ -84,7 +85,7 @@ export class ZeroClawManager {
     return typeof apiKey === 'string' && apiKey ? apiKey : null;
   }
 
-  loadPlanConfig(plan: Plan, apiKey: string, model?: string): void {
+  async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     if (!this.isOnboarded()) {
       throw new Error(
         'ZeroClaw 尚未初始化，请先运行 `zeroclaw onboard` 完成安装后再配置。'
@@ -97,7 +98,13 @@ export class ZeroClawManager {
     }
 
     const currentConfig = this.getConfig() || {};
-    const selectedModel = model || plan.models[0].id;
+    const models = await plan.getModels || plan.models;
+    const selectedModel = validateModelSupport(
+      models,
+      model || plan.models[0]?.id,
+      "/v1/chat/completions",
+      "zeroclaw"
+    );
 
     // 清理旧版 model_providers 遗留条目
     if (currentConfig.model_providers) {

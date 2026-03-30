@@ -130,7 +130,9 @@
     "input_enterprise_key": "输入企业计划 API Key",
     "input_go_key": "输入按量付费 API Key",
     "select_default_model": "选择默认模型",
-    "model_info": "{model} ({context}K)"
+    "model_info": "{model} ({context}K)",
+    "model_not_supported": "模型 {model} 不支持当前工具",
+    "please_select_supported_model": "请重新选择支持的模型"
   },
   "setup": {
     "permission_detected": "检测到权限错误",

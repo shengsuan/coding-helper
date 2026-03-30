@@ -13,12 +13,13 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Node.js | Anthropic AI 编程助手 / AI coding assistant | 
 | [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool | 
 | [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
+| [PicoClaw](https://github.com/openclaw/openclaw) | go | AI 编程网关 / AI coding gateway |  
 
 
 ## 支持的方案 / Supported Plans
 
 | 方案 / Plan | 模型 / Models | 
-|-------------|-----------------------------| 
+|-------------------------|-----------------------------| 
 | **精简计划 / ssy_cp_lite** | anthropic/claude-sonnet-4.5, anthropic/claude-haiku-4.5, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
 | **专业计划 / ssy_cp_pro** | openai/gpt-5.4, anthropic/claude-haiku-4.5, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
 | **企业计划 / ssy_cp_enterprise** | moonshot/kimi-k2.5, doubao-seed-code, glm-4.7, anthropic/claude-sonnet-4.6 | 
@@ -65,8 +66,7 @@ coding-helper enter lang
 coding-helper enter plan
 coding-helper enter apikey
 coding-helper enter opencode
-coding-helper enter nanobot
-coding-helper enter zeroclaw
+coding-helper enter picoclaw
 ```
 
 ### 命令行 / CLI Commands
@@ -101,8 +101,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | Claude Code | `~/.claude/settings.json` |
 | OpenCode | `~/.config/opencode/opencode.json` |
 | OpenClaw | `~/.openclaw/openclaw.json` |
-| Nanobot | `~/.nanobot/config.json` |
-| ZeroClaw | `~/.zeroclaw/config.toml` |
+| PicoClaw | `~/.picoclaw/config.json` |
 
 ## 开发 / Development
 

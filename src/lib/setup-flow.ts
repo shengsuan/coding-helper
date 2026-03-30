@@ -11,12 +11,14 @@ import { nanobotManager } from './nanobot-manager.js';
 import { zeroClawManager } from './zeroclaw-manager.js';
 import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
+import { picoclawManager } from './picoclaw-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
 import { execSync, spawnSync } from 'child_process';
-import { PLANS, SUPPORTED_TOOLS, API_KEY_URLS, type Plan } from './constants.js';
+import { PLANS, SUPPORTED_TOOLS, API_KEY_URLS, type Model } from './constants.js';
 import { logger } from '../utils/logger.js';
 import { track } from './tea-tracker.js';
+import { UnsupportedModelError, filterSupportedModels } from './model-selector.js';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
@@ -260,15 +262,21 @@ export class SetupFlow {
     }
   }
 
-  private async selectModel(planId: string): Promise<void> {
+  private async selectModel(planId: string, requiredApi?: string): Promise<void> {
     const plan = PLANS[planId];
     const models = await plan.getModels || plan.models
     if (!plan) return;
 
+    const availableModels = requiredApi? filterSupportedModels(models, requiredApi): models;
+    if (availableModels.length === 0) {
+      console.log(chalk.red(`\n[!] No models support required API: ${requiredApi}`));
+      return;
+    }
+
     this.resetScreen();
     this.printSectionHeader(locale.t('ui.select_model') + ` - ${plan.name_zh}`);
 
-    const modelChoices = models.map(model => ({
+    const modelChoices = availableModels.map((model: Model) => ({
       name: `${model.id} (${Math.floor(model.contextLength / 1000)}K)`,
       value: model.id
     }));
@@ -276,10 +284,10 @@ export class SetupFlow {
     const model = await select({
       message: locale.t('ui.select_default_model'),
       choices: modelChoices,
-      default: plan.models[0].id,
+      default: availableModels[0].id,
       pageSize: 10,
       theme,
-    });
+    }) as string;
 
     settings.setModel(planId, model);
     track('change_model');
@@ -406,6 +414,10 @@ export class SetupFlow {
       //   chalk.cyan('    ◆ ') + chalk.white('ZeroClaw') +
       //   chalk.gray('     — AI gateway')
       // );
+      console.log(
+        chalk.cyan('    ◆ ') + chalk.white('PicoClaw') +
+        chalk.gray('     — AI gateway')
+      );
       console.log();
 
       // Promo banner
@@ -635,6 +647,9 @@ export class SetupFlow {
     if (toolName === 'openclaw') {
       return openClawManager.detectCurrentConfig();
     }
+    if (toolName === 'picoclaw') {
+      return picoclawManager.detectCurrentConfig();
+    }
     return { plan: null, apiKey: null };
   }
 
@@ -657,12 +672,21 @@ export class SetupFlow {
     }).start();
 
     try {
-      registry.loadPlanConfig(toolName, plan, config.api_key, config.model);
+      await registry.loadPlanConfig(toolName, plan, config.api_key, config.model);
       spinner.succeed(chalk.green(locale.t('ui.config_loaded', { tool: tool.displayName })));
     } catch (error) {
-      logger.logError('SetupFlow.loadPlanConfig', error);
       spinner.fail(locale.t('ui.config_failed'));
-      console.error(error);
+
+      if (error instanceof UnsupportedModelError) {
+        console.log(chalk.yellow(`\n[!] ${locale.t('ui.model_not_supported', { model: error.modelId })}`));
+        console.log(chalk.yellow(`    ${locale.t('ui.please_select_supported_model')}`));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await this.selectModel(planId, error.requiredApi);
+        await this.loadPlanConfig(toolName, planId);
+      } else {
+        logger.logError('SetupFlow.loadPlanConfig', error);
+        console.error(error);
+      }
     }
   }
 

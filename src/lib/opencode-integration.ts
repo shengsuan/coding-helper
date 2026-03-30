@@ -3,6 +3,7 @@ import { dirname, join } from "path";
 import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
+import { validateModelSupport } from "./model-selector.js";
 
 interface OpenCodeModel {
   name: string;
@@ -110,6 +111,13 @@ export class OpenCodeIntegration {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
+    const selectedModelId = validateModelSupport(
+      plan.models,
+      model || plan.models[0]?.id,
+      "/v1/chat/completions",
+      "opencode"
+    );
+
     if ("defaultModel" in currentConfig) {
       delete currentConfig.defaultModel;
     }
@@ -143,7 +151,7 @@ export class OpenCodeIntegration {
       models,
     };
 
-    const selectedModel = model || plan.models[0].id;
+    const selectedModel = selectedModelId;
     const newConfig: OpenCodeConfig = {
       $schema: "https://opencode.ai/config.json",
       ...currentConfig,

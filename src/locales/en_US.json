@@ -130,7 +130,9 @@
     "input_enterprise_key": "Input Enterprise Plan API Key",
     "input_go_key": "Input Pay as You Go API Key",
     "select_default_model": "Select default model",
-    "model_info": "{model} ({context}K)"
+    "model_info": "{model} ({context}K)",
+    "model_not_supported": "Model {model} is not supported for this tool",
+    "please_select_supported_model": "Please select a supported model"
   },
   "setup": {
     "permission_detected": "Permission error detected",

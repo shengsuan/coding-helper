@@ -146,7 +146,7 @@ export interface Tool {
   installCommand: string;
   configPath: string;
   displayName: string;
-  runtime: "node" | "python";
+  runtime: "node" | "python" | "go" | "rust";
   minPythonVersion?: string;
 }
 
@@ -192,6 +192,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
   //   displayName: "ZeroClaw",
   //   runtime: "node",
   // },
+  picoclaw: {
+    name: "picoclaw",
+    command: "picoclaw",
+    installCommand: "brew install picoclaw",
+    configPath: join(homedir(), ".picoclaw", "config.json"),
+    displayName: "PicoClaw",
+    runtime: "go",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");
