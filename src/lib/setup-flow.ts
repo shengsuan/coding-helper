@@ -12,6 +12,7 @@ import { zeroClawManager } from './zeroclaw-manager.js';
 import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
 import { picoclawManager } from './picoclaw-manager.js';
+import { codexManager } from './codex-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
 import { execSync, spawnSync } from 'child_process';
@@ -262,7 +263,7 @@ export class SetupFlow {
     }
   }
 
-  private async selectModel(planId: string, requiredApi?: string): Promise<void> {
+  private async selectModel(planId: string, requiredApi?: string[]): Promise<void> {
     const plan = PLANS[planId];
     const models = await plan.getModels || plan.models
     if (!plan) return;
@@ -395,28 +396,32 @@ export class SetupFlow {
       // Supported tools display
       console.log(chalk.gray('  ' + locale.t('ui.main_menu_title')));
       console.log(
-        chalk.cyan('    ◆ ') + chalk.white('OpenClaw') +
-        chalk.gray('     — AI coding gateway')
+        chalk.cyan('    ◆ ') + chalk.white('OpenClaw'.padEnd(20, ' ')) +
+        chalk.gray('— AI coding gateway')
       );
       console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Claude Code') +
-        chalk.gray('  — AI coding assistant')
+        chalk.cyan('    ◆ ') + chalk.white('Claude Code'.padEnd(20, ' ')) +
+        chalk.gray('— AI coding assistant')
       );
       console.log(
-        chalk.cyan('    ◆ ') + chalk.white('OpenCode') +
-        chalk.gray('     — Open-source coding tool')
+        chalk.cyan('    ◆ ') + chalk.white('OpenCode'.padEnd(20, ' ')) +
+        chalk.gray('— Open-source coding tool')
       );
       // console.log(
       //   chalk.cyan('    ◆ ') + chalk.white('Nanobot') +
-      //   chalk.gray('      — AI agent framework')
+      //   chalk.gray('— AI agent framework')
       // );
       // console.log(
       //   chalk.cyan('    ◆ ') + chalk.white('ZeroClaw') +
-      //   chalk.gray('     — AI gateway')
+      //   chalk.gray('— AI gateway')
       // );
       console.log(
-        chalk.cyan('    ◆ ') + chalk.white('PicoClaw') +
-        chalk.gray('     — AI gateway')
+        chalk.cyan('    ◆ ') + chalk.white('PicoClaw'.padEnd(20, ' ')) +
+        chalk.gray('— AI gateway')
+      );
+      console.log(
+        chalk.cyan('    ◆ ') + chalk.white('Codex'.padEnd(20, ' ')) +
+        chalk.gray('— AI gateway')
       );
       console.log();
 
@@ -649,6 +654,9 @@ export class SetupFlow {
     }
     if (toolName === 'picoclaw') {
       return picoclawManager.detectCurrentConfig();
+    }
+    if (toolName === 'codex') {
+      return codexManager.detectCurrentConfig();
     }
     return { plan: null, apiKey: null };
   }

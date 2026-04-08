@@ -110,7 +110,7 @@ export class ClaudeIntegration {
     const defaultModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,
-      "/v1/messages",
+      ["/v1/messages"],
       "claude-code"
     );
 
@@ -119,6 +119,7 @@ export class ClaudeIntegration {
       env: {
         ...cleanedEnv,
         ANTHROPIC_AUTH_TOKEN: apiKey,
+        ANTHROPIC_API_KEY: apiKey,                //todo: remove in future, keep for backward compatibility
         ANTHROPIC_BASE_URL: plan.anthropicBaseUrl,
         ANTHROPIC_MODEL: defaultModel,
         API_TIMEOUT_MS: "3000000",

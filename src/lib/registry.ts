@@ -12,6 +12,7 @@ import { openClawManager } from "./openclaw-manager.js";
 import { openCodeIntegration } from "./opencode-integration.js";
 import { zeroClawManager } from "./zeroclaw-manager.js";
 import { trackToolEvent } from "./tea-tracker.js";
+import { codexManager } from "./codex-manager.js";
 
 interface PythonEnv {
   pythonCmd: string | null;
@@ -617,6 +618,8 @@ export class IntegrationRegistry {
       await zeroClawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "picoclaw") {
       await picoclawManager.loadPlanConfig(plan, apiKey, model);
+    } else if (toolName === "codex") {
+      await codexManager.loadPlanConfig(plan, apiKey, model);
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
@@ -636,7 +639,9 @@ export class IntegrationRegistry {
       zeroClawManager.unloadPlanConfig(planId);
     } else if (toolName === "picoclaw") {
       picoclawManager.unloadPlanConfig();
-    }else {
+    } else if (toolName === "codex") {
+      codexManager.unloadPlanConfig();
+    } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
     trackToolEvent("unset", toolName);

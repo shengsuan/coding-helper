@@ -131,7 +131,7 @@ export class PicoclawManager {
     const selectedModelId = validateModelSupport(
       models,
       model || plan.models[0]?.id,
-      "/v1/chat/completions",
+      ["/v1/chat/completions"],
       "picoclaw"
     );
     const modelName = selectedModelId.split("/").slice(-1)[0];

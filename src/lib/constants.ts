@@ -159,6 +159,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "OpenClaw",
     runtime: "node",
   },
+  codex: {
+    name: "codex",
+    command: "codex",
+    installCommand: "npm install -g @openai/codex",
+    configPath: join(homedir(), ".codex", "config.toml"),
+    displayName: "Codex",
+    runtime: "rust",
+  },
   "claude-code": {
     name: "claude-code",
     command: "claude",

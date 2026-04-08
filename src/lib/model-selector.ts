@@ -3,25 +3,25 @@ import { type Model } from "./constants.js";
 export class UnsupportedModelError extends Error {
   constructor(
     public modelId: string,
-    public requiredApi: string,
+    public requiredApi: string[],
     public toolName: string
   ) {
-    super(`Model ${modelId} does not support required API: ${requiredApi}`);
+    super(`Model ${modelId} does not support required API: ${requiredApi.join(', ')}`);
     this.name = "UnsupportedModelError";
   }
 }
 
 export function filterSupportedModels(
   models: Model[],
-  requiredApi: string = "/v1/chat/completions"
+  requiredApi: string[] = ["/v1/chat/completions"]
 ): Model[] {
-  return models.filter(m => m.support_apis?.includes(requiredApi));
+  return models.filter(m => m.support_apis?.some(api => requiredApi.includes(api)));
 }
 
 export function validateModelSupport(
   models: Model[],
   modelId: string | undefined,
-  requiredApi: string = "/v1/chat/completions",
+  requiredApi: string[] = ["/v1/chat/completions"],
   toolName: string = "Tool"
 ): string {
   if (!modelId) {
@@ -37,7 +37,7 @@ export function validateModelSupport(
     throw new Error(`Model not found: ${modelId}`);
   }
 
-  if (!model.support_apis?.includes(requiredApi)) {
+  if (!model.support_apis?.some(api => requiredApi.includes(api))) {
     throw new UnsupportedModelError(modelId, requiredApi, toolName);
   }
   return modelId;

@@ -113,7 +113,7 @@ export class NanobotManager {
     const selectedModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,
-      "/v1/chat/completions",
+      ["/v1/chat/completions"],
       "nanobot"
     );
     const nanobotModel = selectedModel;

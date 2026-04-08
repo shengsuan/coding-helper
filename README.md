@@ -14,6 +14,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool | 
 | [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
 | [PicoClaw](https://github.com/openclaw/openclaw) | go | AI 编程网关 / AI coding gateway |  
+| [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
 
 
 ## 支持的方案 / Supported Plans
@@ -67,6 +68,7 @@ coding-helper enter plan
 coding-helper enter apikey
 coding-helper enter opencode
 coding-helper enter picoclaw
+coding-helper enter codex
 ```
 
 ### 命令行 / CLI Commands
@@ -102,6 +104,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | OpenCode | `~/.config/opencode/opencode.json` |
 | OpenClaw | `~/.openclaw/openclaw.json` |
 | PicoClaw | `~/.picoclaw/config.json` |
+| Codex | `~/.codex/config.toml` |
 
 ## 开发 / Development
 

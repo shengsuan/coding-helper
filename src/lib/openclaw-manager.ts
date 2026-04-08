@@ -199,7 +199,7 @@ export class OpenClawManager {
     const selectedModelId = validateModelSupport(
       plan.models,
       model || plan.models[0]?.id,
-      "/v1/chat/completions",
+      ["/v1/chat/completions"],
       "openclaw"
     );
 

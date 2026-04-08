@@ -102,7 +102,7 @@ export class ZeroClawManager {
     const selectedModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,
-      "/v1/chat/completions",
+      ["/v1/chat/completions"],
       "zeroclaw"
     );
 

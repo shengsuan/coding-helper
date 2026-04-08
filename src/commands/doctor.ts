@@ -10,6 +10,7 @@ import { claudeIntegration } from '../lib/claude-integration.js';
 import { openClawManager } from '../lib/openclaw-manager.js';
 import { SUPPORTED_TOOLS } from '../lib/constants.js';
 import { picoclawManager } from '../lib/picoclaw-manager.js';
+import { codexManager } from '../lib/codex-manager.js';
 
 export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 ' + i18n.t('doctor.checking') + '\n'));
@@ -145,6 +146,18 @@ export async function doctorCommand(): Promise<void> {
     console.log(chalk.green(`  ✓ 当前套餐: ${pcPlanName}`));
     if (picoclawDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${picoclawDetected.apiKey.slice(0, 6)}…`));
+    }
+  } else {
+    console.log(chalk.gray('  ○ 未配置任何套餐'));
+  }
+
+  console.log(chalk.bold('\n🤖 Codex 配置:'));
+  const codexDetected = codexManager.detectCurrentConfig();
+  if (codexDetected.plan) {
+    const cdPlanName = getPlanDisplayName(codexDetected.plan);
+    console.log(chalk.green(`  ✓ 当前套餐: ${cdPlanName}`));
+    if (codexDetected.apiKey) {
+      console.log(chalk.green(`  ✓ API Key: ${codexDetected.apiKey.slice(0, 6)}…`));
     }
   } else {
     console.log(chalk.gray('  ○ 未配置任何套餐'));
