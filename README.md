@@ -53,6 +53,28 @@ coding-helper
 
 ## 使用方法 / Usage
 
+### 快速配置（推荐）/ Quick Setup (Recommended)
+
+如果你已经有 API Key，可以使用 `set` 命令一键完成配置：
+
+If you already have an API key, use the `set` command for one-step setup:
+
+```bash
+# 使用格式 / Usage format
+coding-helper set <tool_name> <plan_name>
+
+# 示例 / Examples
+coding-helper set codex ssy_cp_enterprise       # 配置 Codex 使用企业计划
+coding-helper set claude-code ssy_cp_pro        # 配置 Claude Code 使用专业计划
+coding-helper set openclaw ssy_cp_lite          # 配置 OpenClaw 使用精简计划
+```
+
+该命令会自动：/ This command will automatically:
+- ✅ 检查工具是否已安装（未安装则自动安装）/ Check if tool is installed (install if missing)
+- ✅ 验证 API Key 是否已配置 / Verify API key is configured
+- ✅ 将配置写入对应工具的配置文件 / Write config to the tool's config file
+- ✅ 配置合适的模型和端点 / Configure appropriate model and endpoint
+
 ### 交互模式 / Interactive Mode
 
 ```bash
@@ -74,6 +96,10 @@ coding-helper enter codex
 ### 命令行 / CLI Commands
 
 ```bash
+# 快速配置 / Quick Setup
+coding-helper set codex ssy_cp_enterprise    # 快速配置 Codex 使用企业计划 / Quick setup Codex with Enterprise plan
+coding-helper set claude-code ssy_cp_pro     # 快速配置 Claude Code 使用专业计划 / Quick setup Claude Code with Pro plan
+
 # 语言 / Language
 coding-helper lang show              # 查看当前语言 / Show current language
 coding-helper lang set zh_CN         # 设为中文 / Set to Chinese
@@ -140,7 +166,7 @@ src/
     openclaw-manager.ts     # OpenClaw 配置写入 / OpenClaw config writer
     nanobot-manager.ts      # Nanobot 配置写入 / Nanobot config writer
     zeroclaw-manager.ts     # ZeroClaw 配置写入 / ZeroClaw config writer
-  commands/                 # 子命令处理器 / Subcommand handlers (auth, lang, doctor, config)
+  commands/                 # 子命令处理器 / Subcommand handlers (auth, lang, doctor, config, set)
   locales/                  # 国际化 JSON 文件 / i18n JSON files
   utils/                    # 日志、终端工具 / Logger, terminal helpers
 ```

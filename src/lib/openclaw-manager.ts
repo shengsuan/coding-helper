@@ -192,19 +192,20 @@ export class OpenClawManager {
     }
   }
 
-  loadPlanConfig(plan: Plan, apiKey: string, model?: string): void {
+  async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
+    const models = await plan.getModels || plan.models;
     const selectedModelId = validateModelSupport(
-      plan.models,
-      model || plan.models[0]?.id,
+      models,
+      model || models[0]?.id,
       ["/v1/chat/completions"],
       "openclaw"
     );
 
-    const models: OpenClawModel[] = []
-    for(const m of plan.models){
+    const modelsList: OpenClawModel[] = []
+    for(const m of models){
       const input = m.modalities?.input?.filter(
         (item) => item === "text" || item === "image"
       );
@@ -218,14 +219,14 @@ export class OpenClawManager {
         maxTokens: m.maxTokens,
       };
       entry.input = input;
-      models.push(entry);
+      modelsList.push(entry);
     }
 
     const provider: OpenClawProvider = {
       baseUrl: plan.baseUrl,
       apiKey: apiKey,
       api: "openai-completions",
-      models,
+      models: modelsList,
     };
 
     const selectedModel = selectedModelId;
@@ -267,7 +268,7 @@ export class OpenClawManager {
     }
 
     // Add all plan models so the user can freely /model switch inside OpenClaw
-    for (const m of plan.models) {
+    for (const m of models) {
       const ref = `${plan.id}/${m.id}`;
       if (!(ref in modelsCatalog)) {
         modelsCatalog[ref] = {};

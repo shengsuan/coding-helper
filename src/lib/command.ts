@@ -7,6 +7,7 @@ import {
   authCommand,
   doctorCommand,
   configCommand,
+  setCommand,
 } from "../commands/index.js";
 import chalk from "chalk";
 import { createRequire } from "module";
@@ -34,6 +35,7 @@ export class Command {
     this.registerLang();
     this.registerAuth();
     this.registerDoctor();
+    this.registerSet();
     this.registerEnter();
     this.registerInit();
     this.registerDefaultAction();
@@ -93,6 +95,18 @@ export class Command {
       .action(() => doctorCommand());
   }
 
+  private registerSet(): void {
+    this.program
+      .command("set")
+      .description("Quickly configure a tool with a plan")
+      .argument("[tool]", "Tool name (e.g., codex, claude-code, openclaw)")
+      .argument("[plan]", "Plan name (e.g., ssy_cp_lite, ssy_cp_pro, ssy_cp_enterprise)")
+      .action(async (tool?: string, plan?: string) => {
+        const args = [tool, plan].filter(Boolean) as string[];
+        await setCommand(args);
+      });
+  }
+
   private registerEnter(): void {
     this.program
       .command("enter [section]")
@@ -128,6 +142,7 @@ export class Command {
         [
           ex("coding-helper", "Interactive main menu"),
           ex("coding-helper init", "First-time setup wizard"),
+          ex("coding-helper set codex ssy_cp_enterprise", "Quick setup tool with plan"),
           ex("coding-helper enter plan", "Jump to plan config"),
           ex("coding-helper enter opencode", "Jump to OpenCode config"),
           ex("coding-helper lang show", "Show current language"),
