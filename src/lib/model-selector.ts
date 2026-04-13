@@ -6,7 +6,7 @@ export class UnsupportedModelError extends Error {
     public requiredApi: string[],
     public toolName: string
   ) {
-    super(`Model ${modelId} does not support required API: ${requiredApi.join(', ')}`);
+    super(`模型 ${modelId} 不支持必要的 API 接口: ${requiredApi.join(', ')}`);
     this.name = "UnsupportedModelError";
   }
 }
@@ -25,16 +25,16 @@ export function validateModelSupport(
   toolName: string = "Tool"
 ): string {
   if (!modelId) {
-    const firstSupported = filterSupportedModels(models, requiredApi)[0];
-    if (!firstSupported) {
-      throw new Error(`No models support required API: ${requiredApi}`);
+    const supported = filterSupportedModels(models, requiredApi)[0];
+    if (!supported) {
+      throw new Error(`暂时没有兼容的模型: ${requiredApi}`);
     }
-    return firstSupported.id;
+    return supported.id;
   }
 
   const model = models.find(m => m.id === modelId);
   if (!model) {
-    throw new Error(`Model not found: ${modelId}`);
+    throw new Error(`未找到模型: ${modelId}`);
   }
 
   if (!model.support_apis?.some(api => requiredApi.includes(api))) {

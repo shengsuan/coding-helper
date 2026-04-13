@@ -249,7 +249,7 @@ export class SetupFlow {
           } else {
             spinner.fail(chalk.red(locale.t('ui.api_key_network_error')));
           }
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           continue;
         }
 
@@ -670,7 +670,7 @@ export class SetupFlow {
     const config = settings.getPlanConfig(planId);
     if (!config?.api_key) {
       console.log(chalk.red('\n[!] ' + locale.t('ui.missing_config')));
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       return;
     }
 
@@ -688,7 +688,7 @@ export class SetupFlow {
       if (error instanceof UnsupportedModelError) {
         console.log(chalk.yellow(`\n[!] ${locale.t('ui.model_not_supported', { model: error.modelId })}`));
         console.log(chalk.yellow(`    ${locale.t('ui.please_select_supported_model')}`));
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await this.selectModel(planId, error.requiredApi);
         await this.loadPlanConfig(toolName, planId);
       } else {

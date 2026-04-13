@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { homedir } from 'os';
 import * as toml from '@iarna/toml';
-import { PLANS, type Plan } from './constants.js';
+import { Model, PLANS, type Plan } from './constants.js';
 import { logger } from '../utils/logger.js';
 import { validateModelSupport } from './model-selector.js';
 
@@ -208,7 +208,7 @@ export class ZeroClawManager {
   }
 
   getProviderModels(planId: string): string[] {
-    return PLANS[planId]?.models.map(m => m.id) || [];
+    return PLANS[planId]?.models.map((m) => m.id) || [];
   }
 }
 
