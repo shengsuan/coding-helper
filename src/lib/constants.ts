@@ -41,6 +41,7 @@ export const PLANS: Record<string, Plan> = {
         contextLength: 200000,
         maxTokens: 128000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions"]
       },
       { id: "deepseek/deepseek-v3.2", contextLength: 128000, maxTokens: 32000 },
       {
@@ -48,6 +49,7 @@ export const PLANS: Record<string, Plan> = {
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text", "image"], output: ["text"] },
+        support_apis: ["/v1/chat/completions"]
       },
     ],
   },
@@ -65,12 +67,14 @@ export const PLANS: Record<string, Plan> = {
         contextLength: 200000,
         maxTokens: 128000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions"]
       },
       {
         id: "moonshot/kimi-k2.5",
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions"]
       },
     ],
   },
@@ -88,12 +92,14 @@ export const PLANS: Record<string, Plan> = {
         contextLength: 200000,
         maxTokens: 128000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions"]
       },
       {
         id: "moonshot/kimi-k2.5",
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions", "/v1/messages"]
       },
     ],
   },
@@ -107,34 +113,32 @@ export const PLANS: Record<string, Plan> = {
     getModels: getModels("https://router.shengsuanyun.com/api/v1/models"),
     models: [
       {
-        id: "google/gemini-3-pro-preview",
-        contextLength: 200000,
-        maxTokens: 128000,
-        modalities: { input: ["text"], output: ["text"] },
-      },
-      {
-        id: "google/gemini-3.1-pro-preview",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-      },
-      {
         id: "openai/gpt-5.2",
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions","/v1/messages","/v1/responses"]
       },
       {
         id: "anthropic/claude-sonnet-4.6",
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions", "/v1/messages"]
       },
       {
         id: "x-ai/grok-4-fast",
         contextLength: 256000,
         maxTokens: 32000,
         modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions", "/v1/messages"]
+      },
+      {
+        id: "x-ai/grok-4",
+        contextLength: 256000,
+        maxTokens: 256000,
+        modalities: { input: ["text"], output: ["text"] },
+        support_apis: ["/v1/chat/completions", "/v1/messages"]
       },
     ],
   },
