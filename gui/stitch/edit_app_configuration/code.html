@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#3a485b",
+                    "tertiary-container": "#c24100",
+                    "surface-container": "#eaedff",
+                    "on-tertiary-fixed-variant": "#812800",
+                    "error-container": "#ffdad6",
+                    "surface": "#faf8ff",
+                    "primary": "#0040e0",
+                    "on-error": "#ffffff",
+                    "outline": "#747688",
+                    "tertiary-fixed": "#ffdbcf",
+                    "inverse-surface": "#283044",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#0035be",
+                    "on-secondary-fixed": "#0d1c2e",
+                    "outline-variant": "#c4c5d9",
+                    "surface-tint": "#124af0",
+                    "on-background": "#131b2e",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "on-surface-variant": "#434656",
+                    "primary-fixed": "#dde1ff",
+                    "primary-container": "#2e5bff",
+                    "secondary-container": "#d5e3fc",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#b8c3ff",
+                    "on-primary-container": "#efefff",
+                    "surface-dim": "#d2d9f4",
+                    "secondary-fixed-dim": "#b9c7df",
+                    "surface-container-high": "#e2e7ff",
+                    "surface-container-low": "#f2f3ff",
+                    "secondary-fixed": "#d5e3fc",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#ffece6",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-primary-fixed": "#001356",
+                    "background": "#faf8ff",
+                    "secondary": "#515f74",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#131b2e",
+                    "surface-container-highest": "#dae2fd",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#b8c3ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "tertiary": "#993100",
+                    "on-secondary-container": "#57657a",
+                    "surface-variant": "#dae2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(242, 243, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#f2f3ff] flex flex-col py-6 font-['Inter'] font-medium text-sm">
+<div class="px-6 mb-10">
+<h1 class="font-['Manrope'] font-extrabold text-[#131b2e] text-xl tracking-tight">Architect Console</h1>
+<p class="text-on-surface-variant text-xs mt-1">V 2.0.4</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 text-[#2E5BFF] font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff]" href="#">
+<span class="material-symbols-outlined">neurology</span>
+                Models
+            </a>
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+                Deployments
+            </a>
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">key</span>
+                API Keys
+            </a>
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Usage
+            </a>
+</nav>
+<div class="px-4 mb-6">
+<button class="w-full py-2.5 px-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold text-center hover:shadow-[0_4px_12px_rgba(0,64,224,0.3)] transition-all active:scale-95">
+                New App
+            </button>
+</div>
+<div class="border-t border-outline-variant/20 pt-4">
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">help</span>
+                Help
+            </a>
+<a class="flex items-center gap-3 text-[#434656] pl-5 py-3 hover:bg-[#eaedff] transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar Component -->
+<header class="w-full h-16 sticky top-0 z-40 bg-[#faf8ff] flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<span class="text-xl font-headline font-bold tracking-tight text-[#131b2e]">AI Config Engine</span>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<span class="text-on-surface-variant font-medium">Writing Assistant</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:bg-[#eaedff] p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-[#eaedff] p-2 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/10">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Professional headshot of a software architect with a clean studio background and soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj2s5bhh6BmMV_cYza8xeQov1F_6nzzBsAdbLING0b3y5SgOY2bZw3mtKDbwkLnhfb1WzlPGzSPAFTEmEpfWglnExiAuYxPRL1zts7r6vrW714c9tJsbD0Kzn88j9_wJy7xHx1_v5lQey0ltvyYkv5D2ED0YD_uEI0UXTdqznw8l1U9AHDbo7Ra-ovXLdsaklPv5eS5Otd0guRe9ou4oi0IlJGlFSkYcnf37MtJ4vVacXPR-xdUvDUCZhHImFYWs7So_8IlDYm8Xg"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-10 max-w-5xl mx-auto">
+<!-- App Identity Header (Tonal Layering) -->
+<section class="mb-12 flex items-start gap-8 bg-surface-container-low p-8 rounded-xl">
+<div class="w-24 h-24 bg-surface-container-lowest rounded-xl flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<h2 class="text-3xl font-headline font-extrabold tracking-tight">Writing Assistant</h2>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-wider">Active</span>
+</div>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">
+                        A specialized module optimized for grammatical precision, stylistic consistency, and semantic enrichment of technical documentation and creative prose.
+                    </p>
+<div class="mt-4 flex gap-4 text-sm font-medium">
+<span class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">update</span> Last synced 2h ago
+                        </span>
+<span class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">token</span> 1.2M tokens this month
+                        </span>
+</div>
+</div>
+</section>
+<!-- Configuration Form Area -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Form Column -->
+<div class="col-span-8">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(19,27,46,0.04)]">
+<h3 class="text-xl font-headline font-bold mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">settings_input_component</span>
+                            Provider Configuration
+                        </h3>
+<form class="space-y-8">
+<!-- 1. Dropdown for Model Provider -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1">Model Provider</label>
+<div class="relative group">
+<select class="w-full appearance-none bg-surface-container-low border-none rounded-xl px-5 py-4 text-on-surface focus:ring-2 focus:ring-primary transition-all cursor-pointer">
+<option value="openai">OpenAI</option>
+<option value="anthropic">Anthropic</option>
+<option value="google">Google Cloud Vertex AI</option>
+<option value="mistral">Mistral AI</option>
+<option value="azure">Azure Cognitive Services</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant/70 ml-1">Select the underlying infrastructure for your assistant's intelligence.</p>
+</div>
+<!-- 2. Password-masked input for API Key -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1">API Access Key</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low border-none rounded-xl px-5 py-4 text-on-surface focus:ring-2 focus:ring-primary transition-all" placeholder="Enter your provider API key" type="password" value="sk-proj-4920k92019xk2019dk201"/>
+<button class="absolute right-4 text-primary font-bold text-sm hover:underline flex items-center gap-1 transition-all hover:translate-x-[-2px]" type="button">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                                        Reveal
+                                    </button>
+</div>
+<p class="text-xs text-on-surface-variant/70 ml-1">Sensitive keys are encrypted at rest using AES-256 GCM.</p>
+</div>
+<!-- 3. Dropdown for Model Selection with searchable list -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-on-surface-variant ml-1">Model Selection</label>
+<div class="relative">
+<div class="flex items-center bg-surface-container-low rounded-xl px-5 py-4 focus-within:ring-2 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+<input class="flex-1 bg-transparent border-none p-0 focus:ring-0 text-on-surface font-medium" placeholder="Search models..." type="text" value="GPT-4o"/>
+<span class="material-symbols-outlined text-on-surface-variant ml-3">unfold_more</span>
+</div>
+<!-- Searchable Dropdown List Simulation (Bento-style list) -->
+<div class="absolute top-full left-0 right-0 mt-2 glass-panel rounded-xl shadow-2xl border border-outline-variant/10 z-10 overflow-hidden hidden group-hover:block">
+<div class="p-2">
+<div class="bg-primary/5 rounded-lg px-4 py-3 flex justify-between items-center cursor-pointer border-l-4 border-primary">
+<div>
+<p class="font-bold text-primary">GPT-4o</p>
+<p class="text-xs text-on-surface-variant">Best for all-around writing</p>
+</div>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+<div class="hover:bg-surface-container-high rounded-lg px-4 py-3 flex justify-between items-center cursor-pointer transition-colors mt-1">
+<div>
+<p class="font-medium">Claude 3.5 Sonnet</p>
+<p class="text-xs text-on-surface-variant">Superior creative reasoning</p>
+</div>
+</div>
+<div class="hover:bg-surface-container-high rounded-lg px-4 py-3 flex justify-between items-center cursor-pointer transition-colors mt-1">
+<div>
+<p class="font-medium">GPT-4 Turbo</p>
+<p class="text-xs text-on-surface-variant">Reliable legacy performance</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-6 flex items-center justify-between">
+<button class="text-tertiary font-bold px-6 py-3 rounded-xl hover:bg-tertiary/5 transition-colors flex items-center gap-2" type="button">
+<span class="material-symbols-outlined">delete_forever</span>
+                                    Uninstall Configuration
+                                </button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white font-bold px-10 py-3 rounded-xl hover:shadow-[0_4px_20px_rgba(0,64,224,0.4)] transition-all active:scale-[0.98]" type="submit">
+                                    Save Changes
+                                </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Secondary Info Column (Contextual Details) -->
+<div class="col-span-4 space-y-8">
+<!-- Documentation Bento Card -->
+<div class="bg-surface-container-high p-6 rounded-xl space-y-4">
+<div class="w-12 h-12 bg-surface-container-lowest rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">menu_book</span>
+</div>
+<h4 class="font-headline font-bold text-lg">Configuration Help</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                            Need help setting up your writing assistant? Read our guide on <a class="text-primary hover:underline" href="#">Provider Token Limits</a> and <a class="text-primary hover:underline" href="#">Model Benchmarks</a>.
+                        </p>
+</div>
+<!-- Environment Status Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 p-6 rounded-xl shadow-sm">
+<h4 class="font-headline font-bold text-md mb-4 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            System Health
+                        </h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Latency</span>
+<span class="text-sm font-medium">142ms</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Uptime</span>
+<span class="text-sm font-medium">99.98%</span>
+</div>
+</div>
+</div>
+<!-- Model Capability Radar Placeholder -->
+<div class="relative h-48 rounded-xl overflow-hidden bg-surface-container-highest group">
+<img alt="Model capability visualization" class="w-full h-full object-cover opacity-30" data-alt="Abstract 3D visualization of neural network pathways with glowing nodes and blue gradient pulses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnItiFp_2PeEeUOAfi2Z-zLZp-kTWmHYN7nFUYDXEqH0kzerJttOxeE10s10JnISU7t-4ZT9tAhllyn6m-Cj9c2HHZKIUFpqanVFo4UMN_Wkw6OgVDoPk5JkWCOcGYCp2PKOT_JjoIIZdtTsJQvXmt-JcZx7XgH80aLxDc3qaAbMPoq8KEHXa6nFlaeUgsbgtVqWxsANJyYs0olosg8roqo2lbg1-SguniNMl3h5_jarH3wVA351v4jqG7q7Hs6SYbHS4NSy5tj2w"/>
+<div class="absolute inset-0 flex flex-col justify-end p-5">
+<p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">Architecture</p>
+<p class="text-on-surface font-bold">Transformer Engine v4</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

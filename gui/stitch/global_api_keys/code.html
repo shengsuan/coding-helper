@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Config Engine - API Keys Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#3a485b",
+                    "tertiary-container": "#c24100",
+                    "surface-container": "#eaedff",
+                    "on-tertiary-fixed-variant": "#812800",
+                    "error-container": "#ffdad6",
+                    "surface": "#faf8ff",
+                    "primary": "#0040e0",
+                    "on-error": "#ffffff",
+                    "outline": "#747688",
+                    "tertiary-fixed": "#ffdbcf",
+                    "inverse-surface": "#283044",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#0035be",
+                    "on-secondary-fixed": "#0d1c2e",
+                    "outline-variant": "#c4c5d9",
+                    "surface-tint": "#124af0",
+                    "on-background": "#131b2e",
+                    "surface-bright": "#faf8ff",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "on-surface-variant": "#434656",
+                    "primary-fixed": "#dde1ff",
+                    "primary-container": "#2e5bff",
+                    "secondary-container": "#d5e3fc",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#b8c3ff",
+                    "on-primary-container": "#efefff",
+                    "surface-dim": "#d2d9f4",
+                    "secondary-fixed-dim": "#b9c7df",
+                    "surface-container-high": "#e2e7ff",
+                    "surface-container-low": "#f2f3ff",
+                    "secondary-fixed": "#d5e3fc",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#ffece6",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-primary-fixed": "#001356",
+                    "background": "#faf8ff",
+                    "secondary": "#515f74",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#131b2e",
+                    "surface-container-highest": "#dae2fd",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#b8c3ff",
+                    "inverse-on-surface": "#eef0ff",
+                    "tertiary": "#993100",
+                    "on-secondary-container": "#57657a",
+                    "surface-variant": "#dae2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(250, 248, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #0040e0 0%, #2e5bff 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#f2f3ff] dark:bg-slate-900 flex flex-col h-full py-6 font-['Inter'] font-medium text-sm">
+<div class="px-6 mb-8">
+<h1 class="font-['Manrope'] font-extrabold text-[#131b2e] dark:text-white text-2xl tracking-tight">Architect Console</h1>
+<p class="text-xs text-on-surface-variant opacity-70">V 2.0.4</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">neurology</span>
+<span>Models</span>
+</a>
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span>Deployments</span>
+</a>
+<!-- Active State: API Keys -->
+<a class="flex items-center gap-3 text-[#2E5BFF] dark:text-white font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff]/50 dark:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined">key</span>
+<span>API Keys</span>
+</a>
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Usage</span>
+</a>
+</nav>
+<div class="px-4 mt-4">
+<button class="w-full primary-gradient text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98]">
+                New App
+            </button>
+</div>
+<div class="mt-auto border-t border-outline-variant/10 pt-4 space-y-1">
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-all duration-300 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Stage -->
+<main class="ml-64 min-h-screen bg-surface relative">
+<!-- TopNavBar (Authority: JSON & Design System) -->
+<header class="w-full h-16 sticky top-0 z-40 bg-[#faf8ff] dark:bg-slate-950 flex justify-between items-center px-8 w-full max-w-full">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-xl pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant text-sm" placeholder="Search keys, providers, or apps..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#eaedff] dark:hover:bg-slate-800 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant/20 mx-2"></div>
+<div class="flex items-center gap-3">
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a professional woman in a modern office with soft natural lighting and neutral colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNyVvbpiGE55HmoOAQtxolkCvc__lGVU8jLJaFiDBa41Ih-H_OAbEWWy-3YY4fja1_LsWjITrRlR3bUEyznVr19fQi5jO-TugovT0irdqha7HIzZdw6DMa2A3CvHu9fa-ErQR9ijEBMgGCqSipPZNgIUFQjFYcSDbTa3eBgqgXhxwmwQQr9aX11NJpAkQvpRKFhv9trPnDtfiTEuYyptDsnBGq78UqSB0F_fuLwCy3yC518KK6cPdBSq2ak02oWtgn-8Upl0dTukM"/>
+<div class="hidden lg:block text-right">
+<p class="text-sm font-bold text-[#131b2e]">Alex Rivera</p>
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">Admin Access</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+<div class="space-y-2">
+<h2 class="text-4xl font-headline font-extrabold tracking-tight text-on-background">API Credentials</h2>
+<p class="text-on-surface-variant max-w-lg leading-relaxed">Manage authentication across your infrastructure. These keys provide programmatic access to your AI models and deployments.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary-container text-on-secondary-container font-semibold text-sm hover:brightness-95 transition-all">
+<span class="material-symbols-outlined text-lg">download</span>
+                        Export Audit Log
+                    </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-xl primary-gradient text-white font-bold text-sm shadow-lg shadow-primary/20 hover:translate-y-[-2px] transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                        Add Provider
+                    </button>
+</div>
+</div>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<span class="text-xs font-bold text-primary px-2 py-1 bg-primary/5 rounded-full">+12% vs LW</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant">Active Providers</p>
+<p class="text-3xl font-headline font-extrabold mt-1">14</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-tertiary/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined">api</span>
+</div>
+<span class="text-xs font-bold text-on-surface-variant px-2 py-1 bg-surface-container rounded-full">3 Expiring</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant">Total Connected Apps</p>
+<p class="text-3xl font-headline font-extrabold mt-1">128</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined">key_visualizer</span>
+</div>
+<span class="text-xs font-bold text-on-surface-variant px-2 py-1 bg-surface-container rounded-full">Last 24h</span>
+</div>
+<p class="text-sm font-medium text-on-surface-variant">Security Requests</p>
+<p class="text-3xl font-headline font-extrabold mt-1">4.2M</p>
+</div>
+</div>
+<!-- Providers Management Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
+<div class="px-8 py-6 flex items-center justify-between border-b border-outline-variant/5">
+<h3 class="text-lg font-headline font-bold text-[#131b2e]">Configured Providers</h3>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/30">
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Provider</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Masked Key</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Connected Apps</th>
+<th class="px-8 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Provider Row 1 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<img alt="OpenAI Logo" class="w-6 h-6 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Abstract geometric logo in minimalist style with deep blue and white accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3ZcUX2YhYHpvMyL6CxHceOuLHbAqLnFwGI79WbJd4jx9vWYF_mdrOVJYumAcNObmvtHmmCYYKYx27W34a7ZXdBnWq35zdGfsURP14T9NJyYSdraFuafQVnSTdRTpJYCG989Xz3npteYGUK1th2cakYBogdZG0HFA89RJ_BQr4QdLsfZ_qt6HBg5A2r56TBWOzBp9N7adT2CKZr_gs096nUAoKP5WEAo0fnrBWmMd0nx2hOb9OlHlKUNRpSb-dbGNUlQdlW0TdQTU"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">OpenAI</p>
+<p class="text-xs text-on-surface-variant">GPT-4, DALL-E 3</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2 text-emerald-600 font-semibold text-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        Active
+                                    </div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<code class="bg-surface-container text-xs px-2 py-1 rounded font-mono text-on-surface-variant">sk-••••••••••••w49a</code>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold">42</span>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">Edit Key</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-tertiary hover:bg-tertiary/5 transition-all">Revoke</button>
+</div>
+</td>
+</tr>
+<!-- Provider Row 2 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<img alt="Anthropic Logo" class="w-6 h-6 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Modern tech logo with clean lines and high contrast black and white design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgh5v-IBpBBfyarjSI6gCrQ2vL7SDLqHIyCHFOpnvp5-1kKAFb-TILAVdxf809wU0JxBdYY0Se4kNbC0cBYtqN8OwpQH49deaFjoNuInsshsN1INLc00K9b-1PG_RNZPgxwlO7kGXA8Z0oTRBNcuWu-rBnlIKXzi7v0dagzwkJhzSKbyhBhEZjzDUaKUIhcCW_QAa-tjne0ec8G5Ybz_TCCsOYYQ_VnKG8hw9ap2ODdTJUYSj9ubdHNGqf541M6ESqpgP840JYw3Q"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Anthropic</p>
+<p class="text-xs text-on-surface-variant">Claude 3.5 Sonnet</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2 text-emerald-600 font-semibold text-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        Active
+                                    </div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<code class="bg-surface-container text-xs px-2 py-1 rounded font-mono text-on-surface-variant">ant-••••••••••••f982</code>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold">18</span>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">Edit Key</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-tertiary hover:bg-tertiary/5 transition-all">Revoke</button>
+</div>
+</td>
+</tr>
+<!-- Provider Row 3 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<img alt="Cohere Logo" class="w-6 h-6 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Minimalist abstract circular logo with organic fluid shapes in soft purple tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVgA4TonisjMh1smi4La7G5XJtDBfM8bU8IIONUH6GtAm8ZobtrN467-gBcyu2Lez9v4mCt36ZaAs4wn9v-Cy5U4_9-McLin3tJXlBKv2vK8XXEu1-0_Vtp9G9Qc-NBKlT3V2SfT1AEo-ndCsXlbqQjILPIvUyS3opiz9WhkvhJVLQFETJNDyYJqQdO3zpD28pwDPw0OikB4MqM41KTNjAkkomYyYXqW2FoVY8rfk0cSXn7rjh0xvbSuIm8jVhA6pn-bfuCFew4Yo"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Cohere</p>
+<p class="text-xs text-on-surface-variant">Command R+, Embed</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2 text-tertiary font-semibold text-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                                        Quota Reached
+                                    </div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<code class="bg-surface-container text-xs px-2 py-1 rounded font-mono text-on-surface-variant">coh-••••••••••••x311</code>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold">5</span>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">Edit Key</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-tertiary hover:bg-tertiary/5 transition-all">Revoke</button>
+</div>
+</td>
+</tr>
+<!-- Provider Row 4 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<img alt="Azure AI Logo" class="w-6 h-6 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Vibrant tech logo representing cloud computing with soft blue and cyan gradients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9QpKWu8JI8Tdeu6bQNj8dsAzKRR8pl7Kh3D6Lafn5mD0Eofr7Hqq2UlC5YFoLSNKr6gZ9Xmvg7mmSKuIkz-u8V4IEJDl1dQEMSRt7tCMUD9tbgkA-ZKHy1_2FuVEJjrAg8Wu4HJfoWdk016It0D-T3EaJEjWxZ-oItuZZfSBfxn-hr-L_fpqrJY8Bg-FizfQq87c8ukm8KIQZ7LQWJ9fXuLD1hBXn9cMB55-kxbOSev-xoqZvCxQDA9Z6yvfrD3dIebvsW2Z133s"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Azure AI</p>
+<p class="text-xs text-on-surface-variant">Enterprise Gateway</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2 text-emerald-600 font-semibold text-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        Active
+                                    </div>
+</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<code class="bg-surface-container text-xs px-2 py-1 rounded font-mono text-on-surface-variant">msf-••••••••••••v110</code>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</td>
+<td class="px-8 py-5 text-center">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold">63</span>
+</td>
+<td class="px-8 py-5 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/5 transition-all">Edit Key</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-bold text-tertiary hover:bg-tertiary/5 transition-all">Revoke</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-surface-container-low/20 flex items-center justify-between border-t border-outline-variant/5">
+<p class="text-xs text-on-surface-variant font-medium">Showing 4 of 14 providers</p>
+<div class="flex items-center gap-1">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="px-3 py-1 text-xs font-bold bg-primary text-white rounded-md">1</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface-variant hover:bg-surface-container rounded-md">2</button>
+<button class="px-3 py-1 text-xs font-bold text-on-surface-variant hover:bg-surface-container rounded-md">3</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Security Notice Banner -->
+<div class="mt-10 p-6 rounded-xl glass-panel border border-primary/10 flex items-start gap-4">
+<div class="p-3 bg-primary-fixed rounded-xl text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface">Secure Key Management Protocol</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed mt-1">All keys are encrypted at rest using AES-256. For your security, we only display the last 4 characters of each key. Ensure you rotate your credentials every 90 days as per enterprise compliance guidelines.</p>
+</div>
+<button class="text-primary font-bold text-sm hover:underline">Learn more about security</button>
+</div>
+</div>
+</main>
+</body></html>
