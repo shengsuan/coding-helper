@@ -5,6 +5,7 @@ import ora from "ora";
 import terminalLink from "terminal-link";
 import { claudeIntegration } from "./claude-integration.js";
 import { picoclawManager } from "./picoclaw-manager.js";
+import { aiderManager } from "./aider-manager.js";
 import { SUPPORTED_TOOLS, type Plan, type Tool } from "./constants.js";
 import { locale } from "./locale.js";
 import { nanobotManager } from "./nanobot-manager.js";
@@ -620,6 +621,8 @@ export class IntegrationRegistry {
       await picoclawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "codex") {
       await codexManager.loadPlanConfig(plan, apiKey, model);
+    } else if (toolName === "aider") {
+      await aiderManager.loadPlanConfig(plan, apiKey, model);
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
@@ -641,6 +644,8 @@ export class IntegrationRegistry {
       picoclawManager.unloadPlanConfig();
     } else if (toolName === "codex") {
       codexManager.unloadPlanConfig();
+    } else if (toolName === "aider") {
+      aiderManager.unloadPlanConfig();
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }

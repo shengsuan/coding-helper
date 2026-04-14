@@ -212,6 +212,15 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "PicoClaw",
     runtime: "go",
   },
+  aider: {
+    name: "aider",
+    command: "aider",
+    installCommand: "pip install aider-install && aider-install",
+    configPath: join(homedir(), ".aider.conf.yml"),
+    displayName: "Aider",
+    runtime: "python",
+    minPythonVersion: "3.10",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");

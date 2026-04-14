@@ -12,6 +12,7 @@ import { zeroClawManager } from './zeroclaw-manager.js';
 import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
 import { picoclawManager } from './picoclaw-manager.js';
+import { aiderManager } from './aider-manager.js';
 import { codexManager } from './codex-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
@@ -417,11 +418,15 @@ export class SetupFlow {
       // );
       console.log(
         chalk.cyan('    ◆ ') + chalk.white('PicoClaw'.padEnd(20, ' ')) +
-        chalk.gray('— AI gateway')
+        chalk.gray('— AI coding tool')
       );
       console.log(
         chalk.cyan('    ◆ ') + chalk.white('Codex'.padEnd(20, ' ')) +
-        chalk.gray('— AI gateway')
+        chalk.gray('— AI coding tool')
+      );
+      console.log(
+        chalk.cyan('    ◆ ') + chalk.white('Aider'.padEnd(20, ' ')) +
+        chalk.gray('— AI coding tool')
       );
       console.log();
 
@@ -654,6 +659,9 @@ export class SetupFlow {
     }
     if (toolName === 'picoclaw') {
       return picoclawManager.detectCurrentConfig();
+    }
+    if (toolName === 'aider') {
+      return aiderManager.detectCurrentConfig();
     }
     if (toolName === 'codex') {
       return codexManager.detectCurrentConfig();

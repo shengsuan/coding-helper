@@ -15,6 +15,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
 | [PicoClaw](https://github.com/openclaw/openclaw) | go | AI 编程网关 / AI coding gateway |  
 | [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
+| [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
 
 
 ## 支持的方案 / Supported Plans
@@ -131,6 +132,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | OpenClaw | `~/.openclaw/openclaw.json` |
 | PicoClaw | `~/.picoclaw/config.json` |
 | Codex | `~/.codex/config.toml` |
+| Aider | `~/.aider.conf.yml` |
 
 ## 开发 / Development
 
