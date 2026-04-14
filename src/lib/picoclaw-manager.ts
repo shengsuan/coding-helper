@@ -126,7 +126,7 @@ export class PicoclawManager {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfigs = this.getConfigs();
-    const models = await plan.getModels || plan.models;
+    const models = await plan.getModels() || plan.models;
 
     const selectedModelId = validateModelSupport(
       models,

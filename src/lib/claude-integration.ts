@@ -106,7 +106,7 @@ export class ClaudeIntegration {
     const currentEnv = currentSettings.env || {};
     const { ANTHROPIC_API_KEY: _, ...cleanedEnv } = currentEnv;
 
-    const models = await plan.getModels || plan.models;
+    const models = await plan.getModels() || plan.models;
     const defaultModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,

@@ -196,7 +196,7 @@ export class OpenClawManager {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
-    const models = await plan.getModels || plan.models;
+    const models = await plan.getModels() || plan.models;
     const selectedModelId = validateModelSupport(
       models,
       model || models[0]?.id,

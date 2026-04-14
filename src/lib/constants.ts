@@ -23,7 +23,7 @@ export interface Plan {
   anthropicBaseUrl: string;
   apiKeyName: string;
   models: Model[];
-  getModels?: Promise<Model[]>;
+  getModels: () => Promise<Model[]>;
 }
 
 export const PLANS: Record<string, Plan> = {
@@ -34,7 +34,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Lite Plan API Key",
-    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
+    getModels: () => getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "bigmodel/glm-4.7",
@@ -60,7 +60,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Pro Plan API Key",
-    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
+    getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "google/gemini-2.5-pro",
@@ -85,7 +85,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Enterprise Plan API Key",
-    getModels: getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
+    getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
     models: [
       {
         id: "google/gemini-2.5-pro",
@@ -110,7 +110,7 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api",
     apiKeyName: "ShengSuanYun API Key",
-    getModels: getModels("https://router.shengsuanyun.com/api/v1/models"),
+    getModels:()=> getModels("https://router.shengsuanyun.com/api/v1/models"),
     models: [
       {
         id: "openai/gpt-5.2",

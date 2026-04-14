@@ -109,7 +109,7 @@ export class NanobotManager {
     delete updatedProviders[obsoleteProviderName];
     updatedProviders[activeProviderName] = { apiKey, apiBase: mapping.apiBase };
 
-    const models = await plan.getModels || plan.models;
+    const models = await plan.getModels() || plan.models;
     const selectedModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,

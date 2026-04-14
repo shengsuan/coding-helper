@@ -98,7 +98,7 @@ export class ZeroClawManager {
     }
 
     const currentConfig = this.getConfig() || {};
-    const models = await plan.getModels || plan.models;
+    const models = await plan.getModels() || plan.models;
     const selectedModel = validateModelSupport(
       models,
       model || plan.models[0]?.id,

@@ -4,14 +4,14 @@ import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { homedir } from "os";
 import { join } from "path";
-import yaml from 'js-yaml';
+import { Document, parseDocument } from 'yaml';
 
-export interface AiderConfig {
-  ssy_code_plan?: string;
+export interface AiderConfigShape {
+  "ssy-code-plan"?: string;
   model: string;
-  openai_api_key?: string;
-  openai_api_base?: string;
-  [key:string]: unknown;
+  "openai-api-key"?: string;
+  "openai-api-base"?: string;
+  [key: string]: unknown;
 }
 
 interface DetectedConfig {
@@ -26,22 +26,22 @@ export class AiderManager {
     this.configsPath = join(homedir(), ".aider.conf.yml");
   }
 
-  getConfigs(): AiderConfig {
+  getConfigs(): Document {
     try {
       if (existsSync(this.configsPath)) {
         const content = readFileSync(this.configsPath, "utf-8");
-        return yaml.load(content) as AiderConfig;
+        return parseDocument(content);
       }
     } catch (error) {
       console.warn("Failed to read Aider settings:", error);
       logger.logError("AiderManager.getSettings", error);
     }
-    return {} as AiderConfig;
+    return new Document({});
   }
 
-  saveConfigs(config: AiderConfig): void {
+  saveConfigs(config: Document): void {
     try {
-      writeFileSync( this.configsPath, yaml.dump(config), "utf-8");
+      writeFileSync(this.configsPath, config.toString(), "utf-8");
     } catch (error) {
       throw new Error(`Failed to save Aider settings: ${error}`);
     }
@@ -49,44 +49,61 @@ export class AiderManager {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfigs = this.getConfigs();
-    const models = await plan.getModels || plan.models;
-
+    const models = await plan.getModels() || plan.models;
     const selectedModelId = validateModelSupport(
       models,
       model || plan.models[0]?.id,
       ["/v1/chat/completions"],
       "aider"
     );
-    const planConfig: AiderConfig = {
-      ...currentConfigs,
-      model: "openai/" + selectedModelId,
-      ssy_code_plan: plan.id,
-      openai_api_key: apiKey,
-      openai_api_base: plan.baseUrl,
-    };
-    this.saveConfigs(planConfig);
+    currentConfigs.commentBefore = `ssy-code-plan:${plan.id}`;
+    currentConfigs.set("openai-api-key", apiKey);
+    currentConfigs.set("openai-api-base", plan.baseUrl);
+    currentConfigs.set("model", 'openai/'+selectedModelId);
+    this.saveConfigs(currentConfigs);
   }
   
   unloadPlanConfig(): void {
     const currentConfigs = this.getConfigs();
-    if (!currentConfigs.ssy_code_plan || !currentConfigs.openai_api_base?.includes("shengsuanyun")) {
-      return;
+    let isModified = false;
+    if (currentConfigs.commentBefore && currentConfigs.commentBefore.includes('ssy-code-plan:')) {
+      const comments = currentConfigs.commentBefore.split('\n');
+      const filteredComments = comments.filter(c => !c.includes('ssy-code-plan:'));
+      currentConfigs.commentBefore = filteredComments.length > 0 ? filteredComments.join('\n') : null;
+      isModified = true;
     }
-    delete currentConfigs.ssy_code_plan;
-    delete currentConfigs.openai_api_base;
-    delete currentConfigs.openai_api_key;
-    this.saveConfigs(currentConfigs);
+    const apiBase = currentConfigs.get("openai-api-base");
+    if (typeof apiBase === "string" && apiBase.includes("shengsuanyun")) {
+      currentConfigs.delete("openai-api-key");
+      currentConfigs.delete("openai-api-base");
+      isModified = true;
+    }
+    if (isModified) {
+      this.saveConfigs(currentConfigs);
+    }
   }
 
   detectCurrentConfig(): DetectedConfig {
     try {
       const currentConfigs = this.getConfigs();
-      if (!currentConfigs.ssy_code_plan || !currentConfigs.openai_api_base?.includes("shengsuanyun") ) {
+      const apiBase = currentConfigs.get("openai-api-base");
+      const apiKey = currentConfigs.get("openai-api-key");
+
+      if (typeof apiBase !== "string" || !apiBase.includes("shengsuanyun")) {
         return { plan: null, apiKey: null };
       }
-      const plan = currentConfigs.ssy_code_plan;
-      const apiKey = currentConfigs.openai_api_key || null;
-      return { plan, apiKey };
+      let planId: string | null = null;
+      if (currentConfigs.commentBefore) {
+        const match = currentConfigs.commentBefore.match(/ssy-code-plan:([^\s]+)/);
+        if (match) {
+          planId = match[1];
+        }
+      }
+
+      return { 
+        plan: planId, 
+        apiKey: typeof apiKey === "string" ? apiKey : null 
+      };
     } catch {
       return { plan: null, apiKey: null };
     }

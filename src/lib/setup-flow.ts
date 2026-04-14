@@ -266,7 +266,7 @@ export class SetupFlow {
 
   private async selectModel(planId: string, requiredApi?: string[]): Promise<void> {
     const plan = PLANS[planId];
-    const models = await plan.getModels || plan.models
+    const models = await plan.getModels() || plan.models
     if (!plan) return;
 
     const availableModels = requiredApi? filterSupportedModels(models, requiredApi): models;
@@ -673,7 +673,7 @@ export class SetupFlow {
     const plan = PLANS[planId];
     const tool = SUPPORTED_TOOLS[toolName];
     if (!plan || !tool) return;
-    plan["models"] = await plan.getModels || plan.models;
+    plan["models"] = await plan.getModels() || plan.models;
 
     const config = settings.getPlanConfig(planId);
     if (!config?.api_key) {
