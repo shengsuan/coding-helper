@@ -1,10 +1,15 @@
 {
   "name": "@coohu/coding-helper",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Lite Plan / Pro Plan Coding Plan Helper for managing OpenCode and Claude Code",
+  "description": "一款简化胜算云 API Key 凭证配置而设计的命令行工具。支持 Claude Code、OpenCode、Aider、PicoClaw、Codex 等多款主流 AI 编程助手",
+  "homepage": "https://github.com/shengsuan/coding-helper#readme",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/shengsuan/coding-helper"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -25,9 +30,14 @@
     "cli",
     "coding",
     "helper",
-    "volcano",
-    "byteplus",
-    "opencode"
+    "胜算云",
+    "Claude",
+    "Claude code",
+    "Codex",  
+    "Aider",
+    "openclaw",
+    "OpenCode",
+    "PicoClaw"
   ],
   "author": {
     "name": "Vol"

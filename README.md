@@ -13,7 +13,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Node.js | Anthropic AI 编程助手 / AI coding assistant | 
 | [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool | 
 | [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
-| [PicoClaw](https://github.com/openclaw/openclaw) | go | AI 编程网关 / AI coding gateway |  
+| [PicoClaw](https://github.com/sipeed/picoclaw) | go | AI 编程网关 / AI coding gateway |  
 | [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
 | [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
 
