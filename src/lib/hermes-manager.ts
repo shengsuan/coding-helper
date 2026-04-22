@@ -77,22 +77,17 @@ export class HermesManager {
   unloadPlanConfig(): void {
     const currentConfigs = this.getConfigs();
     let isModified = false;
-
-    // Check if ssy_code_plan exists in model section
     const plan = currentConfigs.getIn(['model', 'ssy_code_plan']);
     if (plan) {
       currentConfigs.deleteIn(['model', 'ssy_code_plan']);
       isModified = true;
     }
-
-    // Check if base_url points to shengsuanyun
     const apiBase = currentConfigs.getIn(['model', 'base_url']);
     if (typeof apiBase === "string" && apiBase.includes("shengsuanyun")) {
       currentConfigs.setIn(["model", "api_key"], "");
       currentConfigs.setIn(["model", "base_url"], "");
       isModified = true;
     }
-
     if (isModified) {
       this.saveConfigs(currentConfigs);
     }
@@ -101,14 +96,8 @@ export class HermesManager {
   detectCurrentConfig(): DetectedConfig {
     try {
       const currentConfigs = this.getConfigs();
-      const modelNode = currentConfigs.get('model');
-
-      // Get plan and apiKey using YAML document getIn method for nested access
       const plan = currentConfigs.getIn(['model', 'ssy_code_plan']);
       const apiKey = currentConfigs.getIn(['model', 'api_key']);
-
-      logger.logError("Detected Hermes config - plan:", plan + " apiKey:" + apiKey);
-
       if (typeof plan !== "string") {
         return { plan: null, apiKey: null };
       }
