@@ -165,6 +165,30 @@ export async function doctorCommand(): Promise<void> {
     console.log(chalk.gray('  ○ 未配置任何套餐'));
   }
 
+  console.log(chalk.bold('\n🤖 Hermes 配置:'));
+  const hermesDetected = hermesManager.detectCurrentConfig();
+  if (hermesDetected.plan) {
+    const hmPlanName = getPlanDisplayName(hermesDetected.plan);
+    console.log(chalk.green(`  ✓ 当前套餐: ${hmPlanName}`));
+    if (hermesDetected.apiKey) {
+      console.log(chalk.green(`  ✓ API Key: ${hermesDetected.apiKey.slice(0, 6)}…`));
+    }
+  } else {
+    console.log(chalk.gray('  ○ 未配置任何套餐'));
+  }
+
+  console.log(chalk.bold('\n🤖 Aider 配置:'));
+  const aiderDetected = aiderManager.detectCurrentConfig();
+  if (aiderDetected.plan) {
+    const adPlanName = getPlanDisplayName(aiderDetected.plan);
+    console.log(chalk.green(`  ✓ 当前套餐: ${adPlanName}`));
+    if (aiderDetected.apiKey) {
+      console.log(chalk.green(`  ✓ API Key: ${aiderDetected.apiKey.slice(0, 6)}…`));
+    }
+  } else {
+    console.log(chalk.gray('  ○ 未配置任何套餐'));
+  }
+
   console.log('');
   console.log(chalk.gray('─'.repeat(50)));
 
