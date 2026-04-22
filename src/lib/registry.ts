@@ -14,6 +14,7 @@ import { openCodeIntegration } from "./opencode-integration.js";
 import { zeroClawManager } from "./zeroclaw-manager.js";
 import { trackToolEvent } from "./tea-tracker.js";
 import { codexManager } from "./codex-manager.js";
+import { hermesManager } from "./hermes-manager.js";
 
 interface PythonEnv {
   pythonCmd: string | null;
@@ -623,6 +624,8 @@ export class IntegrationRegistry {
       await codexManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "aider") {
       await aiderManager.loadPlanConfig(plan, apiKey, model);
+    } else if (toolName === "hermes") {
+      await hermesManager.loadPlanConfig(plan, apiKey, model);
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }
@@ -646,6 +649,8 @@ export class IntegrationRegistry {
       codexManager.unloadPlanConfig();
     } else if (toolName === "aider") {
       aiderManager.unloadPlanConfig();
+    } else if (toolName === "hermes") {
+      hermesManager.unloadPlanConfig();
     } else {
       throw new Error(`Unknown tool: ${toolName}`);
     }

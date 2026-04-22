@@ -8,6 +8,7 @@ export { ClaudeIntegration, claudeIntegration } from "./lib/claude-integration.j
 export { PicoclawManager, picoclawManager } from "./lib/picoclaw-manager.js";
 export { CodexManager, codexManager } from "./lib/codex-manager.js";
 export { AiderManager, aiderManager } from "./lib/aider-manager.js";
+export { HermesManager, hermesManager } from "./lib/hermes-manager.js";
 export { checkCredential } from "./lib/auth-checker.js";
 export { locale } from "./lib/locale.js";
 export { PLANS, SUPPORTED_TOOLS, API_KEY_URLS } from "./lib/constants.js";

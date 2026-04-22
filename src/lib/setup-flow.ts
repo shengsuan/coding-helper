@@ -13,6 +13,7 @@ import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
 import { picoclawManager } from './picoclaw-manager.js';
 import { aiderManager } from './aider-manager.js';
+import { hermesManager } from './hermes-manager.js';  
 import { codexManager } from './codex-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
@@ -428,6 +429,10 @@ export class SetupFlow {
         chalk.cyan('    ◆ ') + chalk.white('Aider'.padEnd(20, ' ')) +
         chalk.gray('— AI coding tool')
       );
+      console.log(
+        chalk.cyan('    ◆ ') + chalk.white('Hermes Agent'.padEnd(20, ' ')) +
+        chalk.gray('— AI coding tool')
+      );
       console.log();
 
       // Promo banner
@@ -665,6 +670,9 @@ export class SetupFlow {
     }
     if (toolName === 'codex') {
       return codexManager.detectCurrentConfig();
+    }
+    if (toolName === 'hermes') {
+      return hermesManager.detectCurrentConfig();
     }
     return { plan: null, apiKey: null };
   }

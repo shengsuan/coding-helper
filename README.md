@@ -16,6 +16,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [PicoClaw](https://github.com/sipeed/picoclaw) | go | AI 编程网关 / AI coding gateway |  
 | [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
 | [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | python | AI 编程网关 / AI coding gateway |
 
 
 ## 支持的方案 / Supported Plans
@@ -133,6 +134,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | PicoClaw | `~/.picoclaw/config.json` |
 | Codex | `~/.codex/config.toml` |
 | Aider | `~/.aider.conf.yml` |
+| Hermes Agent | `~/.hermes/config.yaml` |
 
 ## 开发 / Development
 

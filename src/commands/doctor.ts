@@ -12,6 +12,7 @@ import { SUPPORTED_TOOLS } from '../lib/constants.js';
 import { picoclawManager } from '../lib/picoclaw-manager.js';
 import { codexManager } from '../lib/codex-manager.js';
 import { aiderManager } from '../lib/aider-manager.js';
+import { hermesManager } from '../lib/hermes-manager.js';
 
 export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 ' + i18n.t('doctor.checking') + '\n'));

@@ -221,6 +221,15 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     runtime: "python",
     minPythonVersion: "3.10",
   },
+  hermes: {
+    name: "hermes",
+    command: "hermes",
+    installCommand: "curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash",
+    configPath: join(homedir(), ".hermes", "config.yaml"),
+    displayName: "Hermes Agent",
+    runtime: "python",
+    minPythonVersion: "3.10",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");
