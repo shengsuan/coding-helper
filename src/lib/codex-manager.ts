@@ -5,6 +5,7 @@ import { logger } from '../utils/logger.js';
 import { dirname, join } from 'path';
 import * as toml from '@iarna/toml';
 import { homedir } from 'os';
+import { getModels } from './models.js';
 
 interface CodexAuth{
   auth_mode?: string;
@@ -82,10 +83,10 @@ export class CodexManager {
     }
 
     const currentConfig = this.getConfig() || {} as CodexConfig;
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
     const selectedModel = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model ||models[0]?.id,
       [ "/v1/responses" ],
       "codex"
     );
@@ -154,10 +155,6 @@ export class CodexManager {
     } catch {
       return { plan: null, apiKey: null };
     }
-  }
-
-  getProviderModels(planId: string): string[] {
-    return PLANS[planId]?.models.map(m => m.id) || [];
   }
 }
 

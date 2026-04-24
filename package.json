@@ -1,14 +1,14 @@
 {
   "name": "@coohu/coding-helper",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "publishConfig": {
     "access": "public"
   },
   "description": "一款简化胜算云 API Key 配置的命令行工具。支持 Claude Code、OpenCode、Aider、PicoClaw、Codex, Hermes Agent 等多款主流 AI 编程助手",
   "homepage": "https://shengsuanyun.com/",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/shengsuan/coding-helper"
+    "type": "git",
+    "url": "https://github.com/shengsuan/coding-helper"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
     "ShengSuanYun",
     "Claude",
     "Claude code",
-    "Codex",  
+    "Codex",
     "Aider",
     "openclaw",
     "OpenCode",

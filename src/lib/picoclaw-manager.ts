@@ -5,6 +5,7 @@ import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import yaml from 'js-yaml';
 import { validateModelSupport } from "./model-selector.js";
+import { getModels } from "./models.js";
 
 export interface PicoClawConfig {
     agents:     Record<string, AgentsDefaults>;
@@ -126,11 +127,11 @@ export class PicoclawManager {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfigs = this.getConfigs();
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
 
     const selectedModelId = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model || models[0]?.id,
       ["/v1/chat/completions"],
       "picoclaw"
     );

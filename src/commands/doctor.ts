@@ -5,7 +5,6 @@ import { locale as i18n } from '../lib/locale.js';
 import { registry as toolManager } from '../lib/registry.js';
 import { openCodeIntegration as openCodeManager } from '../lib/opencode-integration.js';
 import { nanobotManager } from '../lib/nanobot-manager.js';
-import { zeroClawManager } from '../lib/zeroclaw-manager.js';
 import { claudeIntegration } from '../lib/claude-integration.js';
 import { openClawManager } from '../lib/openclaw-manager.js';
 import { SUPPORTED_TOOLS } from '../lib/constants.js';
@@ -124,18 +123,6 @@ export async function doctorCommand(): Promise<void> {
     console.log(chalk.green(`  ✓ 当前套餐: ${nbPlanName}`));
     if (nanobotDetected.apiKey) {
       console.log(chalk.green(`  ✓ API Key: ${nanobotDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🧬 ZeroClaw 配置:'));
-  const zeroclawDetected = zeroClawManager.detectCurrentConfig();
-  if (zeroclawDetected.plan) {
-    const zcPlanName = getPlanDisplayName(zeroclawDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${zcPlanName}`));
-    if (zeroclawDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${zeroclawDetected.apiKey.slice(0, 6)}…`));
     }
   } else {
     console.log(chalk.gray('  ○ 未配置任何套餐'));

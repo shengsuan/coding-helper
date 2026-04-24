@@ -4,6 +4,8 @@ import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { validateModelSupport } from "./model-selector.js";
+import { get } from "http";
+import { getModels } from "./models.js";
 
 interface OpenCodeModel {
   name: string;
@@ -107,13 +109,13 @@ export class OpenCodeIntegration {
     }
   }
 
-  loadPlanConfig(plan: Plan, apiKey: string, model?: string): void {
+  async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
-
+    const mds = await getModels(plan.id);
     const selectedModelId = validateModelSupport(
-      plan.models,
-      model || plan.models[0]?.id,
+      mds,
+      model || mds[0]?.id,
       ["/v1/chat/completions"],
       "opencode"
     );
@@ -124,7 +126,7 @@ export class OpenCodeIntegration {
 
     const models: Record<string, OpenCodeModel> = {};
     const lts = ["text", "audio", "image","video", "pdf"]
-    for (const m of plan.models) {
+    for (const m of mds) {
       const entry: OpenCodeModel = {
         name: m.id,
         limit: {
@@ -246,10 +248,6 @@ export class OpenCodeIntegration {
     } catch {
       return { plan: null, apiKey: null };
     }
-  }
-
-  getProviderModels(planId: string): string[] {
-    return PLANS[planId]?.models.map((m) => m.id) || [];
   }
 }
 

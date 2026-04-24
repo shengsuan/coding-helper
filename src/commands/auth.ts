@@ -8,6 +8,7 @@ import { openClawManager } from "../lib/openclaw-manager.js";
 import { PLANS, SUPPORTED_TOOLS, API_KEY_URLS } from "../lib/constants.js";
 import inquirer from "inquirer";
 import ora from "ora";
+import { getModels } from "../lib/models.js";
 
 export async function authCommand(args: string[]): Promise<void> {
   const [action, value] = args;
@@ -134,17 +135,17 @@ export async function authCommand(args: string[]): Promise<void> {
 
       spinner.succeed(chalk.green(i18n.t("ui.set_success")));
       configManager.setApiKey(planId, inputKey.trim());
-
+      const models = await getModels(planId);
       const { selectModel } = await inquirer.prompt([
         {
           type: "list",
           name: "selectModel",
           message: i18n.t("ui.select_default_model"),
-          choices: plan.models.map((m) => ({
+          choices: models.map((m) => ({
             name: `${m.id} (${Math.floor(m.contextLength / 1000)}K)`,
             value: m.id,
           })),
-          default: plan.models[0].id,
+          default: "",
         },
       ]);
 
@@ -172,30 +173,57 @@ export async function authCommand(args: string[]): Promise<void> {
 
 function showAuthStatus(): void {
   console.log(chalk.bold("\n" + i18n.t("auth.show_status") + ":\n"));
+  const lite = configManager.getPlanConfig("ssy_cp_lite");
+  const pro = configManager.getPlanConfig("ssy_cp_pro");
+  const enterprise = configManager.getPlanConfig("ssy_cp_enterprise");
+  const payg = configManager.getPlanConfig("pay_as_you_go");
 
-  const volcenginePlanConfig = configManager.getPlanConfig("ssy_cp_lite");
-  const byteplusPlanConfig = configManager.getPlanConfig("ssy_cp_pro");
-
-  console.log(chalk.gray("Lite Plan (国内):"));
-  if (volcenginePlanConfig?.api_key) {
+  console.log(chalk.gray("Lite Plan:"));
+  if (lite?.api_key) {
     console.log(
-      chalk.green(`  ✓ API Key: ${volcenginePlanConfig.api_key.slice(0, 6)}…`),
+      chalk.green(`  ✓ API Key: ${lite.api_key.slice(0, 6)}…`),
     );
     console.log(
-      chalk.gray(`  默认模型: ${volcenginePlanConfig.model || "ark-code-latest"}`),
+      chalk.gray(`  默认模型: ${lite.model || ""}`),
     );
   } else {
     console.log(chalk.red("  ✗ 未配置"));
   }
 
   console.log("");
-  console.log(chalk.gray("Pro Plan (海外):"));
-  if (byteplusPlanConfig?.api_key) {
+  console.log(chalk.gray("Pro Plan:"));
+  if (pro?.api_key) {
     console.log(
-      chalk.green(`  ✓ API Key: ${byteplusPlanConfig.api_key.slice(0, 6)}…`),
+      chalk.green(`  ✓ API Key: ${pro.api_key.slice(0, 6)}…`),
     );
     console.log(
-      chalk.gray(`  默认模型: ${byteplusPlanConfig.model || "ark-code-latest"}`),
+      chalk.gray(`  默认模型: ${pro.model || ""}`),
+    );
+  } else {
+    console.log(chalk.red("  ✗ 未配置"));
+  }
+
+  console.log("");
+  console.log(chalk.gray("Enterprise Plan:"));
+  if (enterprise?.api_key) {
+    console.log(
+      chalk.green(`  ✓ API Key: ${enterprise.api_key.slice(0, 6)}…`),
+    );
+    console.log(
+      chalk.gray(`  默认模型: ${enterprise.model || ""}`),
+    );
+  } else {
+    console.log(chalk.red("  ✗ 未配置"));
+  }
+
+  console.log("");
+  console.log(chalk.gray("按量付费:"));
+  if (payg?.api_key) {
+    console.log(
+      chalk.green(`  ✓ API Key: ${payg.api_key.slice(0, 6)}…`),
+    );
+    console.log(
+      chalk.gray(`  默认模型: ${payg.model || ""}`),
     );
   } else {
     console.log(chalk.red("  ✗ 未配置"));
@@ -221,8 +249,7 @@ function showAuthStatus(): void {
   console.log(chalk.gray("OpenClaw 状态:"));
   const openClawConfig = openClawManager.detectCurrentConfig();
   if (openClawConfig.plan) {
-    const planName =
-      openClawConfig.plan === "ssy_cp_lite" ? "Lite Plan" : "Pro Plan";
+    const planName =openClawConfig.plan === "ssy_cp_lite" ? "Lite Plan" : "Pro Plan";
     console.log(chalk.green(`  ✓ 已配置: ${planName}`));
     if (openClawConfig.apiKey) {
       console.log(

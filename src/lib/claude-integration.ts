@@ -4,6 +4,7 @@ import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { validateModelSupport } from "./model-selector.js";
+import { getModels } from "./models.js";
 
 interface ClaudeCodeSettings {
   env?: Record<string, string | number>;
@@ -106,10 +107,10 @@ export class ClaudeIntegration {
     const currentEnv = currentSettings.env || {};
     const { ANTHROPIC_API_KEY: _, ...cleanedEnv } = currentEnv;
 
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id)
     const defaultModel = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model || models[0]?.id,
       ["/v1/messages"],
       "claude-code"
     );

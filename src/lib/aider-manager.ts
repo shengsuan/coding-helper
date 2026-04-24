@@ -1,10 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { validateModelSupport } from "./model-selector.js";
+import { Document, parseDocument } from 'yaml';
 import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { homedir } from "os";
 import { join } from "path";
-import { Document, parseDocument } from 'yaml';
+import { getModels } from "./models.js";
 
 export interface AiderConfigShape {
   "ssy-code-plan"?: string;
@@ -49,10 +50,10 @@ export class AiderManager {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfigs = this.getConfigs();
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
     const selectedModelId = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model || models[0]?.id,
       ["/v1/chat/completions"],
       "aider"
     );

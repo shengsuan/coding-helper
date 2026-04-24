@@ -3,7 +3,6 @@ import ora from 'ora';
 import { settings } from '../lib/settings.js';
 import { registry } from '../lib/registry.js';
 import { PLANS, SUPPORTED_TOOLS } from '../lib/constants.js';
-import { locale as i18n } from '../lib/locale.js';
 import { logger } from '../utils/logger.js';
 
 /**

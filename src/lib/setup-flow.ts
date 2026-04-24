@@ -8,7 +8,6 @@ import { settings } from './settings.js';
 import { registry } from './registry.js';
 import { openCodeIntegration } from './opencode-integration.js';
 import { nanobotManager } from './nanobot-manager.js';
-import { zeroClawManager } from './zeroclaw-manager.js';
 import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
 import { picoclawManager } from './picoclaw-manager.js';
@@ -17,13 +16,13 @@ import { hermesManager } from './hermes-manager.js';
 import { codexManager } from './codex-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
-import { execSync, spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 import { PLANS, SUPPORTED_TOOLS, API_KEY_URLS, type Model } from './constants.js';
 import { logger } from '../utils/logger.js';
 import { track } from './tea-tracker.js';
 import { UnsupportedModelError, filterSupportedModels } from './model-selector.js';
 import { createRequire } from 'module';
-
+import { getModels } from './models.js';
 const require = createRequire(import.meta.url);
 const { version: PKG_VERSION } = require('../../package.json');
 
@@ -267,7 +266,7 @@ export class SetupFlow {
 
   private async selectModel(planId: string, requiredApi?: string[]): Promise<void> {
     const plan = PLANS[planId];
-    const models = await plan.getModels() || plan.models
+    const models = await getModels(planId)
     if (!plan) return;
 
     const availableModels = requiredApi? filterSupportedModels(models, requiredApi): models;
@@ -435,16 +434,6 @@ export class SetupFlow {
       );
       console.log();
 
-      // Promo banner
-      // const promoLinkDisplay = locale.t('ui.promo_link_display');
-      // const promoLinkUrl = locale.t('ui.promo_link_url');
-      // const codingPlanLink = terminalLink(promoLinkDisplay, promoLinkUrl, { fallback: () => promoLinkDisplay });
-      // const promoBox = chalk.bgHex('#ff6a00').black.bold(
-      //   ` 🔥 ${locale.t('ui.promo_buy')} Coding Plan → ${codingPlanLink} `
-      // );
-      // console.log(`  ${promoBox}`);
-      // console.log();
-
       // Status display
       console.log(
         chalk.gray('  精简计划: ') +
@@ -493,33 +482,6 @@ export class SetupFlow {
   async showToolMenu(toolName: string): Promise<void> {
     const tool = SUPPORTED_TOOLS[toolName];
     if (!tool) return;
-
-    // ZeroClaw needs `zeroclaw onboard` before configuration
-    while (toolName === 'zeroclaw' && !zeroClawManager.isOnboarded()) {
-      this.resetScreen();
-      this.printSectionHeader(`${tool.displayName} 初始化`);
-      console.log(chalk.yellow('⚠  ZeroClaw 尚未初始化，配置前需要先完成 onboard。'));
-      console.log('');
-
-      const action = await select({
-        message: locale.t('ui.select_action'),
-        choices: [
-          { name: '>   🚀 运行 zeroclaw onboard（初始化）', value: 'onboard' as const },
-          { name: '<-  ' + locale.t('ui.nav_return'), value: 'back' as const },
-          { name: 'x   ' + locale.t('ui.nav_exit'), value: 'exit' as const },
-        ],
-        theme,
-      });
-
-      if (action === 'exit') {
-        this.quit();
-      } else if (action === 'back') {
-        return;
-      } else if (action === 'onboard') {
-        console.log(chalk.cyan('\n运行 zeroclaw onboard...\n'));
-        spawnSync('zeroclaw', ['onboard'], { stdio: 'inherit', shell: true });
-      }
-    }
 
     while (true) {
       this.resetScreen();
@@ -656,9 +618,6 @@ export class SetupFlow {
     if (toolName === 'nanobot') {
       return nanobotManager.detectCurrentConfig();
     }
-    if (toolName === 'zeroclaw') {
-      return zeroClawManager.detectCurrentConfig();
-    }
     if (toolName === 'openclaw') {
       return openClawManager.detectCurrentConfig();
     }
@@ -681,8 +640,6 @@ export class SetupFlow {
     const plan = PLANS[planId];
     const tool = SUPPORTED_TOOLS[toolName];
     if (!plan || !tool) return;
-    plan["models"] = await plan.getModels() || plan.models;
-
     const config = settings.getPlanConfig(planId);
     if (!config?.api_key) {
       console.log(chalk.red('\n[!] ' + locale.t('ui.missing_config')));

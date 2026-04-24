@@ -1,4 +1,5 @@
 import { join, dirname } from "path";
+import { settings } from "./settings.js";
 import { logger } from "../utils/logger.js";
 import { Model, CONFIG_DIR } from "./constants.js";
 import { mkdir, readFile, writeFile } from "fs/promises";
@@ -14,8 +15,9 @@ interface ApiModel {
     support_apis?:string[];
 }
 
-export async function getModels(url: string): Promise<Model[]> {
+export async function getModels(pid: string): Promise<Model[]> {
     try {
+        const url = settings.getPlanConfig(pid)?.baseUrl + "/models";
         const res = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -41,10 +43,10 @@ export async function getModels(url: string): Promise<Model[]> {
 
         if (result.length > 0) {
             result.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
-            await save("ssy_models.json", result);
+            await save(`${pid}_models.json`, result);
             return result;
         }
-        return await read<Model[]>("ssy_models.json");
+        return await read<Model[]>(`${pid}_models.json`);
     } catch (e) {
         logger.logError("getModels()", e);
         return [];

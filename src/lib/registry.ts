@@ -11,7 +11,6 @@ import { locale } from "./locale.js";
 import { nanobotManager } from "./nanobot-manager.js";
 import { openClawManager } from "./openclaw-manager.js";
 import { openCodeIntegration } from "./opencode-integration.js";
-import { zeroClawManager } from "./zeroclaw-manager.js";
 import { trackToolEvent } from "./tea-tracker.js";
 import { codexManager } from "./codex-manager.js";
 import { hermesManager } from "./hermes-manager.js";
@@ -616,8 +615,6 @@ export class IntegrationRegistry {
       openClawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "nanobot") {
       await nanobotManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "zeroclaw") {
-      await zeroClawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "picoclaw") {
       await picoclawManager.loadPlanConfig(plan, apiKey, model);
     } else if (toolName === "codex") {
@@ -641,8 +638,6 @@ export class IntegrationRegistry {
       openClawManager.unloadPlanConfig(planId);
     } else if (toolName === "nanobot") {
       nanobotManager.unloadPlanConfig(planId);
-    } else if (toolName === "zeroclaw") {
-      zeroClawManager.unloadPlanConfig(planId);
     } else if (toolName === "picoclaw") {
       picoclawManager.unloadPlanConfig();
     } else if (toolName === "codex") {

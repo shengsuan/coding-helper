@@ -1,9 +1,4 @@
 import chalk from 'chalk';
-import { settings as configManager } from '../lib/settings.js';
-import { locale as i18n } from '../lib/locale.js';
-import { registry as toolManager } from '../lib/registry.js';
-import { openCodeIntegration as openCodeManager } from '../lib/opencode-integration.js';
-import { PLANS, SUPPORTED_TOOLS } from '../lib/constants.js';
 import { setupFlow as wizard } from '../lib/setup-flow.js';
 
 export async function configCommand(args: string[]): Promise<void> {
@@ -47,8 +42,8 @@ export async function configCommand(args: string[]): Promise<void> {
     case 'nanobot':
       await wizard['showToolMenu']('nanobot');
       break;
-    case 'zeroclaw':
-      await wizard['showToolMenu']('zeroclaw');
+    case 'hermes':
+      await wizard['showToolMenu']('hermes');
       break;
     case 'claude-code':
       await wizard['showToolMenu']('claude-code');
@@ -56,8 +51,14 @@ export async function configCommand(args: string[]): Promise<void> {
     case 'openclaw':
       await wizard['showToolMenu']('openclaw');
       break;
+    case 'picoclaw':
+      await wizard['showToolMenu']('picoclaw');
+      break;
+    case 'codex':
+      await wizard['showToolMenu']('codex');
+      break;
     default:
       console.log(chalk.red(`未知选项: ${option}`));
-      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude-code, openclaw, nanobot, zeroclaw'));
+      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude-code, openclaw, nanobot, picoclaw, codex, hermes'));
   }
 }

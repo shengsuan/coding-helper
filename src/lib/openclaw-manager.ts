@@ -4,6 +4,7 @@ import { homedir } from "os";
 import { PLANS, type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { validateModelSupport } from "./model-selector.js";
+import { getModels } from "./models.js";
 
 interface OpenClawModel {
   id: string;
@@ -196,7 +197,7 @@ export class OpenClawManager {
     const currentConfig = this.getConfig() || {};
     const currentAuth = this.getAuthConfig() || {};
 
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
     const selectedModelId = validateModelSupport(
       models,
       model || models[0]?.id,
@@ -402,10 +403,6 @@ export class OpenClawManager {
     } catch {
       return { plan: null, apiKey: null };
     }
-  }
-
-  getProviderModels(planId: string): string[] {
-    return PLANS[planId]?.models.map((m) => m.id) || [];
   }
 }
 

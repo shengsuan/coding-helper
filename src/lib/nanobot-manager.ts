@@ -4,6 +4,7 @@ import { homedir } from 'os';
 import { PLANS, type Plan } from './constants.js';
 import { logger } from '../utils/logger.js';
 import { validateModelSupport } from './model-selector.js';
+import { getModels } from './models.js';
 
 interface NanobotProviderConfig {
   apiKey: string;
@@ -109,10 +110,10 @@ export class NanobotManager {
     delete updatedProviders[obsoleteProviderName];
     updatedProviders[activeProviderName] = { apiKey, apiBase: mapping.apiBase };
 
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
     const selectedModel = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model || models[0]?.id,
       ["/v1/chat/completions"],
       "nanobot"
     );
@@ -217,10 +218,6 @@ export class NanobotManager {
     } catch {
       return { plan: null, apiKey: null };
     }
-  }
-
-  getProviderModels(planId: string): string[] {
-    return PLANS[planId]?.models.map(m => m.id) || [];
   }
 }
 

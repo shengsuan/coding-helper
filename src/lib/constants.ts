@@ -22,7 +22,6 @@ export interface Plan {
   baseUrl: string;
   anthropicBaseUrl: string;
   apiKeyName: string;
-  models: Model[];
   getModels: () => Promise<Model[]>;
 }
 
@@ -35,23 +34,6 @@ export const PLANS: Record<string, Plan> = {
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Lite Plan API Key",
     getModels: () => getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
-    models: [
-      {
-        id: "bigmodel/glm-4.7",
-        contextLength: 200000,
-        maxTokens: 128000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions"]
-      },
-      { id: "deepseek/deepseek-v3.2", contextLength: 128000, maxTokens: 32000 },
-      {
-        id: "moonshot/kimi-k2.5",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text", "image"], output: ["text"] },
-        support_apis: ["/v1/chat/completions"]
-      },
-    ],
   },
   "ssy_cp_pro": {
     id: "ssy_cp_pro",
@@ -61,22 +43,6 @@ export const PLANS: Record<string, Plan> = {
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Pro Plan API Key",
     getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
-    models: [
-      {
-        id: "google/gemini-2.5-pro",
-        contextLength: 200000,
-        maxTokens: 128000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions"]
-      },
-      {
-        id: "moonshot/kimi-k2.5",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions"]
-      },
-    ],
   },
   "ssy_cp_enterprise": {
     id: "ssy_cp_enterprise",
@@ -86,22 +52,6 @@ export const PLANS: Record<string, Plan> = {
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Enterprise Plan API Key",
     getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
-    models: [
-      {
-        id: "google/gemini-2.5-pro",
-        contextLength: 200000,
-        maxTokens: 128000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions"]
-      },
-      {
-        id: "moonshot/kimi-k2.5",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions", "/v1/messages"]
-      },
-    ],
   },
   "pay_as_you_go": {
     id: "pay_as_you_go",
@@ -111,36 +61,6 @@ export const PLANS: Record<string, Plan> = {
     anthropicBaseUrl: "https://router.shengsuanyun.com/api",
     apiKeyName: "ShengSuanYun API Key",
     getModels:()=> getModels("https://router.shengsuanyun.com/api/v1/models"),
-    models: [
-      {
-        id: "openai/gpt-5.2",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions","/v1/messages","/v1/responses"]
-      },
-      {
-        id: "anthropic/claude-sonnet-4.6",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions", "/v1/messages"]
-      },
-      {
-        id: "x-ai/grok-4-fast",
-        contextLength: 256000,
-        maxTokens: 32000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions", "/v1/messages"]
-      },
-      {
-        id: "x-ai/grok-4",
-        contextLength: 256000,
-        maxTokens: 256000,
-        modalities: { input: ["text"], output: ["text"] },
-        support_apis: ["/v1/chat/completions", "/v1/messages"]
-      },
-    ],
   },
 };
 
@@ -196,14 +116,6 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
   //   runtime: "python",
   //   minPythonVersion: "3.11",
   // },
-  // zeroclaw: {
-  //   name: "zeroclaw",
-  //   command: "zeroclaw",
-  //   installCommand: "brew install zeroclaw",
-  //   configPath: join(homedir(), ".zeroclaw", "config.toml"),
-  //   displayName: "ZeroClaw",
-  //   runtime: "node",
-  // },
   picoclaw: {
     name: "picoclaw",
     command: "picoclaw",
@@ -233,7 +145,7 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");
-export const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
+export const CONFIG_PATH = join(CONFIG_DIR, "config.json");
 
 export const API_KEY_URLS = {
   "ssy_cp_lite": "https://console.shengsuanyun.com/user/keys",

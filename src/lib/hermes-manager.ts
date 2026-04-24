@@ -5,6 +5,7 @@ import { logger } from "../utils/logger.js";
 import { homedir } from "os";
 import { join } from "path";
 import { Document, parseDocument } from 'yaml';
+import { getModels } from "./models.js";
 
 export interface HermesConfigShape {
   model: {
@@ -52,10 +53,10 @@ export class HermesManager {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfigs = this.getConfigs();
-    const models = await plan.getModels() || plan.models;
+    const models = await getModels(plan.id);
     const selectedModelId = validateModelSupport(
       models,
-      model || plan.models[0]?.id,
+      model || models[0]?.id,
       ["/v1/chat/completions"],
       "hermes"
     );
