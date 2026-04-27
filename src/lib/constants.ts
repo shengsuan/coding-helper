@@ -1,6 +1,5 @@
 import { join } from "path";
 import { homedir } from "os";
-import { getModels } from "./models.js";
 
 export interface ModelModalities {
   input: string[];
@@ -22,7 +21,6 @@ export interface Plan {
   baseUrl: string;
   anthropicBaseUrl: string;
   apiKeyName: string;
-  getModels: () => Promise<Model[]>;
 }
 
 export const PLANS: Record<string, Plan> = {
@@ -33,7 +31,6 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Lite Plan API Key",
-    getModels: () => getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
   },
   "ssy_cp_pro": {
     id: "ssy_cp_pro",
@@ -42,7 +39,6 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Pro Plan API Key",
-    getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
   },
   "ssy_cp_enterprise": {
     id: "ssy_cp_enterprise",
@@ -51,7 +47,6 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
     apiKeyName: "Enterprise Plan API Key",
-    getModels:()=> getModels("https://router.shengsuanyun.com/api/cp/v1/models"),
   },
   "pay_as_you_go": {
     id: "pay_as_you_go",
@@ -60,7 +55,6 @@ export const PLANS: Record<string, Plan> = {
     baseUrl: "https://router.shengsuanyun.com/api/v1",
     anthropicBaseUrl: "https://router.shengsuanyun.com/api",
     apiKeyName: "ShengSuanYun API Key",
-    getModels:()=> getModels("https://router.shengsuanyun.com/api/v1/models"),
   },
 };
 

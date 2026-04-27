@@ -1,11 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { validateModelSupport } from "./model-selector.js";
+import { Document, parseDocument } from 'yaml';
 import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
+import { getModels } from "./models.js";
 import { homedir } from "os";
 import { join } from "path";
-import { Document, parseDocument } from 'yaml';
-import { getModels } from "./models.js";
 
 export interface HermesConfigShape {
   model: {

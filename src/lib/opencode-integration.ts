@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { homedir } from "os";
-import { PLANS, type Plan } from "./constants.js";
+import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { validateModelSupport } from "./model-selector.js";
 import { get } from "http";

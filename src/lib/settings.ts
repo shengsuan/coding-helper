@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { CONFIG_DIR, CONFIG_PATH, Model, PLANS } from './constants.js';
+import { CONFIG_DIR, CONFIG_PATH, PLANS } from './constants.js';
 import { logger } from '../utils/logger.js';
 
 export interface PlanConfig {
