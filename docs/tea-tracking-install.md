@@ -70,14 +70,6 @@ install.sh (shell curl)                     coding-helper CLI (Node.js)
 
 `registry.ts` 中 `toolName` 到 TEA 事件 `type` 的映射：
 
-```
-claude-code  →  claude      (其余工具名直接使用)
-openclaw     →  openclaw
-opencode     →  opencode
-nanobot      →  nanobot
-zeroclaw     →  zeroclaw
-```
-
 ## 上报协议
 
 TEA SDK 底层使用 HTTP POST 发送事件到 `/list` 端点。

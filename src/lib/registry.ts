@@ -601,54 +601,37 @@ export class IntegrationRegistry {
     }
   }
 
-  async loadPlanConfig(
-    toolName: string,
-    plan: Plan,
-    apiKey: string,
-    model?: string,
-  ): Promise<void> {
-    if (toolName === "opencode") {
-      openCodeIntegration.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "claude-code") {
-      await claudeIntegration.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "openclaw") {
-      openClawManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "nanobot") {
-      await nanobotManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "picoclaw") {
-      await picoclawManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "codex") {
-      await codexManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "aider") {
-      await aiderManager.loadPlanConfig(plan, apiKey, model);
-    } else if (toolName === "hermes") {
-      await hermesManager.loadPlanConfig(plan, apiKey, model);
-    } else {
-      throw new Error(`Unknown tool: ${toolName}`);
-    }
+  async loadPlanConfig( toolName: string, plan: Plan, apiKey: string, model?: string ): Promise<void> {
+    const toolManagers: Record<string, { loadPlanConfig: (plan: Plan, apiKey: string, model?: string) => Promise<void> | void }> = {
+      opencode: openCodeIntegration,
+      claude: claudeIntegration,
+      openclaw: openClawManager,
+      nanobot: nanobotManager,
+      picoclaw: picoclawManager,
+      codex: codexManager,
+      aider: aiderManager,
+      hermes: hermesManager,
+    };
+    const manager = toolManagers[toolName];
+    if (!manager) throw new Error(`Unknown tool: ${toolName}`);
+    await manager.loadPlanConfig(plan, apiKey, model);
     trackToolEvent("set", toolName);
   }
 
-  unloadPlanConfig(toolName: string, planId?: string): void {
-    if (toolName === "opencode") {
-      openCodeIntegration.unloadPlanConfig(planId);
-    } else if (toolName === "claude-code") {
-      claudeIntegration.unloadPlanConfig();
-    } else if (toolName === "openclaw") {
-      openClawManager.unloadPlanConfig(planId);
-    } else if (toolName === "nanobot") {
-      nanobotManager.unloadPlanConfig(planId);
-    } else if (toolName === "picoclaw") {
-      picoclawManager.unloadPlanConfig();
-    } else if (toolName === "codex") {
-      codexManager.unloadPlanConfig();
-    } else if (toolName === "aider") {
-      aiderManager.unloadPlanConfig();
-    } else if (toolName === "hermes") {
-      hermesManager.unloadPlanConfig();
-    } else {
-      throw new Error(`Unknown tool: ${toolName}`);
-    }
+  unloadPlanConfig( toolName: string, planId?: string ): void {
+    const toolManagers: Record<string, { unloadPlanConfig: (planId?: string) => void }> = {
+      opencode: openCodeIntegration,
+      claude: claudeIntegration,
+      openclaw: openClawManager,
+      nanobot: nanobotManager,
+      picoclaw: picoclawManager,
+      codex: codexManager,
+      aider: aiderManager,
+      hermes: hermesManager,
+    };
+    const manager = toolManagers[toolName];
+    if (!manager) throw new Error(`Unknown tool: ${toolName}`);
+    manager.unloadPlanConfig(planId);
     trackToolEvent("unset", toolName);
   }
 

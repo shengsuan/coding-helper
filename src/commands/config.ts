@@ -45,8 +45,8 @@ export async function configCommand(args: string[]): Promise<void> {
     case 'hermes':
       await wizard['showToolMenu']('hermes');
       break;
-    case 'claude-code':
-      await wizard['showToolMenu']('claude-code');
+    case 'claude':
+      await wizard['showToolMenu']('claude');
       break;
     case 'openclaw':
       await wizard['showToolMenu']('openclaw');
@@ -59,6 +59,6 @@ export async function configCommand(args: string[]): Promise<void> {
       break;
     default:
       console.log(chalk.red(`未知选项: ${option}`));
-      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude-code, openclaw, nanobot, picoclaw, codex, hermes'));
+      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude, openclaw, nanobot, picoclaw, codex, hermes'));
   }
 }

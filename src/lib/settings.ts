@@ -1,13 +1,16 @@
+import { CONFIG_DIR, CONFIG_PATH, PLANS, SUPPORTED_TOOLS, Tool } from './constants.js';
+import { generatePlanId, isCustomPlanId } from '../utils/crypto-helper.js';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { CONFIG_DIR, CONFIG_PATH, PLANS } from './constants.js';
 import { logger } from '../utils/logger.js';
 
 export interface PlanConfig {
   api_key?: string;
   model?: string;
   label?: string;
-  baseUrl?: string;
-  apiKeyName?: string;
+  base_url?: string;
+  api_key_name?: string;
+  is_custom?: boolean;      // 标识是否为自定义配置
+  created_at?: string;       // 创建时间（ISO 8601）
 }
 
 export interface Config {
@@ -15,8 +18,9 @@ export interface Config {
   plans: {
     [key: string]: PlanConfig;
   };
+  tools:Record<string, Tool>;
 }
-const DEFAULT_CONFIG: Config = { lang: 'zh_CN', plans: {} };
+const DEFAULT_CONFIG: Config = { lang: 'zh_CN', plans: {}, tools: SUPPORTED_TOOLS };
 
 export class Settings {
   private config: Config;
@@ -69,11 +73,11 @@ export class Settings {
       if (!plan.label) {
         plan.label = PLANS[planId].name_zh || PLANS[planId].name;
       }
-      if (!plan.baseUrl) {
-        plan.baseUrl = PLANS[planId].baseUrl;
+      if (!plan.base_url) {
+        plan.base_url = PLANS[planId].baseUrl;
       }
-      if (!plan.apiKeyName) {
-        plan.apiKeyName = PLANS[planId].apiKeyName;
+      if (!plan.api_key_name) {
+        plan.api_key_name = PLANS[planId].apiKeyName;
       }
     }
   }
@@ -105,6 +109,10 @@ export class Settings {
 
   getPlanConfig(planId: string): PlanConfig | undefined {
     return this.config.plans[planId];
+  }
+
+  getAllPlans(): Array<PlanConfig & { id: string }> {
+    return Object.entries(this.config.plans).map(([id, plan]) => ({ ...plan, id }));
   }
 
   private ensurePlan(planId: string): PlanConfig {
@@ -142,6 +150,36 @@ export class Settings {
 
   hasAnyConfig(): boolean {
     return Object.values(this.config.plans).some((plan) => !!plan?.api_key);
+  }
+
+  addCustomPlan(planId: string, config: PlanConfig): void {
+    this.config.plans[planId] = {
+      ...config,
+      is_custom: true,
+      created_at: config.created_at || new Date().toISOString()
+    };
+    this.saveConfig();
+  }
+  getCustomPlans(): Array<PlanConfig & { id: string }> {
+    return Object.entries(this.config.plans)
+      .filter(([_, plan]) => plan.is_custom)
+      .map(([id, plan]) => ({ ...plan, id }));
+  }
+  findPlanByCredentials(baseUrl: string, apiKey: string): string | undefined {
+    const targetPlanId = generatePlanId(baseUrl, apiKey);
+    return this.config.plans[targetPlanId] ? targetPlanId : undefined;
+  }
+  updatePlanLabel(planId: string, label: string): void {
+    if (this.config.plans[planId]) {
+      this.config.plans[planId].label = label;
+      this.saveConfig();
+    }
+  }
+  removeCustomPlan(planId: string): void {
+    if (isCustomPlanId(planId) && this.config.plans[planId]) {
+      delete this.config.plans[planId];
+      this.saveConfig();
+    }
   }
 }
 

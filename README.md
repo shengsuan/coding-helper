@@ -25,8 +25,12 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 |-------------------------|-----------------------------| 
 | **精简计划 / ssy_cp_lite** | anthropic/claude-sonnet-4.5, anthropic/claude-haiku-4.5, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
 | **专业计划 / ssy_cp_pro** | openai/gpt-5.4, anthropic/claude-haiku-4.5, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
-| **企业计划 / ssy_cp_enterprise** | moonshot/kimi-k2.5, doubao-seed-code, glm-4.7, anthropic/claude-sonnet-4.6 | 
-| **按量付费 / pay_as_you_go** | anthropic/claude-opus-4.6, anthropic/claude-opus-4.5, deepseek-v3.2 | 
+| **企业计划 / ssy_cp_enterprise** | moonshot/kimi-k2.5, doubao-seed-code, glm-4.7, anthropic/claude-sonnet-4.6 |
+| **按量付费 / pay_as_you_go** | anthropic/claude-opus-4.6, anthropic/claude-opus-4.5, deepseek-v3.2 |
+
+💡 **自定义 API 端点** / **Custom API Endpoints**：除了预定义的方案，你还可以使用 `custom` 命令配置任意 API 端点（如 OpenAI、Anthropic Direct、Azure OpenAI、企业内部 API 等）。详见 [custom 命令文档](./docs/custom-api-usage.md)。
+
+Besides the predefined plans, you can also use the `custom` command to configure any API endpoint (OpenAI, Anthropic Direct, Azure OpenAI, enterprise APIs, etc.). See [custom command docs](./docs/custom-api-usage.md).
 
 ## 环境要求 / Requirements
 
@@ -67,7 +71,7 @@ coding-helper set <tool_name> <plan_name>
 
 # 示例 / Examples
 coding-helper set codex ssy_cp_enterprise       # 配置 Codex 使用企业计划
-coding-helper set claude-code ssy_cp_pro        # 配置 Claude Code 使用专业计划
+coding-helper set claude ssy_cp_pro        # 配置 Claude Code 使用专业计划
 coding-helper set openclaw ssy_cp_lite          # 配置 OpenClaw 使用精简计划
 ```
 
@@ -100,7 +104,32 @@ coding-helper enter codex
 ```bash
 # 快速配置 / Quick Setup
 coding-helper set codex ssy_cp_enterprise    # 快速配置 Codex 使用企业计划 / Quick setup Codex with Enterprise plan
-coding-helper set claude-code ssy_cp_pro     # 快速配置 Claude Code 使用专业计划 / Quick setup Claude Code with Pro plan
+coding-helper set claude ssy_cp_pro     # 快速配置 Claude Code 使用专业计划 / Quick setup Claude Code with Pro plan
+
+# 自定义 API 配置 / Custom API Configuration
+coding-helper custom -url <base_url> -k <api_key> -m <model_id> [-t <tool>] [-label <label>]
+
+# 示例 / Examples:
+# 配置 OpenAI API（只保存配置）/ Configure OpenAI API (save config only)
+coding-helper custom \
+  -url https://api.openai.com/v1 \
+  -k sk-your-key \
+  -m gpt-4
+
+# 配置并立即应用到工具 / Configure and apply to tool immediately
+coding-helper custom \
+  -url https://api.anthropic.com/v1 \
+  -k sk-ant-key \
+  -m claude-3-opus-20240229 \
+  -t codex \
+  -label my_anthropic
+
+# 配置企业内部 API / Configure enterprise API
+coding-helper custom \
+  -url https://api.company.com/v1 \
+  -k company-key \
+  -m custom-model \
+  -t aider
 
 # 语言 / Language
 coding-helper lang show              # 查看当前语言 / Show current language
@@ -169,10 +198,12 @@ src/
     opencode-integration.ts # OpenCode 配置写入 / OpenCode config writer
     openclaw-manager.ts     # OpenClaw 配置写入 / OpenClaw config writer
     nanobot-manager.ts      # Nanobot 配置写入 / Nanobot config writer
-    zeroclaw-manager.ts     # ZeroClaw 配置写入 / ZeroClaw config writer
   commands/                 # 子命令处理器 / Subcommand handlers (auth, lang, doctor, config, set)
+    custom-config.ts        # 自定义 API 配置 / Custom API configuration
   locales/                  # 国际化 JSON 文件 / i18n JSON files
   utils/                    # 日志、终端工具 / Logger, terminal helpers
+    crypto-helper.ts        # SHA1 hash 和 Plan ID 生成 / SHA1 hash and Plan ID generation
+    name-generator.ts       # 随机标签生成器 / Random label generator
 ```
 
 ## 许可证 / License

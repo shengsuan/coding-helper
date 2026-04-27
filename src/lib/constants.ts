@@ -85,8 +85,8 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "Codex",
     runtime: "rust",
   },
-  "claude-code": {
-    name: "claude-code",
+  claude: {
+    name: "claude",
     command: "claude",
     installCommand: "npm install -g @anthropic-ai/claude-code",
     configPath: join(homedir(), ".claude", "settings.json"),

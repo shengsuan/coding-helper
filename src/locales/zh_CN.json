@@ -123,7 +123,7 @@
     "press_enter_back": "按 Enter 返回",
     "select_action": "选择操作",
     "select_plan_type": "选择套餐类型",
-    "select_both_plans": "四个都配置",
+    "select_both_plans": "都配置",
     "skip_config": "跳过，稍后配置",
     "input_lite_key": "输入胜算云精简计划 API Key",
     "input_pro_key": "输入胜算云专业计划 API Key",

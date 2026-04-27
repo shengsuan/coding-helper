@@ -4,7 +4,7 @@ import figlet from 'figlet';
 import gradient from 'gradient-string';
 import { select, password, confirm, input } from '@inquirer/prompts';
 import terminalLink from 'terminal-link';
-import { settings } from './settings.js';
+import { PlanConfig, settings } from './settings.js';
 import { registry } from './registry.js';
 import { openCodeIntegration } from './opencode-integration.js';
 import { nanobotManager } from './nanobot-manager.js';
@@ -120,40 +120,24 @@ export class SetupFlow {
     while (true) {
       this.resetScreen();
       this.printSectionHeader(locale.t('ui.select_plan'));
-
-      const litePlanConfig = settings.getPlanConfig('ssy_cp_lite');
-      const proPlanConfig = settings.getPlanConfig('ssy_cp_pro');
-      const enterprisePlanConfig = settings.getPlanConfig('ssy_cp_enterprise');
-      const goPlanConfig = settings.getPlanConfig('pay_as_you_go');
+      const plans = settings.getAllPlans();
+      const choices: Array<{ name: string; value: string }> = [];
+      for (const plan of plans) {
+        choices.push({
+          name: `[${plan.label}] ` + (plan.api_key ? chalk.green(' ✓') : ''),
+          value: plan.id
+        })
+      }
+      choices.push(
+        { name: locale.t('ui.select_both_plans'), value: 'both' },
+        { name: locale.t('ui.skip_config'), value: 'skip' },
+        { name: '<-  ' + locale.t('ui.nav_return'), value: 'back' },
+        { name: 'x   ' + locale.t('ui.nav_exit'), value: 'exit' }
+      );
 
       const planAction = await select({
         message: '🌟 ' + locale.t('ui.select_plan'),
-        choices: [
-          {
-            name: '[Lite Plan] ' + locale.t('ui.plan_lite') +
-              (litePlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'ssy_cp_lite' as const
-          },
-          {
-            name: '[Pro Plan] ' + locale.t('ui.plan_pro') +
-              (proPlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'ssy_cp_pro' as const
-          },
-          {
-            name: '[Enterprise Plan] ' + locale.t('ui.plan_enterprise') +
-              (enterprisePlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'ssy_cp_enterprise' as const
-          },
-          {
-            name: '[Pay as You Go] ' + locale.t('ui.plan_go') +
-              (goPlanConfig?.api_key ? chalk.green(' ✓') : ''),
-            value: 'pay_as_you_go' as const
-          },
-          { name: locale.t('ui.select_both_plans'), value: 'both' as const },
-          { name: locale.t('ui.skip_config'), value: 'skip' as const },
-          { name: '<-  ' + locale.t('ui.nav_return'), value: 'back' as const },
-          { name: 'x   ' + locale.t('ui.nav_exit'), value: 'exit' as const }
-        ],
+        choices,
         theme,
       });
 
@@ -178,30 +162,40 @@ export class SetupFlow {
 
   private async configApiKey(planId: string): Promise<void> {
     const plan = PLANS[planId];
-    if (!plan) return;
-
+    const customPlan = settings.getPlanConfig(planId) as PlanConfig | undefined;
+    if (!plan && !customPlan) {
+      console.log(chalk.red(`\n未知的计划 ID: ${planId}`));
+      return;
+    }
+    const planDisplayName = plan ? plan.name_zh : (customPlan?.label || planId);
+    const isCustomPlan = !plan && customPlan;
     while (true) {
       this.resetScreen();
-      this.printSectionHeader(locale.t('ui.config_api_key') + ` - ${plan.name_zh}`);
-
-      const currentConfig = settings.getPlanConfig(planId);
+      this.printSectionHeader(locale.t('ui.config_api_key') + ` - ${planDisplayName}`);
+      const currentConfig = settings.getPlanConfig(planId) as PlanConfig | undefined;
       if (currentConfig?.api_key) {
         console.log(chalk.gray('  ' + locale.t('ui.config_api_key') + ' ') +
           chalk.gray(locale.t('ui.api_key_set') + ' (' + currentConfig.api_key.slice(0, 6) + '…)'));
         console.log('');
       }
+      if (!isCustomPlan) {
+        const apiKeyUrl = API_KEY_URLS[planId as keyof typeof API_KEY_URLS];
+        const clickableUrl = terminalLink(apiKeyUrl, apiKeyUrl, { fallback: () => apiKeyUrl });
+        console.log(chalk.blue('💡 ' + locale.t('ui.api_key_get_hint', { url: clickableUrl })));
+        console.log('');
+      } else {
+        console.log(chalk.gray(`  端点: ${currentConfig?.base_url || 'N/A'}`));
+        console.log(chalk.gray(`  模型: ${currentConfig?.model || 'N/A'}`));
+        console.log('');
+      }
 
-      const apiKeyUrl = API_KEY_URLS[planId as keyof typeof API_KEY_URLS];
-      const clickableUrl = terminalLink(apiKeyUrl, apiKeyUrl, { fallback: () => apiKeyUrl });
-      console.log(chalk.blue('💡 ' + locale.t('ui.api_key_get_hint', { url: clickableUrl })));
-      console.log('');
-
-      const choices: { name: string; value: 'model' | 'input' | 'back' | 'exit' }[] = [];
+      const choices: { name: string; value: 'model' | 'input' | 'delete' | 'back' | 'exit' }[] = [];
       if (currentConfig?.api_key) {
         choices.push({ name: '>   ' + locale.t('ui.switch_model'), value: 'model' });
       }
       choices.push(
         { name: '>   ' + (currentConfig?.api_key ? locale.t('ui.update_api_key') : locale.t('ui.input_api_key')), value: 'input' },
+        { name: '>   ' + "删除", value: 'delete' },
         { name: '<-  ' + locale.t('ui.nav_return'), value: 'back' },
         { name: 'x   ' + locale.t('ui.nav_exit'), value: 'exit' },
       );
@@ -219,10 +213,17 @@ export class SetupFlow {
       } else if (action === 'model') {
         await this.selectModel(planId);
         return;
+      } else if (action === 'delete') {
+        settings.removeCustomPlan(planId)
+        return;
       } else if (action === 'input') {
         this.resetScreen();
-        this.printSectionHeader(locale.t('ui.config_api_key') + ` - ${plan.name_zh}`);
-        console.log(chalk.blue('💡 ' + locale.t('ui.api_key_get_hint', { url: clickableUrl })));
+        this.printSectionHeader(locale.t('ui.config_api_key') + ` - ${planDisplayName}`);
+        if (!isCustomPlan) {
+          const apiKeyUrl = API_KEY_URLS[planId as keyof typeof API_KEY_URLS];
+          const clickableUrl = terminalLink(apiKeyUrl, apiKeyUrl, { fallback: () => apiKeyUrl });
+          console.log(chalk.blue('💡 ' + locale.t('ui.api_key_get_hint', { url: clickableUrl })));
+        }
         console.log('');
 
         const apiKey = await password({
@@ -237,26 +238,29 @@ export class SetupFlow {
           theme,
         });
 
-        const spinner = ora({
-          text: locale.t('ui.validating_api_key'),
-          spinner: 'dots'
-        }).start();
+        if (!isCustomPlan) {
+          const spinner = ora({
+            text: locale.t('ui.validating_api_key'),
+            spinner: 'dots'
+          }).start();
 
-        const validationResult = await checkCredential(apiKey.trim(), planId);
-
-        if (!validationResult.valid) {
-          if (validationResult.error === 'invalid_api_key') {
-            spinner.fail(chalk.red(locale.t('ui.api_key_invalid')));
-          } else {
-            spinner.fail(chalk.red(locale.t('ui.api_key_network_error')));
+          const validationResult = await checkCredential(apiKey.trim(), planId);
+          if (!validationResult.valid) {
+            if (validationResult.error === 'invalid_api_key') {
+              spinner.fail(chalk.red(locale.t('ui.api_key_invalid')));
+            } else {
+              spinner.fail(chalk.red(locale.t('ui.api_key_network_error')));
+            }
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            continue;
           }
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          continue;
+          settings.setApiKey(planId, apiKey.trim());
+          track('set_apikey');
+          spinner.succeed(locale.t('ui.set_success'));
+        } else {
+          settings.setApiKey(planId, apiKey.trim());
+          console.log(chalk.green('\n✓ ' + locale.t('ui.set_success')));
         }
-
-        settings.setApiKey(planId, apiKey.trim());
-        track('set_apikey');
-        spinner.succeed(locale.t('ui.set_success'));
 
         await this.selectModel(planId);
         return;
@@ -266,17 +270,56 @@ export class SetupFlow {
 
   private async selectModel(planId: string, requiredApi?: string[]): Promise<void> {
     const plan = PLANS[planId];
-    const models = await getModels(planId)
-    if (!plan) return;
+    const customPlan = settings.getPlanConfig(planId) as PlanConfig | undefined;
+    if (!plan && !customPlan) {
+      console.log(chalk.red(`\n未知的计划 ID: ${planId}`));
+      return;
+    }
+    const planDisplayName = plan ? plan.name_zh : (customPlan?.label || planId);
+    const isCustomPlan = !plan && customPlan;
 
-    const availableModels = requiredApi? filterSupportedModels(models, requiredApi): models;
+    if (isCustomPlan) {
+      this.resetScreen();
+      this.printSectionHeader(locale.t('ui.select_model') + ` - ${planDisplayName}`);
+
+      if (customPlan?.model) {
+        console.log(chalk.gray(`  当前模型: ${customPlan.model}`));
+        console.log('');
+
+        const shouldUpdate = await confirm({
+          message: '是否更新模型配置？',
+          default: false,
+          theme,
+        });
+
+        if (!shouldUpdate) {
+          return;
+        }
+      }
+
+      const newModel = await input({
+        message: '输入新的模型 ID：',
+        default: customPlan?.model || '',
+        validate: (val) => val.trim() ? true : '必须提供模型 ID',
+        theme,
+      });
+
+      if (newModel.trim()) {
+        settings.setModel(planId, newModel.trim());
+        console.log(chalk.green('\n✓ 模型已更新'));
+      }
+      return;
+    }
+    const models = await getModels(planId);
+
+    const availableModels = requiredApi ? filterSupportedModels(models, requiredApi) : models;
     if (availableModels.length === 0) {
       console.log(chalk.red(`\n[!] No models support required API: ${requiredApi}`));
       return;
     }
 
     this.resetScreen();
-    this.printSectionHeader(locale.t('ui.select_model') + ` - ${plan.name_zh}`);
+    this.printSectionHeader(locale.t('ui.select_model') + ` - ${planDisplayName}`);
 
     const modelChoices = availableModels.map((model: Model) => ({
       name: `${model.id} (${Math.floor(model.contextLength / 1000)}K)`,
@@ -321,7 +364,6 @@ export class SetupFlow {
       } else if (selectedTool === 'back') {
         return;
       }
-
       await this.configureTool(selectedTool);
     }
   }
@@ -342,32 +384,7 @@ export class SetupFlow {
       if (shouldInstall) {
         try {
           await registry.installTool(toolName);
-
-          if (toolName === 'openclaw') {
-            const gwInstallSpinner = ora({
-              text: `Installing ${tool.displayName} gateway...`,
-              spinner: 'dots',
-            }).start();
-            try {
-              execSync('openclaw gateway install', { stdio: 'pipe' });
-              gwInstallSpinner.succeed(chalk.green(`${tool.displayName} gateway installed`));
-            } catch (gwError) {
-              gwInstallSpinner.fail(chalk.red(`${tool.displayName} gateway install failed`));
-              logger.logError('SetupFlow.openclawGatewayInstall', gwError);
-            }
-
-            const gwStartSpinner = ora({
-              text: `Starting ${tool.displayName} gateway...`,
-              spinner: 'dots',
-            }).start();
-            try {
-              execSync('openclaw gateway start', { stdio: 'pipe' });
-              gwStartSpinner.succeed(chalk.green(`${tool.displayName} gateway started`));
-            } catch (gwError) {
-              gwStartSpinner.fail(chalk.red(`${tool.displayName} gateway start failed`));
-              logger.logError('SetupFlow.openclawGatewayStart', gwError);
-            }
-          }
+          await this.runPostInstallSteps(toolName, tool.displayName);
         } catch (error) {
           logger.logError('SetupFlow.configureTool', error);
           console.error(chalk.red(locale.t('setup.install_failed_detail')));
@@ -382,150 +399,176 @@ export class SetupFlow {
         return;
       }
     }
-
     await this.showToolMenu(toolName);
+  }
+
+  private async runPostInstallSteps(toolName: string, displayName: string): Promise<void> {
+    const postInstallSteps: Record<string, Array<{ command: string; description: string }>> = {
+      'openclaw': [
+        { command: 'openclaw gateway install', description: `${displayName} gateway installed` },
+        { command: 'openclaw gateway start', description: `${displayName} gateway started` },
+      ],
+    };
+
+    const steps = postInstallSteps[toolName];
+    if (!steps) return;
+
+    for (const step of steps) {
+      const spinner = ora({
+        text: step.description.replace('installed', 'Installing').replace('started', 'Starting'),
+        spinner: 'dots',
+      }).start();
+
+      try {
+        execSync(step.command, { stdio: 'pipe' });
+        spinner.succeed(chalk.green(step.description));
+      } catch (error) {
+        spinner.fail(chalk.red(step.description.replace('installed', 'install failed').replace('started', 'start failed')));
+        logger.logError(`SetupFlow.postInstall.${toolName}`, error);
+      }
+    }
   }
 
   async showMainMenu(): Promise<void> {
     const cfg = settings.getConfig();
     locale.loadFromConfig(cfg.lang);
+    const actionHandlers: Record<string, () => Promise<void>> = {
+      'exit': async () => this.quit(),
+      'lang': async () => await this.configLanguage(),
+      'plan': async () => await this.configPlan(),
+      'tool': async () => await this.selectAndConfigureTool(),
+    };
 
     while (true) {
       this.resetScreen();
-      const currentCfg = settings.getConfig();
-
-      // Supported tools display
       console.log(chalk.gray('  ' + locale.t('ui.main_menu_title')));
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('OpenClaw'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding gateway')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Claude Code'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding assistant')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('OpenCode'.padEnd(20, ' ')) +
-        chalk.gray('— Open-source coding tool')
-      );
-      // console.log(
-      //   chalk.cyan('    ◆ ') + chalk.white('Nanobot') +
-      //   chalk.gray('— AI agent framework')
-      // );
-      // console.log(
-      //   chalk.cyan('    ◆ ') + chalk.white('ZeroClaw') +
-      //   chalk.gray('— AI gateway')
-      // );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('PicoClaw'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding tool')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Codex'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding tool')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Aider'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding tool')
-      );
-      console.log(
-        chalk.cyan('    ◆ ') + chalk.white('Hermes Agent'.padEnd(20, ' ')) +
-        chalk.gray('— AI coding tool')
-      );
+
+      const toolsToDisplay = Object.values(SUPPORTED_TOOLS);
+      for (const tool of toolsToDisplay) {
+        const description = this.getToolDescription(tool.name);
+        console.log(
+          chalk.cyan('    ◆ ') +
+          chalk.white(tool.displayName.padEnd(20, ' ')) +
+          chalk.gray(`— ${description}`)
+        );
+      }
       console.log();
 
-      // Status display
-      console.log(
-        chalk.gray('  精简计划: ') +
-        (currentCfg.plans?.['ssy_cp_lite']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_lite'].api_key.slice(0, 6) + '…)')
-          : chalk.red('✗')) +
-        chalk.gray('  专业计划: ') +
-        (currentCfg.plans?.['ssy_cp_pro']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_pro'].api_key.slice(0, 6) + '…)')
-          : chalk.red('✗')) + 
+      const allPlans = settings.getAllPlans();
 
-        chalk.gray('  企业计划: ') +
-        (currentCfg.plans?.['ssy_cp_enterprise']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['ssy_cp_enterprise'].api_key.slice(0, 6) + '…)')
-          : chalk.red('✗')) +
-        chalk.gray('  按量付费: ') +
-        (currentCfg.plans?.['pay_as_you_go']?.api_key
-          ? chalk.green('✓ (' + currentCfg.plans['pay_as_you_go'].api_key.slice(0, 6) + '…)')
-          : chalk.red('✗'))
-      );
+      if (allPlans.length > 0) {
+        const predefinedPlans = allPlans.filter(p => !p.is_custom);
+        const customPlans = allPlans.filter(p => p.is_custom);
+        if (predefinedPlans.length > 0) {
+          const planStatusParts: string[] = [];
+          for (const plan of predefinedPlans) {
+            planStatusParts.push(
+              chalk.gray(`  ${plan.label}: `) +
+              (plan.api_key
+                ? chalk.green(`✓ (${plan.api_key.slice(0, 6)}…)`)
+                : chalk.red('✗'))
+            );
+          }
+          console.log(planStatusParts.join(''));
+        }
+        if (customPlans.length > 0) {
+          console.log();
+          console.log(chalk.cyan.bold('  自定义计划:'));
+          for (const plan of customPlans) {
+            console.log(
+              chalk.gray(`    • ${plan.label || plan.id}: `) +
+              (plan.api_key
+                ? chalk.green(`✓ ${plan.base_url}`)
+                : chalk.red('✗')) +
+              chalk.gray(` (${plan.model || 'N/A'})`)
+            );
+          }
+        }
+      } else {
+        console.log(chalk.yellow('  尚未配置任何计划'));
+      }
       console.log();
-
       const action = await select({
         message: locale.t('ui.select_operation'),
         choices: [
-          { name: locale.t('ui.menu_select_plan'), value: 'plan' as const, description: locale.t('ui.select_plan') },
-          { name: locale.t('ui.menu_config_tool'), value: 'tool' as const, description: locale.t('ui.select_tool') },
-          { name: locale.t('ui.menu_config_language'), value: 'lang' as const, description: locale.t('ui.select_language') },
-          { name: locale.t('ui.menu_exit'), value: 'exit' as const },
+          {
+            name: locale.t('ui.menu_select_plan'),
+            value: 'plan',
+            description: locale.t('ui.select_plan')
+          },
+          {
+            name: locale.t('ui.menu_config_tool'),
+            value: 'tool',
+            description: locale.t('ui.select_tool')
+          },
+          {
+            name: locale.t('ui.menu_config_language'),
+            value: 'lang',
+            description: locale.t('ui.select_language')
+          },
+          {
+            name: locale.t('ui.menu_exit'),
+            value: 'exit'
+          },
         ],
         theme,
       });
 
-      if (action === 'exit') {
-        this.quit();
-      } else if (action === 'lang') {
-        await this.configLanguage();
-      } else if (action === 'plan') {
-        await this.configPlan();
-      } else if (action === 'tool') {
-        await this.selectAndConfigureTool();
+      const handler = actionHandlers[action];
+      if (handler) {
+        await handler();
+        if (action === 'exit') return;
       }
     }
+  }
+
+  private getToolDescription(toolName: string): string {
+    const descriptions: Record<string, string> = {
+      'openclaw': 'AI coding gateway',
+      'claude': 'AI coding assistant',
+      'opencode': 'Open-source coding tool',
+      'picoclaw': 'AI coding tool',
+      'codex': 'AI coding tool',
+      'aider': 'AI pair programming',
+      'hermes': 'AI agent framework',
+      'nanobot': 'AI agent framework',
+    };
+    return descriptions[toolName] || 'AI coding tool';
   }
 
   async showToolMenu(toolName: string): Promise<void> {
     const tool = SUPPORTED_TOOLS[toolName];
     if (!tool) return;
+    const plans = settings.getAllPlans();
+    const planDisplayNames: Record<string, string> = {
+      'ssy_cp_lite': locale.t('ui.plan_lite'),
+      'ssy_cp_pro': locale.t('ui.plan_pro'),
+      'ssy_cp_enterprise': locale.t('ui.plan_enterprise'),
+      'pay_as_you_go': locale.t('ui.plan_go'),
+    };
+    const actionHandlers: Record<string, () => Promise<void>> = {
+      'exit': async () => this.quit(),
+      'back': async () => {},
+      'unload': async () => await this.unloadPlanConfig(toolName),
+      'start': async () => await this.startTool(toolName),
+    };
 
     while (true) {
       this.resetScreen();
       this.printSectionHeader(`${tool.displayName} ${locale.t('ui.main_menu_title')}`);
-
-      const litePlanConfig = settings.getPlanConfig('ssy_cp_lite');
-      const proPlanConfig = settings.getPlanConfig('ssy_cp_pro');
-      const enterprisePlanConfig = settings.getPlanConfig('ssy_cp_enterprise');
-      const goPlanConfig = settings.getPlanConfig('pay_as_you_go');
-
       const detectedConfig = this.detectToolConfig(toolName);
-
       console.log(chalk.cyan.bold('📋 ' + locale.t('ui.current_config_status') + ':'));
-      console.log(chalk.gray('  Lite Plan: ') +
-        (litePlanConfig?.api_key
-          ? chalk.green('✓ ' + (litePlanConfig.model || 'anthropic/claude-sonnet-4.6'))
-          : chalk.red(locale.t('ui.not_set'))));
-      console.log(chalk.gray('  Pro Plan: ') +
-        (proPlanConfig?.api_key
-          ? chalk.green('✓ ' + (proPlanConfig.model || 'anthropic/claude-sonnet-4.6'))
-          : chalk.red(locale.t('ui.not_set'))));
-
-      console.log(chalk.gray('  Enterprise Plan: ') +
-        (enterprisePlanConfig?.api_key
-          ? chalk.green('✓ ' + (enterprisePlanConfig.model || 'anthropic/claude-sonnet-4.6'))
-          : chalk.red(locale.t('ui.not_set'))));
-      console.log(chalk.gray('  Pay as You Go: ') +
-        (goPlanConfig?.api_key
-          ? chalk.green('✓ ' + (goPlanConfig.model || 'anthropic/claude-sonnet-4.6'))
-          : chalk.red(locale.t('ui.not_set'))));
+      for (const plan of plans) {
+        console.log(chalk.gray(` [${plan.label}]: `) +
+          (plan?.api_key
+            ? chalk.green('✓ ' + (plan.model || 'anthropic/claude-sonnet-4.6'))
+            : chalk.red(locale.t('ui.not_set'))));
+      }
       console.log('');
-
       console.log(chalk.yellow.bold(`📋 ${tool.displayName} ` + locale.t('ui.current_config_status') + ':'));
       if (detectedConfig.plan) {
-        let planName = locale.t('ui.plan_lite')
-        if(detectedConfig.plan === 'ssy_cp_pro'){
-          planName = locale.t('ui.plan_pro')
-        }
-        if(detectedConfig.plan === 'ssy_cp_enterprise'){
-          planName = locale.t('ui.plan_enterprise')
-        }
-        if(detectedConfig.plan === 'pay_as_you_go'){
-          planName = locale.t('ui.plan_go')
-        }
+        const planConfig = settings.getPlanConfig(detectedConfig.plan) as PlanConfig | undefined;
+        const planName = planConfig?.label || planDisplayNames[detectedConfig.plan] || detectedConfig.plan;
         console.log(chalk.gray('  ' + locale.t('ui.config_plan') + ': ') + chalk.green(planName));
         if (detectedConfig.apiKey) {
           console.log(chalk.gray('  API Key: ') + chalk.gray(locale.t('ui.api_key_set') + ' (' + detectedConfig.apiKey.slice(0, 6) + '…)'));
@@ -536,43 +579,20 @@ export class SetupFlow {
       console.log('');
 
       const choices: Array<{ name: string; value: string }> = [];
-
-      if (litePlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'ssy_cp_lite';
-        choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置 Lite Plan 配置到 ${tool.displayName}`,
-          value: 'load_lite-plan'
-        });
-      }
-
-      if (proPlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'ssy_cp_pro';
-        choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置 Pro Plan 配置到 ${tool.displayName}`,
-          value: 'load_pro-plan'
-        });
-      }
-
-      if (enterprisePlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'ssy_cp_enterprise';
-        choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置 Enterprise Plan 配置到 ${tool.displayName}`,
-          value: 'load_enterprise-plan'
-        });
-      }
-
-      if (goPlanConfig?.api_key) {
-        const isActive = detectedConfig.plan === 'pay_as_you_go';
-        choices.push({
-          name: `${isActive ? '🔄' : '📥'} 设置 按量付费 配置到 ${tool.displayName}`,
-          value: 'pay_as_you_go'
-        });
+      for (const plan of plans) {
+        if (plan.api_key) {
+          const isActive = detectedConfig.plan === plan.id;
+          choices.push({
+            name: `${isActive ? '🔄' : '📥'} 设置 [${plan.label}] 配置到 ${tool.displayName}`,
+            value: `load_${plan.id}`
+          });
+        }
       }
 
       if (detectedConfig.plan) {
         choices.push({ name: `🗑️  卸载 ${tool.displayName} 配置`, value: 'unload' });
 
-        if (toolName === 'opencode' || toolName === 'claude-code') {
+        if (toolName === 'opencode' || toolName === 'claude') {
           choices.push({ name: `🚀 启动 ${tool.displayName} (${tool.command})`, value: 'start' });
         }
       }
@@ -588,64 +608,55 @@ export class SetupFlow {
         theme,
       });
 
-      if (action === 'exit') {
-        this.quit();
-      } else if (action === 'back') {
-        return;
-      } else if (action === 'load_lite-plan') {
-        await this.loadPlanConfig(toolName, 'ssy_cp_lite');
-      } else if (action === 'load_pro-plan') {
-        await this.loadPlanConfig(toolName, 'ssy_cp_pro');
-      } else if (action === 'load_enterprise-plan') {
-        await this.loadPlanConfig(toolName, 'ssy_cp_enterprise');
-      } else if (action === 'pay_as_you_go') {
-        await this.loadPlanConfig(toolName, 'pay_as_you_go');
-      } else if (action === 'unload') {
-        await this.unloadPlanConfig(toolName);
-      } else if (action === 'start') {
-        await this.startTool(toolName);
+      if (action === 'back') {
+        return; 
+      }
+
+      if (action in actionHandlers) {
+        await actionHandlers[action]();
+        if (action === 'exit') return; // exit 后也要返回
+      } else if (action.startsWith('load_')) {
+        const planId = action.replace('load_', '');
+        await this.loadPlanConfig(toolName, planId);
       }
     }
   }
 
   private detectToolConfig(toolName: string): { plan: string | null; apiKey: string | null } {
-    if (toolName === 'opencode') {
-      return openCodeIntegration.detectCurrentConfig();
-    }
-    if (toolName === 'claude-code') {
-      return claudeIntegration.detectCurrentConfig();
-    }
-    if (toolName === 'nanobot') {
-      return nanobotManager.detectCurrentConfig();
-    }
-    if (toolName === 'openclaw') {
-      return openClawManager.detectCurrentConfig();
-    }
-    if (toolName === 'picoclaw') {
-      return picoclawManager.detectCurrentConfig();
-    }
-    if (toolName === 'aider') {
-      return aiderManager.detectCurrentConfig();
-    }
-    if (toolName === 'codex') {
-      return codexManager.detectCurrentConfig();
-    }
-    if (toolName === 'hermes') {
-      return hermesManager.detectCurrentConfig();
-    }
-    return { plan: null, apiKey: null };
+    const toolManagers: Record<string, { detectCurrentConfig: () => { plan: string | null; apiKey: string | null } }> = {
+      'opencode': openCodeIntegration,
+      'claude': claudeIntegration,
+      'nanobot': nanobotManager,
+      'openclaw': openClawManager,
+      'picoclaw': picoclawManager,
+      'aider': aiderManager,
+      'codex': codexManager,
+      'hermes': hermesManager,
+    };
+
+    const manager = toolManagers[toolName];
+    return manager ? manager.detectCurrentConfig() : { plan: null, apiKey: null };
   }
 
   private async loadPlanConfig(toolName: string, planId: string): Promise<void> {
-    const plan = PLANS[planId];
     const tool = SUPPORTED_TOOLS[toolName];
-    if (!plan || !tool) return;
+    if (!tool) return;
+    const plan = PLANS[planId];
     const config = settings.getPlanConfig(planId);
+
     if (!config?.api_key) {
       console.log(chalk.red('\n[!] ' + locale.t('ui.missing_config')));
       await new Promise(resolve => setTimeout(resolve, 3000));
       return;
     }
+    const planToLoad = plan || {
+      id: planId,
+      name: config.label || planId,
+      name_zh: config.label || planId,
+      baseUrl: config.base_url || '',
+      anthropicBaseUrl: (config.base_url || '').replace(/\/v1$/, ''),
+      apiKeyName: 'Custom API Key',
+    };
 
     const spinner = ora({
       text: locale.t('ui.loading_config'),
@@ -653,7 +664,7 @@ export class SetupFlow {
     }).start();
 
     try {
-      await registry.loadPlanConfig(toolName, plan, config.api_key, config.model);
+      await registry.loadPlanConfig(toolName, planToLoad, config.api_key, config.model);
       spinner.succeed(chalk.green(locale.t('ui.config_loaded', { tool: tool.displayName })));
     } catch (error) {
       spinner.fail(locale.t('ui.config_failed'));
@@ -701,49 +712,7 @@ export class SetupFlow {
   private async startTool(toolName: string): Promise<void> {
     const tool = SUPPORTED_TOOLS[toolName];
     if (!tool) return;
-
     let fullCommand = tool.command;
-
-    if (toolName === 'nanobot' || toolName === 'zeroclaw') {
-      const subcommandChoices: Array<{ name: string; value: string }> = [];
-
-      if (toolName === 'nanobot') {
-        subcommandChoices.push(
-          { name: '>   启动交互代理 (agent)', value: 'agent' },
-          { name: '>   启动网关 (gateway)', value: 'gateway' },
-          { name: '>   首次初始化 (onboard)', value: 'onboard' },
-          { name: '>   查看状态 (status)', value: 'status' }
-        );
-      } else if (toolName === 'zeroclaw') {
-        subcommandChoices.push(
-          { name: '>   启动交互代理 (agent)', value: 'agent' },
-          { name: '>   启动守护进程 (daemon)', value: 'daemon' },
-          { name: '>   启动网关 (gateway)', value: 'gateway' },
-          { name: '>   首次初始化 (onboard)', value: 'onboard' },
-          { name: '>   查看状态 (status)', value: 'status' }
-        );
-      }
-
-      subcommandChoices.push(
-        { name: '<-  返回', value: 'back' },
-        { name: 'x   退出', value: 'exit' }
-      );
-
-      const subcommand = await select({
-        message: locale.t('ui.select_action'),
-        choices: subcommandChoices,
-        theme,
-      });
-
-      if (subcommand === 'exit') {
-        this.quit();
-      } else if (subcommand === 'back') {
-        return;
-      } else if (subcommand) {
-        fullCommand = `${tool.command} ${subcommand}`;
-      }
-    }
-
     console.log(chalk.gray('$ ') + chalk.white(fullCommand));
     const spinner = ora({
       text: locale.t('ui.starting_tool'),

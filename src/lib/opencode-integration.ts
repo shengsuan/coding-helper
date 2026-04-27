@@ -4,7 +4,6 @@ import { homedir } from "os";
 import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
 import { validateModelSupport } from "./model-selector.js";
-import { get } from "http";
 import { getModels } from "./models.js";
 
 interface OpenCodeModel {
@@ -111,7 +110,6 @@ export class OpenCodeIntegration {
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
     const currentConfig = this.getConfig() || {};
-    const currentAuth = this.getAuthConfig() || {};
     const mds = await getModels(plan.id);
     const selectedModelId = validateModelSupport(
       mds,
@@ -191,11 +189,9 @@ export class OpenCodeIntegration {
           delete currentConfig.model;
         }
       }
-
       this.saveConfig(currentConfig);
     }
 
-    // Also clean up legacy auth.json if it exists
     const currentAuth = this.getAuthConfig();
     if (currentAuth) {
       if (planId) {
@@ -218,12 +214,10 @@ export class OpenCodeIntegration {
         return { plan: null, apiKey: null };
       }
 
-      // Prefer the plan that the active model points to
       if (config.model) {
         const primaryPlanId = config.model.split("/")[0];
         const provider = config.provider[primaryPlanId];
         if (provider) {
-          // Read apiKey from provider.options first, fallback to legacy auth.json
           const apiKey =
             provider.options?.apiKey ||
             this.getAuthConfig()?.[primaryPlanId]?.key ||
@@ -232,7 +226,6 @@ export class OpenCodeIntegration {
         }
       }
 
-      // Fallback: return the first configured plan
       for (const planId of ["ssy_cp_lite", "ssy_cp_pro"]) {
         const provider = config.provider[planId];
         if (provider) {

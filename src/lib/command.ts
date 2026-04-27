@@ -1,13 +1,14 @@
 import { Command as Commander } from "commander";
-import { locale } from "./locale.js";
-import { settings } from "./settings.js";
 import { setupFlow } from "./setup-flow.js";
+import { settings } from "./settings.js";
+import { locale } from "./locale.js";
 import {
   langCommand,
   authCommand,
   doctorCommand,
   configCommand,
   setCommand,
+  customConfigCommand,
 } from "../commands/index.js";
 import chalk from "chalk";
 import { createRequire } from "module";
@@ -36,6 +37,7 @@ export class Command {
     this.registerAuth();
     this.registerDoctor();
     this.registerSet();
+    this.registerCustomConfig();
     this.registerEnter();
     this.registerInit();
     this.registerDefaultAction();
@@ -104,6 +106,26 @@ export class Command {
       .action(async (tool?: string, plan?: string) => {
         const args = [tool, plan].filter(Boolean) as string[];
         await setCommand(args);
+      });
+  }
+
+  private registerCustomConfig(): void {
+    this.program
+      .command("custom")
+      .description("Configure custom API endpoint")
+      .option("-url, --url <base_url>", "API Base URL")
+      .option("-k, --key <api_key>", "API Key")
+      .option("-m, --model <model_id>", "Model ID")
+      .option("-label, --label <label>", "Configuration label")
+      .option("-t, --tool <tool_name>", "Tool name")
+      .action(async (options) => {
+        await customConfigCommand({
+          url: options.url,
+          k: options.key,
+          m: options.model,
+          label: options.label,
+          t: options.tool
+        });
       });
   }
 

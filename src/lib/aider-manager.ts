@@ -3,9 +3,9 @@ import { validateModelSupport } from "./model-selector.js";
 import { Document, parseDocument } from 'yaml';
 import { type Plan } from "./constants.js";
 import { logger } from "../utils/logger.js";
+import { getModels } from "./models.js";
 import { homedir } from "os";
 import { join } from "path";
-import { getModels } from "./models.js";
 
 export interface AiderConfigShape {
   "ssy-code-plan"?: string;

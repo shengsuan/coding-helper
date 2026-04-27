@@ -75,7 +75,7 @@ npm pack
 
 常见选择：
 - 飞书文档附件 → `sf3-cn.feishucdn.com`
-- ShengSuanYun  静态资源 → `lf3-static.bytednsdoc.com`
+- 静态资源 → `lf3-static.bytednsdoc.com`
 - AWS S3 / 阿里云 OSS 等
 
 ### 3. 编写 install.sh

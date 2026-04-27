@@ -17,7 +17,7 @@ interface ApiModel {
 
 export async function getModels(pid: string): Promise<Model[]> {
     try {
-        const url = settings.getPlanConfig(pid)?.baseUrl + "/models";
+        const url = settings.getPlanConfig(pid)?.base_url + "/models";
         const res = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" }

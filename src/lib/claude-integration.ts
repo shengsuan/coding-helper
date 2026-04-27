@@ -112,7 +112,7 @@ export class ClaudeIntegration {
       models,
       model || models[0]?.id,
       ["/v1/messages"],
-      "claude-code"
+      "claude"
     );
 
     const planConfig: ClaudeCodeSettings = {
