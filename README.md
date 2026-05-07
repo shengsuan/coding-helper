@@ -17,6 +17,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
 | [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | python | AI 编程网关 / AI coding gateway |
+| [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | rust | AI 编程网关 / AI coding gateway |
 
 
 ## 支持的方案 / Supported Plans
@@ -164,6 +165,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | Codex | `~/.codex/config.toml` |
 | Aider | `~/.aider.conf.yml` |
 | Hermes Agent | `~/.hermes/config.yaml` |
+| DeepSeek TUI | `~/.deepseek/config.toml` |
 
 ## 开发 / Development
 
@@ -179,31 +181,6 @@ npm run build
 
 # 运行构建产物 / Run built version
 npm start
-```
-
-## 项目结构 / Project Structure
-
-```
-src/
-  cli.ts                    # 入口 / Entry point
-  lib/
-    command.ts              # CLI 命令定义 / CLI command definitions (commander)
-    setup-flow.ts           # 交互式向导 UI / Interactive wizard UI
-    settings.ts             # YAML 配置管理 / Config management (~/.coding-helper/config.yaml)
-    registry.ts             # 工具安装与配置调度 / Tool installation & config orchestration
-    constants.ts            # 方案、模型、工具定义 / Plans, models, tool definitions
-    locale.ts               # 国际化 / i18n (zh_CN / en_US)
-    auth-checker.ts         # API Key 校验 / API key validation
-    claude-integration.ts   # Claude Code 配置写入 / Claude Code config writer
-    opencode-integration.ts # OpenCode 配置写入 / OpenCode config writer
-    openclaw-manager.ts     # OpenClaw 配置写入 / OpenClaw config writer
-    nanobot-manager.ts      # Nanobot 配置写入 / Nanobot config writer
-  commands/                 # 子命令处理器 / Subcommand handlers (auth, lang, doctor, config, set)
-    custom-config.ts        # 自定义 API 配置 / Custom API configuration
-  locales/                  # 国际化 JSON 文件 / i18n JSON files
-  utils/                    # 日志、终端工具 / Logger, terminal helpers
-    crypto-helper.ts        # SHA1 hash 和 Plan ID 生成 / SHA1 hash and Plan ID generation
-    name-generator.ts       # 随机标签生成器 / Random label generator
 ```
 
 ## 许可证 / License

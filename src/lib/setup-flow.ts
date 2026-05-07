@@ -12,8 +12,9 @@ import { openClawManager } from './openclaw-manager.js';
 import { claudeIntegration } from './claude-integration.js';
 import { picoclawManager } from './picoclaw-manager.js';
 import { aiderManager } from './aider-manager.js';
-import { hermesManager } from './hermes-manager.js';  
+import { hermesManager } from './hermes-manager.js';
 import { codexManager } from './codex-manager.js';
+import { deepSeekManager, DeepSeekModelError } from './deepseek-manager.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
 import { execSync } from 'child_process';
@@ -338,6 +339,42 @@ export class SetupFlow {
     track('change_model');
   }
 
+  private async selectModelForDeepSeek(planId: string): Promise<void> {
+    const plan = PLANS[planId];
+    if (!plan) {
+      console.log(chalk.red(`\n未知的计划 ID: ${planId}`));
+      return;
+    }
+
+    this.resetScreen();
+    this.printSectionHeader(locale.t('ui.select_model') + ` - ${plan.name_zh}`);
+
+    const allModels = await getModels(planId);
+    const compatibleModels = allModels.filter(m => m.id.includes('/deepseek'));
+
+    if (compatibleModels.length === 0) {
+      console.log(chalk.red('\n[!] 当前计划没有符合 DeepSeek 要求的模型'));
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      return;
+    }
+
+    const modelChoices = compatibleModels.map((model: Model) => ({
+      name: `${model.id} (${Math.floor(model.contextLength / 1000)}K)`,
+      value: model.id
+    }));
+
+    const model = await select({
+      message: locale.t('ui.select_default_model'),
+      choices: modelChoices,
+      default: compatibleModels[0].id,
+      pageSize: 10,
+      theme,
+    }) as string;
+
+    settings.setModel(planId, model);
+    track('change_model');
+  }
+
   private async selectAndConfigureTool(): Promise<void> {
     while (true) {
       this.resetScreen();
@@ -632,6 +669,7 @@ export class SetupFlow {
       'aider': aiderManager,
       'codex': codexManager,
       'hermes': hermesManager,
+      'deepseek': deepSeekManager,
     };
 
     const manager = toolManagers[toolName];
@@ -669,7 +707,18 @@ export class SetupFlow {
     } catch (error) {
       spinner.fail(locale.t('ui.config_failed'));
 
-      if (error instanceof UnsupportedModelError) {
+      if (error instanceof DeepSeekModelError) {
+        console.log(chalk.yellow(`\n[!] ${error.message}`));
+        if (error.availableModels.length > 0) {
+          console.log(chalk.yellow(`    可用的模型：`));
+          error.availableModels.forEach(m => {
+            console.log(chalk.gray(`      - ${m.id}`));
+          });
+        }
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        await this.selectModelForDeepSeek(planId);
+        await this.loadPlanConfig(toolName, planId);
+      } else if (error instanceof UnsupportedModelError) {
         console.log(chalk.yellow(`\n[!] ${locale.t('ui.model_not_supported', { model: error.modelId })}`));
         console.log(chalk.yellow(`    ${locale.t('ui.please_select_supported_model')}`));
         await new Promise(resolve => setTimeout(resolve, 3000));

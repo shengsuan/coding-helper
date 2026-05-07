@@ -136,6 +136,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     runtime: "python",
     minPythonVersion: "3.10",
   },
+  deepseek: {
+    name: "deepseek",
+    command: "deepseek",
+    installCommand: "npm install -g deepseek-tui",
+    configPath: join(homedir(), ".deepseek", "config.toml"),
+    displayName: "DeepSeek TUI",
+    runtime: "rust",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");

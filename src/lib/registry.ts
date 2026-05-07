@@ -14,6 +14,7 @@ import { openCodeIntegration } from "./opencode-integration.js";
 import { trackToolEvent } from "./tea-tracker.js";
 import { codexManager } from "./codex-manager.js";
 import { hermesManager } from "./hermes-manager.js";
+import { deepSeekManager } from "./deepseek-manager.js";
 
 interface PythonEnv {
   pythonCmd: string | null;
@@ -611,6 +612,7 @@ export class IntegrationRegistry {
       codex: codexManager,
       aider: aiderManager,
       hermes: hermesManager,
+      deepseek: deepSeekManager,
     };
     const manager = toolManagers[toolName];
     if (!manager) throw new Error(`Unknown tool: ${toolName}`);
@@ -628,6 +630,7 @@ export class IntegrationRegistry {
       codex: codexManager,
       aider: aiderManager,
       hermes: hermesManager,
+      deepseek: deepSeekManager,
     };
     const manager = toolManagers[toolName];
     if (!manager) throw new Error(`Unknown tool: ${toolName}`);

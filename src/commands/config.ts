@@ -57,8 +57,11 @@ export async function configCommand(args: string[]): Promise<void> {
     case 'codex':
       await wizard['showToolMenu']('codex');
       break;
+    case 'deepseek':
+      await wizard['showToolMenu']('deepseek');
+      break;
     default:
       console.log(chalk.red(`未知选项: ${option}`));
-      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude, openclaw, nanobot, picoclaw, codex, hermes'));
+      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude, openclaw, nanobot, picoclaw, codex, hermes, deepseek'));
   }
 }

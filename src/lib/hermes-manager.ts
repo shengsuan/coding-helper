@@ -1,11 +1,11 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { validateModelSupport } from "./model-selector.js";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { homedir } from 'os';
 import { Document, parseDocument } from 'yaml';
-import { type Plan } from "./constants.js";
-import { logger } from "../utils/logger.js";
-import { getModels } from "./models.js";
-import { homedir } from "os";
-import { join } from "path";
+import { validateModelSupport } from './model-selector.js';
+import { type Plan } from './constants.js';
+import { getModels } from './models.js';
+import { logger } from '../utils/logger.js';
 
 export interface HermesConfigShape {
   model: {
@@ -27,27 +27,34 @@ export class HermesManager {
   private configsPath: string;
 
   constructor() {
-    this.configsPath = join(homedir(), ".hermes", "config.yaml");
+    this.configsPath = join(homedir(), '.hermes', 'config.yaml');
+  }
+
+  private ensureDir(filePath: string): void {
+    const dir = dirname(filePath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
   }
 
   getConfigs(): Document {
     try {
       if (existsSync(this.configsPath)) {
-        const content = readFileSync(this.configsPath, "utf-8");
+        const content = readFileSync(this.configsPath, 'utf-8');
         return parseDocument(content);
       }
     } catch (error) {
-      console.warn("Failed to read Hermes settings:", error);
-      logger.logError("HermesManager.getSettings", error);
+      logger.logError('HermesManager.getConfigs', error);
     }
     return new Document({});
   }
 
   saveConfigs(config: Document): void {
     try {
-      writeFileSync(this.configsPath, config.toString(), "utf-8");
+      this.ensureDir(this.configsPath);
+      writeFileSync(this.configsPath, config.toString(), 'utf-8');
     } catch (error) {
-      throw new Error(`Failed to save Hermes settings: ${error}`);
+      throw new Error(`Failed to save Hermes config: ${error}`);
     }
   }
 
@@ -57,41 +64,49 @@ export class HermesManager {
     const selectedModelId = validateModelSupport(
       models,
       model || models[0]?.id,
-      ["/v1/chat/completions"],
-      "hermes"
+      ['/v1/chat/completions'],
+      'hermes'
     );
-    currentConfigs.setIn(["model", "ssy_code_plan"], plan.id);
-    currentConfigs.setIn(["model", "provider"], "custom");
 
-    // Set api_key with PLAIN string style to avoid line folding
+    const existingModel = currentConfigs.get('model');
+    const isValidObject = existingModel &&
+                          typeof existingModel === 'object' &&
+                          'has' in existingModel &&
+                          typeof (existingModel as any).has === 'function';
+
+    if (!isValidObject) {
+      const modelNode = currentConfigs.createNode({});
+      currentConfigs.set('model', modelNode);
+    }
+
+    currentConfigs.setIn(['model', 'ssy_code_plan'], plan.id);
+    currentConfigs.setIn(['model', 'provider'], 'custom');
+
     const apiKeyNode = currentConfigs.createNode(apiKey);
     if (apiKeyNode && typeof apiKeyNode === 'object' && 'type' in apiKeyNode) {
       (apiKeyNode as any).type = 'PLAIN';
     }
-    currentConfigs.setIn(["model", "api_key"], apiKeyNode);
+    currentConfigs.setIn(['model', 'api_key'], apiKeyNode);
 
-    currentConfigs.setIn(["model", "base_url"], plan.baseUrl);
-    currentConfigs.setIn(["model", "default"], selectedModelId);
+    currentConfigs.setIn(['model', 'base_url'], plan.baseUrl);
+    currentConfigs.setIn(['model', 'default'], selectedModelId);
     this.saveConfigs(currentConfigs);
   }
-  
+
   unloadPlanConfig(): void {
     const currentConfigs = this.getConfigs();
-    let isModified = false;
     const plan = currentConfigs.getIn(['model', 'ssy_code_plan']);
-    if (plan) {
-      currentConfigs.deleteIn(['model', 'ssy_code_plan']);
-      isModified = true;
-    }
+    if (!plan) return;
+
+    currentConfigs.deleteIn(['model', 'ssy_code_plan']);
+
     const apiBase = currentConfigs.getIn(['model', 'base_url']);
-    if (typeof apiBase === "string" && apiBase.includes("shengsuanyun")) {
-      currentConfigs.setIn(["model", "api_key"], "");
-      currentConfigs.setIn(["model", "base_url"], "");
-      isModified = true;
+    if (typeof apiBase === 'string' && apiBase.includes('shengsuanyun')) {
+      currentConfigs.setIn(['model', 'api_key'], '');
+      currentConfigs.setIn(['model', 'base_url'], '');
     }
-    if (isModified) {
-      this.saveConfigs(currentConfigs);
-    }
+
+    this.saveConfigs(currentConfigs);
   }
 
   detectCurrentConfig(): DetectedConfig {
@@ -99,15 +114,15 @@ export class HermesManager {
       const currentConfigs = this.getConfigs();
       const plan = currentConfigs.getIn(['model', 'ssy_code_plan']);
       const apiKey = currentConfigs.getIn(['model', 'api_key']);
-      if (typeof plan !== "string") {
+      if (typeof plan !== 'string') {
         return { plan: null, apiKey: null };
       }
       return {
         plan,
-        apiKey: typeof apiKey === "string" ? apiKey : null
+        apiKey: typeof apiKey === 'string' ? apiKey : null
       };
     } catch (error) {
-      logger.logError("HermesManager.detectCurrentConfig", error);
+      logger.logError('HermesManager.detectCurrentConfig', error);
       return { plan: null, apiKey: null };
     }
   }
