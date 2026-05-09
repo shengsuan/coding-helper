@@ -66,11 +66,6 @@ export class DeepSeekManager {
   }
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
-    const mapping = PLANS[plan.id];
-    if (!mapping) {
-      throw new Error(`Unsupported plan for DeepSeek: ${plan.id}`);
-    }
-
     const allModels = await getModels(plan.id);
     const compatibleModels = this.filterDeepSeekModels(allModels);
 
@@ -99,7 +94,7 @@ export class DeepSeekManager {
 
     const config = this.getConfig() || {};
     config.api_key = apiKey;
-    config.base_url = mapping.baseUrl;
+    config.base_url = plan.baseUrl;
     config.default_text_model = selectedModel;
     config.ssy_code_plan = plan.id;
     this.saveConfig(config);

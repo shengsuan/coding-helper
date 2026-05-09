@@ -77,11 +77,6 @@ export class CodexManager {
   }
 
   async loadPlanConfig(plan: Plan, apiKey: string, model?: string): Promise<void> {
-    const mapping = PLANS[plan.id];
-    if (!mapping) {
-      throw new Error(`Unsupported plan for Codex: ${plan.id}`);
-    }
-
     const currentConfig = this.getConfig() || {} as CodexConfig;
     const models = await getModels(plan.id);
     const selectedModel = validateModelSupport(
@@ -92,7 +87,7 @@ export class CodexManager {
     );
 
     currentConfig.model = selectedModel;
-    currentConfig.openai_base_url = mapping.baseUrl;
+    currentConfig.openai_base_url = plan.baseUrl;
     currentConfig.ssy_code_plan_id = plan.id;
 
     if (!currentConfig['notice.model_migrations']) {
