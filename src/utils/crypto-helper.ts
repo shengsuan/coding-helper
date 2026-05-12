@@ -1,5 +1,9 @@
 import crypto from 'crypto';
-export function generatePlanId(baseUrl: string, apiKey: string): string {
+
+export function generatePlanId(baseUrl?: string, apiKey?: string): string {
+  if (!baseUrl || !apiKey) {
+    return `custom_${Date.now()}`;
+  }
   const normalized = `${baseUrl.trim()}:${apiKey.trim()}`;
   const hash = crypto.createHash('sha1').update(normalized).digest('hex');
   return `custom_${hash.substring(0, 16)}`;

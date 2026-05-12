@@ -166,7 +166,7 @@ export class Settings {
       .map(([id, plan]) => ({ ...plan, id }));
   }
   findPlanByCredentials(baseUrl: string, apiKey: string): string | undefined {
-    const targetPlanId = generatePlanId(baseUrl, apiKey);
+    const targetPlanId = generatePlanId();
     return this.config.plans[targetPlanId] ? targetPlanId : undefined;
   }
   updatePlanLabel(planId: string, label: string): void {

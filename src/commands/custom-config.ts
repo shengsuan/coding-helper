@@ -27,7 +27,7 @@ export async function customConfigCommand(options: CustomConfigOptions): Promise
     const apiKey = options.k || await selectOrInputApiKey();
     const model = options.m || await selectOrInputModel();
     const toolName = options.t; // -t 为可选参数，不提供时不配置工具
-    const planId = generatePlanId(baseUrl, apiKey);
+    const planId = generatePlanId();
     const existingPlan = settings.getPlanConfig(planId);
 
     if (existingPlan) {
