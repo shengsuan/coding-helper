@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { validateModelSupport } from '../lib/model-selector.js';
-import { PLANS, type Plan, Model } from '../lib/constants.js';
+import { type Plan, Model } from '../lib/constants.js';
 import { getModels } from '../lib/models.js';
 import { logger } from '../utils/logger.js';
 import { dirname, join } from 'path';

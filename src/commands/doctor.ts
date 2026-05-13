@@ -3,15 +3,8 @@ import { execSync } from 'child_process';
 import { settings as configManager } from '../lib/settings.js';
 import { locale as i18n } from '../lib/locale.js';
 import { registry as toolManager } from '../lib/registry.js';
-import { openCodeIntegration as openCodeManager } from '../manager/opencode.js';
-import { nanobotManager } from '../manager/nanobot.js';
-import { claudeIntegration } from '../manager/claude.js';
-import { openClawManager } from '../manager/openclaw.js';
+import { toolManagers } from '../manager/index.js';
 import { SUPPORTED_TOOLS } from '../lib/constants.js';
-import { picoclawManager } from '../manager/picoclaw.js';
-import { codexManager } from '../manager/codex.js';
-import { aiderManager } from '../manager/aider.js';
-import { hermesManager } from '../manager/hermes.js';
 
 export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 ' + i18n.t('doctor.checking') + '\n'));
@@ -65,115 +58,29 @@ export async function doctorCommand(): Promise<void> {
 
   console.log(chalk.bold('\n⚙️  ' + i18n.t('doctor.config_status') + ':'));
 
-  const volcenginePlanConfig = configManager.getPlanConfig('ssy_cp_lite');
-  const byteplusPlanConfig = configManager.getPlanConfig('ssy_cp_pro');
-
-  if (volcenginePlanConfig?.api_key) {
-    console.log(chalk.green(`  ✓ Lite Plan API Key: ${volcenginePlanConfig.api_key.slice(0, 6)}…`));
-  } else {
-    console.log(chalk.gray('  ○ Lite Plan API Key: 未配置'));
-  }
-
-  if (byteplusPlanConfig?.api_key) {
-    console.log(chalk.green(`  ✓ Pro Plan API Key: ${byteplusPlanConfig.api_key.slice(0, 6)}…`));
-  } else {
-    console.log(chalk.gray('  ○ Pro Plan API Key: 未配置'));
-  }
-
-  console.log(chalk.bold('\n🤖 Claude Code 配置:'));
-  const claudeDetected = claudeIntegration.detectCurrentConfig();
-  if (claudeDetected.plan) {
-    const ccPlanName = getPlanDisplayName(claudeDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${ccPlanName}`));
-    if (claudeDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${claudeDetected.apiKey.slice(0, 6)}…`));
+  const plans = configManager.getAllPlans();
+  for(const plan of plans) {
+    if (plan.api_key) {
+      console.log(chalk.green(`  ✓ ${plan.label} API Key: ${plan.api_key.slice(0, 6)}…`));
+    } else {
+      console.log(chalk.gray(`  ○ ${plan.label} API Key: 未配置`));
     }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
   }
 
-  console.log(chalk.bold('\n📋 OpenCode 配置:'));
-  const detectedConfig = openCodeManager.detectCurrentConfig();
-  if (detectedConfig.plan) {
-    const planName = getPlanDisplayName(detectedConfig.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${planName}`));
-    if (detectedConfig.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${detectedConfig.apiKey.slice(0, 6)}…`));
+  for (const name of Object.keys(SUPPORTED_TOOLS)) {
+    const displayName = SUPPORTED_TOOLS[name]?.displayName || name;
+    const manager = toolManagers[name];
+    if (!manager) continue;
+    console.log(chalk.bold(`\n🤖 ${displayName} 配置:`));
+    const detected = manager.detectCurrentConfig();
+    if (detected.plan) {
+      console.log(chalk.green(`  ✓ 当前套餐: ${configManager.getPlanConfig(detected.plan)?.label || detected.plan}`));
+      if (detected.apiKey) {
+        console.log(chalk.green(`  ✓ API Key: ${detected.apiKey.slice(0, 6)}…`));
+      }
+    } else {
+      console.log(chalk.gray('  ○ 未配置任何套餐'));
     }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🦞 OpenClaw 配置:'));
-  const openclawDetected = openClawManager.detectCurrentConfig();
-  if (openclawDetected.plan) {
-    const ocPlanName = getPlanDisplayName(openclawDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${ocPlanName}`));
-    if (openclawDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${openclawDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🤖 Nanobot 配置:'));
-  const nanobotDetected = nanobotManager.detectCurrentConfig();
-  if (nanobotDetected.plan) {
-    const nbPlanName = getPlanDisplayName(nanobotDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${nbPlanName}`));
-    if (nanobotDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${nanobotDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🤖 Picoclaw 配置:'));
-  const picoclawDetected = picoclawManager.detectCurrentConfig();
-  if (picoclawDetected.plan) {
-    const pcPlanName = getPlanDisplayName(picoclawDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${pcPlanName}`));
-    if (picoclawDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${picoclawDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🤖 Codex 配置:'));
-  const codexDetected = codexManager.detectCurrentConfig();
-  if (codexDetected.plan) {
-    const cdPlanName = getPlanDisplayName(codexDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${cdPlanName}`));
-    if (codexDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${codexDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🤖 Hermes 配置:'));
-  const hermesDetected = hermesManager.detectCurrentConfig();
-  if (hermesDetected.plan) {
-    const hmPlanName = getPlanDisplayName(hermesDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${hmPlanName}`));
-    if (hermesDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${hermesDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
-  }
-
-  console.log(chalk.bold('\n🤖 Aider 配置:'));
-  const aiderDetected = aiderManager.detectCurrentConfig();
-  if (aiderDetected.plan) {
-    const adPlanName = getPlanDisplayName(aiderDetected.plan);
-    console.log(chalk.green(`  ✓ 当前套餐: ${adPlanName}`));
-    if (aiderDetected.apiKey) {
-      console.log(chalk.green(`  ✓ API Key: ${aiderDetected.apiKey.slice(0, 6)}…`));
-    }
-  } else {
-    console.log(chalk.gray('  ○ 未配置任何套餐'));
   }
 
   console.log('');
@@ -185,20 +92,5 @@ export async function doctorCommand(): Promise<void> {
     console.log(chalk.red.bold('\n❌ ' + i18n.t('doctor.issues_found') + '\n'));
     issues.forEach(issue => console.log(chalk.red('  • ' + issue)));
     console.log('');
-  }
-}
-
-function getPlanDisplayName(planId: string): string {
-  switch (planId) {
-    case 'ssy_cp_lite':
-      return 'Lite Plan';
-    case 'ssy_cp_pro':
-      return 'Pro Plan';
-    case 'ssy_cp_enterprise':
-      return 'Enterprise Plan';
-    case 'pay_as_you_go':
-      return '按使用量计费';
-    default:
-      return planId;
   }
 }

@@ -3,18 +3,10 @@ import { execSync, spawnSync } from "child_process";
 import inquirer from "inquirer";
 import ora from "ora";
 import terminalLink from "terminal-link";
-import { claudeIntegration } from "../manager/claude.js";
-import { picoclawManager } from "../manager/picoclaw.js";
-import { aiderManager } from "../manager/aider.js";
+import { toolManagers } from "../manager/index.js";
 import { SUPPORTED_TOOLS, type Plan, type Tool } from "./constants.js";
 import { locale } from "./locale.js";
-import { nanobotManager } from "../manager/nanobot.js";
-import { openClawManager } from "../manager/openclaw.js";
-import { openCodeIntegration } from "../manager/opencode.js";
 import { trackToolEvent } from "./tea-tracker.js";
-import { codexManager } from "../manager/codex.js";
-import { hermesManager } from "../manager/hermes.js";
-import { deepSeekManager } from "../manager/deepseek.js";
 
 interface PythonEnv {
   pythonCmd: string | null;
@@ -603,17 +595,6 @@ export class IntegrationRegistry {
   }
 
   async loadPlanConfig( toolName: string, plan: Plan, apiKey: string, model?: string ): Promise<void> {
-    const toolManagers: Record<string, { loadPlanConfig: (plan: Plan, apiKey: string, model?: string) => Promise<void> | void }> = {
-      opencode: openCodeIntegration,
-      claude: claudeIntegration,
-      openclaw: openClawManager,
-      nanobot: nanobotManager,
-      picoclaw: picoclawManager,
-      codex: codexManager,
-      aider: aiderManager,
-      hermes: hermesManager,
-      deepseek: deepSeekManager,
-    };
     const manager = toolManagers[toolName];
     if (!manager) throw new Error(`Unknown tool: ${toolName}`);
     await manager.loadPlanConfig(plan, apiKey, model);
@@ -621,17 +602,6 @@ export class IntegrationRegistry {
   }
 
   unloadPlanConfig( toolName: string, planId?: string ): void {
-    const toolManagers: Record<string, { unloadPlanConfig: (planId?: string) => void }> = {
-      opencode: openCodeIntegration,
-      claude: claudeIntegration,
-      openclaw: openClawManager,
-      nanobot: nanobotManager,
-      picoclaw: picoclawManager,
-      codex: codexManager,
-      aider: aiderManager,
-      hermes: hermesManager,
-      deepseek: deepSeekManager,
-    };
     const manager = toolManagers[toolName];
     if (!manager) throw new Error(`Unknown tool: ${toolName}`);
     manager.unloadPlanConfig(planId);

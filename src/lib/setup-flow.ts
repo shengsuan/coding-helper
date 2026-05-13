@@ -6,15 +6,7 @@ import { select, password, confirm, input } from '@inquirer/prompts';
 import terminalLink from 'terminal-link';
 import { PlanConfig, settings } from './settings.js';
 import { registry } from './registry.js';
-import { openCodeIntegration } from '../manager/opencode.js';
-import { nanobotManager } from '../manager/nanobot.js';
-import { openClawManager } from '../manager/openclaw.js';
-import { claudeIntegration } from '../manager/claude.js';
-import { picoclawManager } from '../manager/picoclaw.js';
-import { aiderManager } from '../manager/aider.js';
-import { hermesManager } from '../manager/hermes.js';
-import { codexManager } from '../manager/codex.js';
-import { deepSeekManager, DeepSeekModelError } from '../manager/deepseek.js';
+import { toolManagers, DeepSeekModelError } from '../manager/index.js';
 import { checkCredential } from './auth-checker.js';
 import { locale } from './locale.js';
 import { execSync } from 'child_process';
@@ -660,18 +652,6 @@ export class SetupFlow {
   }
 
   private detectToolConfig(toolName: string): { plan: string | null; apiKey: string | null } {
-    const toolManagers: Record<string, { detectCurrentConfig: () => { plan: string | null; apiKey: string | null } }> = {
-      'opencode': openCodeIntegration,
-      'claude': claudeIntegration,
-      'nanobot': nanobotManager,
-      'openclaw': openClawManager,
-      'picoclaw': picoclawManager,
-      'aider': aiderManager,
-      'codex': codexManager,
-      'hermes': hermesManager,
-      'deepseek': deepSeekManager,
-    };
-
     const manager = toolManagers[toolName];
     return manager ? manager.detectCurrentConfig() : { plan: null, apiKey: null };
   }
