@@ -1,11 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { homedir } from "os";
-import { PLANS, type Plan } from "./constants.js";
+import { PLANS, type Plan } from "../lib/constants.js";
 import { logger } from "../utils/logger.js";
 import yaml from 'js-yaml';
-import { validateModelSupport } from "./model-selector.js";
-import { getModels } from "./models.js";
+import { validateModelSupport } from "../lib/model-selector.js";
+import { getModels } from "../lib/models.js";
 
 export interface PicoClawConfig {
     agents:     Record<string, AgentsDefaults>;

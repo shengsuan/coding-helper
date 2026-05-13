@@ -3,15 +3,15 @@ import { execSync } from 'child_process';
 import { settings as configManager } from '../lib/settings.js';
 import { locale as i18n } from '../lib/locale.js';
 import { registry as toolManager } from '../lib/registry.js';
-import { openCodeIntegration as openCodeManager } from '../lib/opencode-integration.js';
-import { nanobotManager } from '../lib/nanobot-manager.js';
-import { claudeIntegration } from '../lib/claude-integration.js';
-import { openClawManager } from '../lib/openclaw-manager.js';
+import { openCodeIntegration as openCodeManager } from '../manager/opencode.js';
+import { nanobotManager } from '../manager/nanobot.js';
+import { claudeIntegration } from '../manager/claude.js';
+import { openClawManager } from '../manager/openclaw.js';
 import { SUPPORTED_TOOLS } from '../lib/constants.js';
-import { picoclawManager } from '../lib/picoclaw-manager.js';
-import { codexManager } from '../lib/codex-manager.js';
-import { aiderManager } from '../lib/aider-manager.js';
-import { hermesManager } from '../lib/hermes-manager.js';
+import { picoclawManager } from '../manager/picoclaw.js';
+import { codexManager } from '../manager/codex.js';
+import { aiderManager } from '../manager/aider.js';
+import { hermesManager } from '../manager/hermes.js';
 
 export async function doctorCommand(): Promise<void> {
   console.log(chalk.bold.cyan('\n🔍 ' + i18n.t('doctor.checking') + '\n'));

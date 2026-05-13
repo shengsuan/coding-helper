@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { validateModelSupport } from "./model-selector.js";
+import { validateModelSupport } from "../lib/model-selector.js";
 import { Document, parseDocument } from 'yaml';
-import { type Plan } from "./constants.js";
+import { type Plan } from "../lib/constants.js";
 import { logger } from "../utils/logger.js";
-import { getModels } from "./models.js";
+import { getModels } from "../lib/models.js";
 import { homedir } from "os";
 import { join } from "path";
 

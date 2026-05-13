@@ -1,12 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { homedir } from 'os';
-import * as toml from '@iarna/toml';
-import { validateModelSupport } from './model-selector.js';
-import { PLANS, type Plan } from './constants.js';
-import { getModels } from './models.js';
+import { validateModelSupport } from '../lib/model-selector.js';
+import { PLANS, type Plan, Model } from '../lib/constants.js';
+import { getModels } from '../lib/models.js';
 import { logger } from '../utils/logger.js';
-import type { Model } from './constants.js';
+import { dirname, join } from 'path';
+import * as toml from '@iarna/toml';
+import { homedir } from 'os';
 
 interface DeepSeekConfig {
   api_key?: string;

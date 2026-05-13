@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { validateModelSupport } from './model-selector.js';
-import { PLANS, type Plan } from './constants.js';
+import { validateModelSupport } from '../lib/model-selector.js';
+import { PLANS, type Plan } from '../lib/constants.js';
 import { logger } from '../utils/logger.js';
-import { getModels } from './models.js';
+import { getModels } from '../lib/models.js';
 import { dirname, join } from 'path';
 import * as toml from '@iarna/toml';
 import { homedir } from 'os';

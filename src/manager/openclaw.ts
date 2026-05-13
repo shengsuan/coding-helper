@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { validateModelSupport } from "../lib/model-selector.js";
+import { type Plan } from "../lib/constants.js";
+import { logger } from "../utils/logger.js";
+import { getModels } from "../lib/models.js";
 import { dirname, join } from "path";
 import { homedir } from "os";
-import { type Plan } from "./constants.js";
-import { logger } from "../utils/logger.js";
-import { validateModelSupport } from "./model-selector.js";
-import { getModels } from "./models.js";
 
 interface OpenClawModel {
   id: string;

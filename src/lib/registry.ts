@@ -3,18 +3,18 @@ import { execSync, spawnSync } from "child_process";
 import inquirer from "inquirer";
 import ora from "ora";
 import terminalLink from "terminal-link";
-import { claudeIntegration } from "./claude-integration.js";
-import { picoclawManager } from "./picoclaw-manager.js";
-import { aiderManager } from "./aider-manager.js";
+import { claudeIntegration } from "../manager/claude.js";
+import { picoclawManager } from "../manager/picoclaw.js";
+import { aiderManager } from "../manager/aider.js";
 import { SUPPORTED_TOOLS, type Plan, type Tool } from "./constants.js";
 import { locale } from "./locale.js";
-import { nanobotManager } from "./nanobot-manager.js";
-import { openClawManager } from "./openclaw-manager.js";
-import { openCodeIntegration } from "./opencode-integration.js";
+import { nanobotManager } from "../manager/nanobot.js";
+import { openClawManager } from "../manager/openclaw.js";
+import { openCodeIntegration } from "../manager/opencode.js";
 import { trackToolEvent } from "./tea-tracker.js";
-import { codexManager } from "./codex-manager.js";
-import { hermesManager } from "./hermes-manager.js";
-import { deepSeekManager } from "./deepseek-manager.js";
+import { codexManager } from "../manager/codex.js";
+import { hermesManager } from "../manager/hermes.js";
+import { deepSeekManager } from "../manager/deepseek.js";
 
 interface PythonEnv {
   pythonCmd: string | null;
