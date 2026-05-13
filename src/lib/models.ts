@@ -1,6 +1,7 @@
 import { join, dirname } from "path";
 import { settings } from "./settings.js";
 import { logger } from "../utils/logger.js";
+import { fmtUrlToFileName } from "../utils/fmt.js";
 import { Model, CONFIG_DIR } from "./constants.js";
 import { mkdir, readFile, writeFile } from "fs/promises";
 
@@ -18,6 +19,7 @@ interface ApiModel {
 export async function getModels(pid: string): Promise<Model[]> {
     try {
         const url = settings.getPlanConfig(pid)?.base_url + "/models";
+        const fname = `${fmtUrlToFileName(url)}.json`;
         const res = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -43,10 +45,10 @@ export async function getModels(pid: string): Promise<Model[]> {
 
         if (result.length > 0) {
             result.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
-            await save(`${pid}_models.json`, result);
+            await save(fname, result);
             return result;
         }
-        return await read<Model[]>(`${pid}_models.json`);
+        return await read<Model[]>(fname);
     } catch (e) {
         logger.logError("getModels()", e);
         return [];
