@@ -17,7 +17,7 @@
     "coding-helper": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc && cp -r src/locales dist/",
+    "build": "tsc && cp -r src/locales dist/ && chmod +x dist/cli.js",
     "dev": "tsx watch src/cli.ts",
     "start": "node dist/cli.js",
     "test": "vitest run",
