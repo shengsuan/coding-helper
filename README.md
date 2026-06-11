@@ -18,6 +18,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | python | AI 编程网关 / AI coding gateway |
 | [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | rust | AI 编程网关 / AI coding gateway |
+| [OpenCodeReview](https://github.com/alibaba-group/open-code-review) | go | AI 代码评审工具 / AI code review tool |
 
 
 ## 支持的方案 / Supported Plans
@@ -166,6 +167,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | Aider | `~/.aider.conf.yml` |
 | Hermes Agent | `~/.hermes/config.yaml` |
 | DeepSeek TUI | `~/.deepseek/config.toml` |
+| OpenCodeReview | `~/.opencodereview/config.json` |
 
 ## 开发 / Development
 

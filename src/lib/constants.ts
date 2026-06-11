@@ -144,6 +144,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "DeepSeek TUI",
     runtime: "rust",
   },
+  opencodereview: {
+    name: "opencodereview",
+    command: "ocr",
+    installCommand: "npm install -g @alibaba-group/open-code-review",
+    configPath: join(homedir(), ".opencodereview", "config.json"),
+    displayName: "OpenCodeReview",
+    runtime: "go",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");

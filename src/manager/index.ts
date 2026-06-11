@@ -7,6 +7,7 @@ export { aiderManager } from './aider.js';
 export { hermesManager } from './hermes.js';
 export { codexManager } from './codex.js';
 export { deepSeekManager, DeepSeekModelError } from './deepseek.js';
+export { openCodeReviewManager } from './opencodereview.js';
 
 import { openCodeIntegration } from './opencode.js';
 import { nanobotManager } from './nanobot.js';
@@ -17,6 +18,7 @@ import { aiderManager } from './aider.js';
 import { hermesManager } from './hermes.js';
 import { codexManager } from './codex.js';
 import { deepSeekManager } from './deepseek.js';
+import { openCodeReviewManager } from './opencodereview.js';
 import { type Plan } from '../lib/constants.js';
 
 export interface ToolManager {
@@ -35,4 +37,5 @@ export const toolManagers: Record<string, ToolManager> = {
   codex: codexManager,
   hermes: hermesManager,
   deepseek: deepSeekManager,
+  opencodereview: openCodeReviewManager,
 };
