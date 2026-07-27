@@ -8,6 +8,7 @@ export { hermesManager } from './hermes.js';
 export { codexManager } from './codex.js';
 export { deepSeekManager, DeepSeekModelError } from './deepseek.js';
 export { openCodeReviewManager } from './opencodereview.js';
+export { grokBuildManager } from './grok-build.js';
 
 import { openCodeIntegration } from './opencode.js';
 import { nanobotManager } from './nanobot.js';
@@ -19,6 +20,7 @@ import { hermesManager } from './hermes.js';
 import { codexManager } from './codex.js';
 import { deepSeekManager } from './deepseek.js';
 import { openCodeReviewManager } from './opencodereview.js';
+import { grokBuildManager } from './grok-build.js';
 import { type Plan } from '../lib/constants.js';
 
 export interface ToolManager {
@@ -38,4 +40,5 @@ export const toolManagers: Record<string, ToolManager> = {
   hermes: hermesManager,
   deepseek: deepSeekManager,
   opencodereview: openCodeReviewManager,
+  'grok-build': grokBuildManager,
 };

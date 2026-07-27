@@ -152,6 +152,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     displayName: "OpenCodeReview",
     runtime: "go",
   },
+  "grok-build": {
+    name: "grok-build",
+    command: "grok-build",
+    installCommand: "curl -fsSL https://x.ai/cli/install.sh | bash",
+    configPath: join(homedir(), ".grok", "config.toml"),
+    displayName: "Grok Build",
+    runtime: "rust",
+  },
 };
 
 export const CONFIG_DIR = join(homedir(), ".coding-helper");
