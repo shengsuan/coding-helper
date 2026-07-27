@@ -154,7 +154,7 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
   },
   "grok-build": {
     name: "grok-build",
-    command: "grok-build",
+    command: "grok",
     installCommand: "curl -fsSL https://x.ai/cli/install.sh | bash",
     configPath: join(homedir(), ".grok", "config.toml"),
     displayName: "Grok Build",
