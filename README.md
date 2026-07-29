@@ -1,212 +1,170 @@
 # Coding Helper
 
-一键配置 [胜算云](https://shengsuanyun.com/) Coding Plan API 凭证到多款 AI 编程工具的 CLI 工具。
+一键配置 [胜算云](https://shengsuanyun.com/) Coding Plan API 凭证到多款 AI 编程工具的跨平台 CLI。
 
-CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan API credentials across multiple AI coding tools.
+Coding Helper is a cross-platform CLI for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan API credentials across AI coding tools.
 
----
+## 支持的工具 / Supported tools
 
-## 支持的工具 / Supported Tools
+| 工具 / Tool | 说明 / Description | 配置路径 / Config path |
+| --- | --- | --- |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic AI 编程助手 | `~/.claude/settings.json` |
+| [OpenCode](https://github.com/opencode-ai/opencode) | 开源 AI 编程工具 | `~/.config/opencode/opencode.json` |
+| [OpenClaw](https://github.com/openclaw/openclaw) | AI 编程网关 | `~/.openclaw/openclaw.json` |
+| [PicoClaw](https://github.com/sipeed/picoclaw) | AI 编程网关 | `~/.picoclaw/config.json` |
+| [Codex](https://github.com/openai/codex) | AI 编程助手 | `~/.codex/config.toml` |
+| [Aider](https://github.com/Aider-AI/aider) | AI 结对编程工具 | `~/.aider.conf.yml` |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | AI Agent | `~/.hermes/config.yaml` |
+| [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | 终端 AI 助手 | `~/.deepseek/config.toml` |
+| [OpenCodeReview](https://github.com/alibaba-group/open-code-review) | AI 代码评审工具 | `~/.opencodereview/config.json` |
+| [Grok Build](https://github.com/xai-org/grok-build) | AI 编程工具 | `~/.grok/config.toml` |
 
-| 工具 / Tool | 运行时 / Runtime | 说明 / Description | 
-|-------------|-----------------|-------------------| 
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Node.js | Anthropic AI 编程助手 / AI coding assistant | 
-| [OpenCode](https://github.com/opencode-ai/opencode) | Node.js | 开源 AI 编程工具 / Open-source AI coding tool | 
-| [OpenClaw](https://github.com/openclaw/openclaw) | Node.js | AI 编程网关 / AI coding gateway |  
-| [PicoClaw](https://github.com/sipeed/picoclaw) | go | AI 编程网关 / AI coding gateway |  
-| [Codex](https://github.com/openai/codex) | rust | AI 编程网关 / AI coding gateway |
-| [Aider](https://github.com/Aider-AI/aider) | python | AI 编程网关 / AI coding gateway |
-| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | python | AI 编程网关 / AI coding gateway |
-| [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | rust | AI 编程网关 / AI coding gateway |
-| [OpenCodeReview](https://github.com/alibaba-group/open-code-review) | go | AI 代码评审工具 / AI code review tool |
-| [Grok Build](https://github.com/xai-org/grok-build) | rust | 开源 AI 编程工具 / AI code tool |
+## 支持的方案 / Supported plans
 
+| 方案 / Plan | 标识 / ID | 默认 API 端点 |
+| --- | --- | --- |
+| 按量付费 / Pay as You Go | `pay_as_you_go` | `https://router.shengsuanyun.com/api/v1` |
 
-## 支持的方案 / Supported Plans
-
-| 方案 / Plan | 模型 / Models | 
-|-------------------------|-----------------------------| 
-| **精简计划 / ssy_cp_lite** | anthropic/claude-sonnet-4.5, anthropic/claude-haiku-4.5, glm-4.7, deepseek-v3.2, kimi-k2-thinking, kimi-k2.5 | 
-| **专业计划 / ssy_cp_pro** | openai/gpt-5.4, anthropic/claude-haiku-4.5, glm-4.7, kimi-k2-thinking, kimi-k2.5 | 
-| **企业计划 / ssy_cp_enterprise** | moonshot/kimi-k2.5, doubao-seed-code, glm-4.7, anthropic/claude-sonnet-4.6 |
-| **按量付费 / pay_as_you_go** | anthropic/claude-opus-4.6, anthropic/claude-opus-4.5, deepseek-v3.2 |
-
-💡 **自定义 API 端点** / **Custom API Endpoints**：除了预定义的方案，你还可以使用 `custom` 命令配置任意 API 端点（如 OpenAI、Anthropic Direct、Azure OpenAI、企业内部 API 等）。详见 [custom 命令文档](./docs/custom-api-usage.md)。
-
-Besides the predefined plans, you can also use the `custom` command to configure any API endpoint (OpenAI, Anthropic Direct, Azure OpenAI, enterprise APIs, etc.). See [custom command docs](./docs/custom-api-usage.md).
-
-## 环境要求 / Requirements
-
-- Node.js >= 18
-- Python >= 3.11（仅 Nanobot 需要 / only for Nanobot）
+模型会通过套餐端点的 `/models` 接口查询，并依据目标工具所需 API 自动校验。
 
 ## 安装 / Installation
+
+### npm
+
+已发布版本可继续使用原有安装命令：
 
 ```bash
 npm install -g @coohu/coding-helper
 ```
 
-## 快速开始 / Quick Start
+npm 包包含 Linux amd64、macOS amd64、macOS arm64 和 Windows amd64 二进制，并在运行时自动选择当前平台的版本。安装 npm 包需要 Node.js 18 或更高版本。
 
-运行交互式配置向导：/ Run the interactive setup wizard:
+### GitHub Release
+
+从 [GitHub Releases](https://github.com/shengsuan/coding-helper/releases) 下载与系统匹配的二进制文件，添加执行权限后运行：
+
+```bash
+chmod +x coding-helper-linux-amd64
+./coding-helper-linux-amd64 --help
+```
+
+### 从源码安装 / From source
+
+开发和源码构建需要 Go 1.26 或更高版本：
+
+```bash
+go install ./cmd/coding-helper
+coding-helper --help
+```
+
+也可以直接构建：
+
+```bash
+go build -o coding-helper ./cmd/coding-helper
+./coding-helper --help
+```
+
+## 快速开始 / Quick start
+
+先为套餐添加 API Key：
+
+```bash
+coding-helper cfg key add pay_as_you_go --key <api-key> --label h1
+```
+
+再将套餐（及可选指定标签的 Key）应用到工具：
+
+```bash
+coding-helper set codex pay_as_you_go
+coding-helper set codex pay_as_you_go h1
+```
+
+`set` 会检查目标工具是否已安装；若未安装，会执行该工具对应的安装命令。随后会查询可用模型，校验 API 兼容性，并写入工具配置。
+
+运行不带参数的命令可查看 Plan 列表和 Tool 列表：
 
 ```bash
 coding-helper
 ```
 
-首次运行时，向导将引导你完成以下步骤：/ On first run, the wizard guides you through:
+## 命令 / Commands
 
-1. 语言选择（中文 / English）/ Language selection
-2. 方案配置（胜算云 / Pro Plan API Key）/ Plan configuration
-3. 工具配置（将凭证加载到所选工具）/ Tool configuration
-
-## 使用方法 / Usage
-
-### 快速配置（推荐）/ Quick Setup (Recommended)
-
-如果你已经有 API Key，可以使用 `set` 命令一键完成配置：
-
-If you already have an API key, use the `set` command for one-step setup:
+### 总览与帮助 / Overview and help
 
 ```bash
-# 使用格式 / Usage format
-coding-helper set <tool_name> <plan_name>
-
-# 示例 / Examples
-coding-helper set codex ssy_cp_enterprise       # 配置 Codex 使用企业计划
-coding-helper set claude ssy_cp_pro        # 配置 Claude Code 使用专业计划
-coding-helper set openclaw ssy_cp_lite          # 配置 OpenClaw 使用精简计划
+coding-helper                 # 显示 Plan 列表、Tool 列表及帮助提示
+coding-helper -h               # 或 --help / help
+coding-helper -v               # 或 --version / version
+coding-helper -s               # 或 --show / show，显示 Plan + Tool 列表
+coding-helper -s plan          # 只显示 Plan 列表
+coding-helper -s tool          # 只显示 Tool 列表
 ```
 
-该命令会自动：/ This command will automatically:
-- ✅ 检查工具是否已安装（未安装则自动安装）/ Check if tool is installed (install if missing)
-- ✅ 验证 API Key 是否已配置 / Verify API key is configured
-- ✅ 将配置写入对应工具的配置文件 / Write config to the tool's config file
-- ✅ 配置合适的模型和端点 / Configure appropriate model and endpoint
-
-### 交互模式 / Interactive Mode
+### Plan 管理 / Plan management
 
 ```bash
-# 主菜单（默认）/ Main menu (default)
-coding-helper
+coding-helper cfg                  # 或 -c / --cfg，列出所有 Plan
+coding-helper cfg show <plan>      # 显示 Plan 详情（含 API Key 列表）
+coding-helper cfg add <plan> --base-url URL [--label L] [--model M]
+coding-helper cfg edit <plan> [--label L] [--base-url URL] [--model M]
+coding-helper cfg del <plan>
 
-# 首次初始化向导 / First-time setup wizard
-coding-helper init
-
-# 跳转到指定配置项 / Jump to a specific config section
-coding-helper enter lang
-coding-helper enter plan
-coding-helper enter apikey
-coding-helper enter opencode
-coding-helper enter picoclaw
-coding-helper enter codex
+coding-helper cfg key add <plan> --key K [--label L]
+coding-helper cfg key edit <plan> --key K [--new-key NK] [--label L]
+coding-helper cfg key del <plan> --key K
+coding-helper cfg key del <plan> --label L
 ```
 
-### 命令行 / CLI Commands
+未指定 `--label` 时，`cfg add` 会随机生成一个标签；`--model` 也是可选项。
+
+Tool 列表内置于程序中，不可通过 `cfg` 增删改，仅可通过 `show`/`cfg` 查询展示。
+
+### 配置工具 / Apply to tools
 
 ```bash
-# 快速配置 / Quick Setup
-coding-helper set codex ssy_cp_enterprise    # 快速配置 Codex 使用企业计划 / Quick setup Codex with Enterprise plan
-coding-helper set claude ssy_cp_pro     # 快速配置 Claude Code 使用专业计划 / Quick setup Claude Code with Pro plan
+coding-helper set <tool> <plan> [key_label]   # 将 Plan（及可选指定标签的 Key）写入工具自身配置文件
+coding-helper set <tool> del                  # 清除工具自身配置文件中由本程序写入的字段
+```
 
-# 自定义 API 配置 / Custom API Configuration
-coding-helper custom -url <base_url> -k <api_key> -m <model_id> [-t <tool>] [-label <label>]
+未指定 `key_label` 时，使用该 Plan 的第一个 API Key。
 
-# 示例 / Examples:
-# 配置 OpenAI API（只保存配置）/ Configure OpenAI API (save config only)
-coding-helper custom \
-  -url https://api.openai.com/v1 \
-  -k sk-your-key \
-  -m gpt-4
+### 快捷设置 / Quick setup
 
-# 配置并立即应用到工具 / Configure and apply to tool immediately
-coding-helper custom \
-  -url https://api.anthropic.com/v1 \
-  -k sk-ant-key \
-  -m claude-3-opus-20240229 \
-  -t codex \
-  -label my_anthropic
+为工具配置一个 Plan 中还没有的 baseurl/apikey；命令会在完成工具配置文件写入的同时，把新的 API Key 保存进 Plan（若 base_url 命中已有 Plan 则追加 Key，否则自动创建新 Plan）：
 
-# 配置企业内部 API / Configure enterprise API
-coding-helper custom \
-  -url https://api.company.com/v1 \
-  -k company-key \
-  -m custom-model \
-  -t aider
-
-# 语言 / Language
-coding-helper lang show              # 查看当前语言 / Show current language
-coding-helper lang set zh_CN         # 设为中文 / Set to Chinese
-coding-helper lang set en_US         # 设为英文 / Set to English
-
-# 认证 / Authentication
-coding-helper auth show                         # 查看认证状态 / Show auth status
-coding-helper auth ssy_cp_lite <token>         # 设置胜算云 API Key / Set Lite Plan API key
-coding-helper auth ssy_cp_pro <token>          # 设置 Pro Plan API Key / Set Pro Plan API key
-coding-helper auth ssy_cp_enterprise <token>   # 设置胜算云 API Key / Set Lite Plan API key
-coding-helper auth pay_as_you_go <token>        # 设置 Pro Plan API Key / Set Pro Plan API key
-coding-helper auth revoke ssy_cp_lite          # 撤销已保存的 API Key / Revoke a saved API key
-coding-helper auth reload opencode              # 重新加载配置到工具 / Reload config into a tool
-
-# 诊断 / Diagnostics
-coding-helper doctor                 # 健康检查 / Run health check
+```bash
+coding-helper set quick <tool> --base-url URL --api-key KEY [--label LABEL] [--model MODEL]
 ```
 
 ## 配置 / Configuration
 
-配置文件存储在 `~/.coding-helper/config.yaml`。每个工具的凭证会写入其自身的配置路径：
+主配置文件为可执行文件同目录下的 `config.json`，其中保存语言设置、Plan（含多个 API Key）以及内置的
+Tool 列表。文件以仅当前用户可读写的权限创建。
 
-Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentials written to its own config location:
+配置文件默认使用 AES-256-GCM 加密存储，加密密钥保存在操作系统原生安全存储中：macOS Keychain、
+Windows Credential Manager、Linux Secret Service（libsecret，如 gnome-keyring）。首次运行会自动生成
+随机密钥并写入系统密钥库，全程对用户透明，无需手动输入密码。Linux 上需要有可用的 Secret Service
+实现，否则无法读写配置文件。
 
-| 工具 / Tool | 配置路径 / Config Path |
-|-------------|----------------------|
-| Claude Code | `~/.claude/settings.json` |
-| OpenCode | `~/.config/opencode/opencode.json` |
-| OpenClaw | `~/.openclaw/openclaw.json` |
-| PicoClaw | `~/.picoclaw/config.json` |
-| Codex | `~/.codex/config.toml` |
-| Aider | `~/.aider.conf.yml` |
-| Hermes Agent | `~/.hermes/config.yaml` |
-| DeepSeek TUI | `~/.deepseek/config.toml` |
-| OpenCodeReview | `~/.opencodereview/config.json` |
-| Grok Build | `~/.grok/config.toml` |
+Coding Helper 会保留工具配置中的其他字段，只更新它管理的连接、模型和认证字段。请妥善保管 API Key，避免将本地配置文件提交到版本控制系统。
 
-### Grok Build 配置示例
+### 密码管理 / auth
 
-在 `~/.grok/config.toml` 中可配置：
-
-```toml
-[model.sheng-suan-yun]
-model = "anthropic/claude-sonnet-5"
-base_url = "https://router.shengsuanyun.com/api"
-name = "Claude Sonnet 5"
-env_key = "SHENGSUANYUN_API_KEY"
+```bash
+coding-helper -a                  # 或 --auth / auth，显示配置文件加密状态
+coding-helper auth set [password]     # 设置/启用自定义密码（不提供参数时交互式隐藏输入两次确认）
+coding-helper auth change [password]  # 修改密码，用法同 set
+coding-helper auth delete             # 删除密码，配置文件还原为明文
 ```
 
 ## 开发 / Development
 
 ```bash
-# 安装依赖 / Install dependencies
-npm install
-
-# 开发模式（自动重载）/ Dev mode (auto-reload)
-npm run dev
-
-# 构建 / Build
-npm run build
-
-# 运行构建产物 / Run built version
-npm start
+go test ./...
+go vet ./...
+make build
 ```
 
 ## 许可证 / License
 
 MIT
-
-感谢这些开发者的贡献：
-
-<p align="left">
-  <a href="https://www.volcengine.com/docs/82379/1928261?lang=zh">
-  Ark Helper
-  </a>
-</p>

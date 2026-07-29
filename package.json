@@ -1,74 +1,26 @@
 {
   "name": "@coohu/coding-helper",
-  "version": "1.8.1",
-  "publishConfig": {
-    "access": "public"
-  },
-  "description": "一款简化胜算云 API Key 配置的命令行工具。支持 Claude Code、OpenCode、Aider、PicoClaw、Codex, Hermes Agent 等多款主流 AI 编程助手",
-  "homepage": "https://shengsuanyun.com/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/shengsuan/coding-helper"
-  },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "Configure ShengSuanYun Coding Plan credentials for AI coding tools",
+  "license": "MIT",
   "bin": {
-    "coding-helper": "dist/cli.js"
+    "coding-helper": "bin/coding-helper.cjs"
   },
   "scripts": {
-    "build": "tsc && cp -r src/locales dist/ && chmod +x dist/cli.js",
-    "dev": "tsx watch src/cli.ts",
-    "start": "node dist/cli.js",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "clean": "rm -rf dist",
-    "preuninstall": "node -e \"import('./dist/lib/tea-tracker.js').then(m=>m.track('uninstall')).catch(()=>{})\"",
-    "prepublishOnly": "npm run clean && npm run build"
+    "postinstall": "node bin/install.cjs"
   },
-  "keywords": [
-    "cli",
-    "coding",
-    "helper",
-    "胜算云",
-    "ShengSuanYun",
-    "Claude",
-    "Claude code",
-    "Codex",
-    "Aider",
-    "openclaw",
-    "OpenCode",
-    "PicoClaw",
-    "Hermes Agent"
+  "files": [
+    "bin",
+    "package.json"
   ],
-  "author": {
-    "name": "coohu"
-  },
-  "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18"
   },
-  "dependencies": {
-    "@iarna/toml": "^2.2.5",
-    "@inquirer/prompts": "^8.3.0",
-    "@types/figlet": "^1.7.0",
-    "@types/gradient-string": "^1.1.6",
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0",
-    "figlet": "^1.10.0",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^9.2.12",
-    "js-yaml": "^4.1.1",
-    "ora": "^8.0.1",
-    "terminal-link": "^5.0.0",
-    "yaml": "^2.8.3"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shengsuan/coding-helper.git"
   },
-  "devDependencies": {
-    "@types/inquirer": "^9.0.7",
-    "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.10.0",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.0",
-    "vitest": "^4.0.18"
+  "publishConfig": {
+    "access": "public"
   }
 }

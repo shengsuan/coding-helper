@@ -1,5 +1,9 @@
-/node_modules
-/dist
+/bin/*
+!/bin/
+!/bin/coding-helper.cjs
+!/bin/install.cjs
+coverage.out
+*.tgz
 
 package-lock.json
 .DS_Store
