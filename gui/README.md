@@ -1,113 +1,50 @@
-# AI App Configurator - Architect Console
+# Coding Helper GUI
 
-一个基于 React + TypeScript + Tailwind CSS 的桌面应用，用于集中管理多个 AI 应用的配置。
+Coding Helper GUI 是 [Coding Helper](../README.md) 的 Tauri 桌面界面。它**不内置也不打包** CLI 核心、Go 二进制或 Node 运行时：GUI 通过调用已安装的 `coding-helper` 可执行文件工作。
 
-## 设计系统
+这意味着用户只需下载一次 CLI，随后可自由选择终端或 GUI；两者使用同一份配置、同一组 API Key 和同一套工具适配逻辑。
 
-本项目采用 "The Precision Dashboard" 设计系统，主要特点：
+## 使用
 
-### 颜色方案
-- **主色调**: Deep Slate & Electric Blue (#0040e0, #2e5bff)
-- **表面层次**: 通过背景色变化 (#faf8ff → #ffffff) 创建视觉层次
-- **无边框原则**: 使用背景色差异而非边框来分隔区域
+1. 先安装 CLI：
 
-### 字体
-- **标题**: Manrope - 用于大标题和数据展示
-- **正文**: Inter - 用于数据密集区域和标签
+   ```bash
+   npm install -g @coohu/coding-helper
+   # 或下载 GitHub Release 的 coding-helper 二进制
+   ```
 
-### 特色交互
-- **Haptic Hover**: 悬停时元素轻微上浮 (2px Y轴位移)
-- **渐变按钮**: 主要按钮使用渐变色 (primary → primary-container)
-- **毛玻璃效果**: 浮动元素使用 backdrop-blur
+2. 安装并启动 GUI：
 
-## 项目结构
+   ```bash
+   pnpm install
+   pnpm dev:app
+   ```
 
-```
-src/
-├── App.tsx                          # 主应用组件，路由控制
-├── main.tsx                         # 应用入口
-├── main.css                         # 全局样式和设计系统变量
-└── components/
-    ├── Layout.tsx                   # 布局组件（侧边栏 + 顶栏）
-    ├── Dashboard.tsx                # 应用列表页面（主页）
-    ├── EditConfiguration.tsx        # 应用配置编辑页面
-    ├── GlobalApiKeys.tsx           # API 密钥管理页面
-    └── UsageAnalytics.tsx          # 使用分析页面
-```
+GUI 会先查找 `CODING_HELPER_PATH`，再在开发环境中使用仓库的 `../bin/coding-helper`，最后从 `PATH` 查找 `coding-helper`。
 
-## 功能页面
-
-### 1. Dashboard (主页)
-- 展示 10 个 AI 应用的状态
-- 卡片式布局，区分已连接/未配置状态
-- 支持快速配置入口
-
-### 2. Edit Configuration
-- 编辑应用的 Provider 配置
-- API Key 管理（加密显示）
-- 模型选择
-- 系统健康监控
-
-### 3. Global API Keys
-- 统一管理所有 Provider 的 API 密钥
-- 表格展示密钥状态和使用情况
-- 安全提示和操作日志导出
-
-### 4. Usage Analytics
-- 可视化展示 API 使用量
-- 柱状图展示各应用的 Token 消耗
-- 成本估算和效率评分
-- 应用性能详细表格
-
-## 开发命令
+如果 CLI 不在 `PATH`，可显式指定：
 
 ```bash
-# 安装依赖
-pnpm install
+CODING_HELPER_PATH=/absolute/path/to/coding-helper pnpm dev:app
+```
 
-# 启动开发服务器
-pnpm dev
+## 开发
 
-# 构建生产版本
+```bash
+# 构建前端
 pnpm build
 
-# 构建 macOS 应用
+# 启动 Tauri 开发应用（需要先构建根目录 CLI）
+cd .. && make build
+cd gui && pnpm dev:app
+
+# 构建 macOS GUI 应用；产物不包含 coding-helper
 pnpm mac
 ```
 
-## 技术栈
+## 架构
 
-- **React 19** - UI 框架
-- **TypeScript** - 类型安全
-- **Tailwind CSS 4** - 样式系统
-- **Vite** - 构建工具
-- **Tauri** - 桌面应用框架
-
-## 设计原则
-
-1. **最小化边框**: 使用背景色层次创建视觉结构
-2. **响应式交互**: 所有可交互元素都有悬停和点击反馈
-3. **一致性**: 遵循统一的间距、圆角和颜色系统
-4. **可访问性**: 保持高对比度和清晰的视觉层次
-
-## Material Symbols 图标
-
-项目使用 Google Material Symbols 图标字体，通过 CSS 自动加载。使用方式：
-
-```tsx
-<span className="material-symbols-outlined">icon_name</span>
-```
-
-## 浏览器支持
-
-- Chrome/Edge (最新版)
-- Firefox (最新版)
-- Safari (最新版)
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-
-## License
-
-MIT
+- React 前端通过 Tauri `invoke` 调用 Rust 后端。
+- Rust 后端执行 `coding-helper gui '<JSON request>'`。
+- Go CLI 提供内部 JSON bridge，复用 CLI 的 `Settings`、模型查询和工具配置代码。
+- GUI bundle 仅包含前端资源与 Tauri 壳；它不会重复下载或携带 `coding-helper`、Node、旧的 `bridge.mjs`。

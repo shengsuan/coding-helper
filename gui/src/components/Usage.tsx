@@ -44,7 +44,6 @@ const apps = [
 export default function Usage() {
   return (
     <div className="p-10 space-y-10">
-      {/* Header Section */}
       <section className="flex justify-between items-end">
         <div>
           <h2 className="font-headline font-extrabold text-4xl text-on-surface tracking-tight">
@@ -70,9 +69,7 @@ export default function Usage() {
         </div>
       </section>
 
-      {/* Usage Charts */}
       <div className="grid grid-cols-12 gap-6">
-        {/* Main Bar Chart Card */}
         <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 shadow-sm">
           <div className="flex justify-between items-start mb-12">
             <div>
@@ -87,13 +84,11 @@ export default function Usage() {
             </div>
           </div>
 
-          {/* Bar Chart */}
           <div className="flex items-end justify-between h-64 gap-2 px-4">
             {[45, 65, 30, 90, 55, 75, 40, 25, 60, 80].map((height, index) => (
               <div key={index} className="flex flex-col items-center gap-3 w-full group">
-                <div
+                <div style={{ height: `${height}%` }}
                   className={`w-full bg-primary-container rounded-t-lg transition-all duration-500 group-hover:bg-primary`}
-                  style={{ height: `${height}%` }}
                 ></div>
                 <span className="text-[10px] font-bold text-on-surface-variant opacity-60 group-hover:opacity-100 uppercase">
                   App {String(index + 1).padStart(2, '0')}
@@ -103,7 +98,6 @@ export default function Usage() {
           </div>
         </div>
 
-        {/* Snapshot Stats Card */}
         <div className="col-span-12 lg:col-span-4 grid grid-rows-2 gap-6">
           <div className="bg-primary rounded-xl p-6 text-white relative overflow-hidden flex flex-col justify-between shadow-lg shadow-primary/20">
             <div className="z-10">
@@ -142,7 +136,6 @@ export default function Usage() {
         </div>
       </div>
 
-      {/* App Usage List */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="font-headline font-bold text-2xl text-on-surface">
@@ -160,7 +153,6 @@ export default function Usage() {
           </div>
         </div>
 
-        {/* Table Header */}
         <div className="grid grid-cols-12 px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest bg-surface-container/30 rounded-t-xl">
           <div className="col-span-4">Application Name</div>
           <div className="col-span-2 text-center">Status</div>
@@ -169,11 +161,9 @@ export default function Usage() {
           <div className="col-span-2 text-right">Mthly Cost</div>
         </div>
 
-        {/* App Rows */}
         <div className="divide-y divide-outline-variant/10 bg-surface-container-lowest rounded-b-xl shadow-sm border border-outline-variant/5">
           {apps.map((app) => (
-            <div
-              key={app.id}
+            <div key={app.id}
               className="grid grid-cols-12 px-6 py-5 items-center hover:bg-surface-container-highest transition-colors group"
             >
               <div className="col-span-4 flex items-center gap-4">
@@ -187,8 +177,7 @@ export default function Usage() {
                 </div>
               </div>
               <div className="col-span-2 flex justify-center">
-                <span
-                  className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
+                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
                     app.status === 'Optimal'
                       ? 'bg-emerald-100 text-emerald-700'
                       : 'bg-amber-100 text-amber-700'

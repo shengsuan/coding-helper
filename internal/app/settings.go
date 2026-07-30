@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 
 	"github.com/99designs/keyring"
+	"github.com/shengsuan/coding-helper/internal/tool"
 )
 
 var configMagic = []byte("CHENC1")
@@ -67,17 +68,19 @@ func decryptJSON(secret string, salt, sealed []byte) ([]byte, error) {
 
 type Settings struct {
 	path      string
-	home      string
+	catalog   *tool.Registry
 	data      Config
 	encrypted bool
 	salt      []byte
 }
 
-func NewSettings(configDir, home string) (*Settings, error) {
+// NewSettings receives the catalog instead of constructing built-in tools.
+// This ensures persisted display metadata and Integration use the same source.
+func NewSettings(configDir string, catalog *tool.Registry) (*Settings, error) {
 	s := &Settings{
 		path:      filepath.Join(configDir, "config.json"),
-		home:      home,
-		data:      Config{Lang: "zh_CN", Plans: map[string]Plan{}, Tools: map[string]Tool{}},
+		catalog:   catalog,
+		data:      Config{Lang: "zh_CN", Plans: map[string]Plan{}, Tools: map[string]Tool{}, ToolPlans: map[string]string{}},
 		encrypted: true,
 	}
 	b, err := os.ReadFile(s.path)
@@ -119,6 +122,9 @@ func NewSettings(configDir, home string) (*Settings, error) {
 	}
 	if s.data.Plans == nil {
 		s.data.Plans = map[string]Plan{}
+	}
+	if s.data.ToolPlans == nil {
+		s.data.ToolPlans = map[string]string{}
 	}
 	s.patch()
 	return s, nil
@@ -205,13 +211,80 @@ func (s *Settings) patch() {
 			s.data.Plans[id] = p
 		}
 	}
-	s.data.Tools = DefaultTools(s.home)
+	tools := make(map[string]Tool, len(s.catalog.Descriptors()))
+	for _, d := range s.catalog.Descriptors() {
+		tools[string(d.ID)] = Tool{Name: string(d.ID), Command: d.Command, InstallCommand: d.Installer.Display, ConfigPath: d.ConfigPath, DisplayName: d.DisplayName, Runtime: d.Runtime}
+	}
+	s.data.Tools = tools
 }
 
 func (s *Settings) Plans() map[string]Plan { return s.data.Plans }
 func (s *Settings) PlanIDs() []string      { return sortedKeys(s.data.Plans) }
 func (s *Settings) Tools() map[string]Tool { return s.data.Tools }
 func (s *Settings) ToolIDs() []string      { return sortedKeys(s.data.Tools) }
+func (s *Settings) Lang() string           { return s.data.Lang }
+
+// CurrentPlan returns the plan recorded for a tool in coding-helper's own
+// config.json. It deliberately does not inspect the target tool's config file:
+// those file formats belong to third parties and may change independently.
+func (s *Settings) CurrentPlan(toolName string) string {
+	return s.data.ToolPlans[toolName]
+}
+
+func (s *Settings) SetToolPlan(toolName, planID string) error {
+	if s.data.ToolPlans == nil {
+		s.data.ToolPlans = map[string]string{}
+	}
+	if _, ok := s.data.Tools[toolName]; !ok {
+		return fmt.Errorf("未知工具：%s", toolName)
+	}
+	if _, ok := s.data.Plans[planID]; !ok {
+		return fmt.Errorf("未知套餐：%s", planID)
+	}
+	s.data.ToolPlans[toolName] = planID
+	return s.Save()
+}
+
+func (s *Settings) ClearToolPlan(toolName string) error {
+	if s.data.ToolPlans == nil {
+		return nil
+	}
+	delete(s.data.ToolPlans, toolName)
+	return s.Save()
+}
+
+func (s *Settings) SetLang(lang string) error {
+	s.data.Lang = lang
+	return s.Save()
+}
+
+// UpsertPrimaryKey replaces the first API key for a plan, or appends one when
+// the plan has no keys yet. The GUI exposes a single-key editor; multi-key
+// management stays on the CLI (`cfg key …`).
+func (s *Settings) UpsertPrimaryKey(planID, key string) error {
+	p, ok := s.data.Plans[planID]
+	if !ok {
+		return fmt.Errorf("未知套餐：%s", planID)
+	}
+	if len(p.APIKey) == 0 {
+		p.APIKey = []ApiKey{{Key: key}}
+	} else {
+		p.APIKey[0].Key = key
+	}
+	s.data.Plans[planID] = p
+	return s.Save()
+}
+
+// ClearKeys removes every API key stored for the given plan.
+func (s *Settings) ClearKeys(planID string) error {
+	p, ok := s.data.Plans[planID]
+	if !ok {
+		return fmt.Errorf("未知套餐：%s", planID)
+	}
+	p.APIKey = []ApiKey{}
+	s.data.Plans[planID] = p
+	return s.Save()
+}
 
 func (s *Settings) GetPlan(id string) (Plan, bool) {
 	p, ok := s.data.Plans[id]
@@ -252,6 +325,11 @@ func (s *Settings) DeletePlan(id string) error {
 		return fmt.Errorf("未知套餐：%s", id)
 	}
 	delete(s.data.Plans, id)
+	for toolName, planID := range s.data.ToolPlans {
+		if planID == id {
+			delete(s.data.ToolPlans, toolName)
+		}
+	}
 	return s.Save()
 }
 

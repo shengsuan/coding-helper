@@ -69,3 +69,16 @@
 body {
   font-family: var(--font-body);
 }
+
+.input {
+  width: 100%;
+  background: var(--color-surface-container-low);
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  color: var(--color-on-surface);
+}
+
+.input:focus {
+  outline: 2px solid var(--color-primary);
+}

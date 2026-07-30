@@ -8,8 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "clean": "rm -rf src-tauri/target",
-    "mac": "tauri build --bundles app"
+    "clean": "rm -rf src-tauri/target dist",
+    "mac": "tauri build --bundles app",
+    "dev:app": "tauri dev"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

@@ -2,6 +2,7 @@ package app
 
 import (
 	"bufio"
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
@@ -14,16 +15,18 @@ import (
 	"strings"
 
 	"github.com/99designs/keyring"
+	"github.com/shengsuan/coding-helper/internal/models"
+	"github.com/shengsuan/coding-helper/internal/tool"
 )
 
 const version = "1.8.1"
 
 type Application struct {
-	settings     *Settings
-	integrations *Integration
-	in           *bufio.Reader
-	out          io.Writer
-	home         string
+	settings *Settings
+	tools    *tool.Service
+	in       *bufio.Reader
+	out      io.Writer
+	home     string
 }
 
 func Run(args []string, in io.Reader, out io.Writer) error {
@@ -39,11 +42,16 @@ func Run(args []string, in io.Reader, out io.Writer) error {
 		exe = resolved
 	}
 	configDir := filepath.Dir(exe)
-	s, err := NewSettings(configDir, home)
+	registry, err := DefaultTools(home)
+	if err != nil {
+		return err
+	}
+	s, err := NewSettings(configDir, registry)
 	if err != nil {
 		return fmt.Errorf("读取配置失败：%w", err)
 	}
-	a := &Application{settings: s, integrations: NewIntegration(home), in: bufio.NewReader(in), out: out, home: home}
+	resolver := models.ModelResolver{Client: models.NewClient(nil)}
+	a := &Application{settings: s, tools: tool.NewService(registry, resolver), in: bufio.NewReader(in), out: out, home: home}
 	return a.run(args)
 }
 
@@ -66,6 +74,10 @@ func (a *Application) run(args []string) error {
 		return a.set(args[1:])
 	case "-a", "--auth", "auth":
 		return a.auth(args[1:])
+	case "gui":
+		// Machine-readable bridge for the desktop GUI. Not listed in help
+		// because end users should use the human CLI commands instead.
+		return a.gui(args[1:])
 	default:
 		return fmt.Errorf("未知命令：%s", args[0])
 	}
@@ -148,7 +160,7 @@ func (a *Application) printTools() {
 	for _, id := range a.settings.ToolIDs() {
 		t := a.settings.Tools()[id]
 		state := "未安装"
-		if a.integrations.Installed(id) {
+		if a.tools.Installed(tool.ToolID(id)) {
 			state = "已安装"
 		}
 		fmt.Fprintf(a.out, "  %s  (%s)  %s\n", id, t.DisplayName, state)
@@ -324,7 +336,10 @@ func (a *Application) set(args []string) error {
 	}
 	toolName := args[0]
 	if args[1] == "del" {
-		if err := a.integrations.Clear(toolName); err != nil {
+		if err := a.tools.Clear(context.Background(), tool.ToolID(toolName)); err != nil {
+			return err
+		}
+		if err := a.settings.ClearToolPlan(toolName); err != nil {
 			return err
 		}
 		fmt.Fprintf(a.out, "✓ 已清除 %s 的配置\n", toolName)
@@ -350,25 +365,28 @@ func (a *Application) applyPlan(toolName, planID, keyLabel, preferredModel strin
 		}
 		return fmt.Errorf("套餐 %s 中未找到标签为 %s 的 API 密钥", planID, keyLabel)
 	}
-	tool, ok := a.settings.Tools()[toolName]
+	descriptor, ok := a.settings.Tools()[toolName]
 	if !ok {
 		return fmt.Errorf("未知工具：%s", toolName)
 	}
-	if !a.integrations.Installed(toolName) {
-		fmt.Fprintf(a.out, "%s 尚未安装，正在执行：%s\n", tool.DisplayName, tool.InstallCommand)
-		if err := a.integrations.Install(toolName); err != nil {
-			return fmt.Errorf("安装 %s 失败：%w", tool.DisplayName, err)
+	if !a.tools.Installed(tool.ToolID(toolName)) {
+		fmt.Fprintf(a.out, "%s 尚未安装，正在执行：%s\n", descriptor.DisplayName, descriptor.InstallCommand)
+		if err := a.tools.Install(context.Background(), tool.ToolID(toolName)); err != nil {
+			return fmt.Errorf("安装 %s 失败：%w", descriptor.DisplayName, err)
 		}
 	}
 	model := preferredModel
 	if model == "" {
 		model = plan.Model
 	}
-	fmt.Fprintf(a.out, "正在配置 %s…\n", tool.DisplayName)
-	if err := a.integrations.Configure(toolName, planID, plan, key.Key, model); err != nil {
+	fmt.Fprintf(a.out, "正在配置 %s…\n", descriptor.DisplayName)
+	if err := a.tools.Apply(context.Background(), tool.ToolID(toolName), planID, plan, key.Key, model); err != nil {
 		return err
 	}
-	fmt.Fprintf(a.out, "✓ 已将 %s 配置为使用 %s\n", tool.DisplayName, plan.Label)
+	if err := a.settings.SetToolPlan(toolName, planID); err != nil {
+		return fmt.Errorf("已写入 %s 配置，但无法保存套餐映射：%w", descriptor.DisplayName, err)
+	}
+	fmt.Fprintf(a.out, "✓ 已将 %s 配置为使用 %s\n", descriptor.DisplayName, plan.Label)
 	return nil
 }
 
@@ -483,6 +501,13 @@ func maskKey(key string) string {
 		return "未配置"
 	}
 	return key
+}
+
+func shortModel(v string) string {
+	if p := strings.LastIndex(v, "/"); p >= 0 {
+		return v[p+1:]
+	}
+	return v
 }
 
 func parseFlags(args []string) (map[string]string, error) {
