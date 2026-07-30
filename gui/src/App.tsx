@@ -96,8 +96,7 @@ function App() {
     }
   };
   const selected = overview.tools.find((tool) => tool.name === selectedTool) || null;
-  const page =
-    currentPage === "dashboard" ? (
+  const page = currentPage === "dashboard" ? (
       <Dashboard tools={overview.tools} plans={overview.plans} loading={loading} t={t}
         onConfigureTool={configureTool}
         onNavigateTools={() => setCurrentPage("tools")}
@@ -119,10 +118,7 @@ function App() {
   return (
     <Layout currentPage={currentPage} language={language} t={t} user={user} onNavigate={setCurrentPage}
       onLanguageChange={(nextLanguage) => void changeLanguage(nextLanguage)}
-      onLogout={() => {
-        logout();
-        setUser(null);
-      }}
+      onLogout={() => {logout();setUser(null);}}
     >
       {error && (
         <div className="mx-8 mt-6 p-4 bg-error-container text-error rounded-lg">

@@ -24,8 +24,7 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
             {t("dashboardDescription")}
           </p>
         </div>
-        <button
-          onClick={onNavigateTools}
+        <button onClick={onNavigateTools}
           className="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-sm">settings</span>
@@ -52,8 +51,7 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
           tools.map((tool) => {
             const plan = plans.find((item) => item.id === tool.configuredPlan);
             return (
-              <div
-                key={tool.name}
+              <div key={tool.name}
                 className="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-primary-container/20 hover:shadow-[0_12px_40px_rgba(19,27,46,0.06)] transition-all duration-300"
               >
                 <div className="flex justify-between gap-3">
@@ -79,8 +77,7 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
                     <span className="text-on-surface-variant">
                       {t("configuration")}
                     </span>
-                    <span
-                      className={
+                    <span className={
                         plan
                           ? "font-semibold text-primary"
                           : "font-medium text-outline"
@@ -96,8 +93,7 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
                     <span className="font-semibold">{tool.runtime}</span>
                   </div>
                 </div>
-                <button
-                  onClick={() => onConfigureTool(tool.name)}
+                <button onClick={() => onConfigureTool(tool.name)}
                   className="w-full font-bold py-2.5 rounded-lg bg-surface-container-low text-primary hover:bg-primary hover:text-white transition-all"
                 >
                   {plan ? t("changeConfiguration") : t("configure")}

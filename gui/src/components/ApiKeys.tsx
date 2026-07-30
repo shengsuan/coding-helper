@@ -116,9 +116,7 @@ export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }:
                         : "text-on-surface-variant font-semibold text-xs"
                     }
                   >
-                    {plan.apiKeyConfigured
-                      ? t("configured")
-                      : t("notConfigured")}
+                    {plan.apiKeyConfigured? t("configured"): t("notConfigured")}
                   </span>
                 </td>
                 <td className="px-8 py-5 text-sm">
@@ -159,11 +157,7 @@ export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }:
   );
 }
 
-function Stat({
-  icon,
-  label,
-  value,
-}: {
+function Stat({ icon, label, value }: {
   icon: string;
   label: string;
   value: string | number;

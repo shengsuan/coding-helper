@@ -33,8 +33,7 @@ export default function Config({
     setModel(plan?.model || "");
     setApiKey("");
     if (!planId) return;
-    core
-      .models(planId)
+    core.models(planId)
       .then((items) => setModels(items.map((item) => item.id)))
       .catch(() => setModels([]));
   }, [planId, plan?.model]);

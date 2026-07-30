@@ -10,13 +10,7 @@ interface ToolsProps {
   onConfigure: (name: string) => void;
 }
 
-export default function Tools({
-  tools,
-  plans,
-  t,
-  onChanged,
-  onConfigure,
-}: ToolsProps) {
+export default function Tools({ tools, plans, t, onChanged, onConfigure }: ToolsProps) {
   const [message, setMessage] = useState("");
   const remove = async (tool: Tool) => {
     try {
@@ -40,8 +34,7 @@ export default function Tools({
         {tools.map((tool) => {
           const plan = plans.find((item) => item.id === tool.configuredPlan);
           return (
-            <div
-              key={tool.name}
+            <div key={tool.name}
               className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/10"
             >
               <div className="flex justify-between gap-4">
@@ -51,8 +44,7 @@ export default function Tools({
                     {tool.command}
                   </p>
                 </div>
-                <span
-                  className={
+                <span className={
                     tool.installed
                       ? "text-emerald-600 font-semibold text-sm"
                       : "text-tertiary font-semibold text-sm"
@@ -79,15 +71,13 @@ export default function Tools({
                 )}
               </div>
               <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => onConfigure(tool.name)}
+                <button onClick={() => onConfigure(tool.name)}
                   className="bg-primary text-white font-bold px-4 py-2 rounded-lg"
                 >
                   {t("configure")}
                 </button>
                 {tool.configuredPlan && (
-                  <button
-                    onClick={() => remove(tool)}
+                  <button onClick={() => remove(tool)}
                     className="text-tertiary font-bold px-4 py-2"
                   >
                     {t("removeConfiguration")}

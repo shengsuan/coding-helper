@@ -69,31 +69,20 @@ export default function Auth({ t, onLogin, onRegister }: AuthProps) {
             <form onSubmit={submit} className="mt-8 space-y-5">
               {mode === "register" && (
                 <Field label={t("displayName")}>
-                  <input
-                    className="input"
-                    required
-                    value={name}
+                  <input className="input" required value={name}
                     onChange={(event) => setName(event.target.value)}
                     placeholder={t("displayName")}
                   />
                 </Field>
               )}
               <Field label={t("email")}>
-                <input
-                  className="input"
-                  required
-                  type="email"
-                  value={email}
+                <input className="input" required type="email" value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="name@example.com"
                 />
               </Field>
               <Field label={t("password")}>
-                <input
-                  className="input"
-                  required
-                  minLength={6}
-                  type="password"
+                <input className="input" required minLength={6} type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="••••••••"
@@ -101,11 +90,7 @@ export default function Auth({ t, onLogin, onRegister }: AuthProps) {
               </Field>
               {mode === "register" && (
                 <Field label={t("confirmPassword")}>
-                  <input
-                    className="input"
-                    required
-                    minLength={6}
-                    type="password"
+                  <input className="input" required minLength={6} type="password"
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     placeholder="••••••••"
@@ -113,18 +98,15 @@ export default function Auth({ t, onLogin, onRegister }: AuthProps) {
                 </Field>
               )}
               {error && <p className="text-error text-sm">{error}</p>}
-              <button
+              <button type="submit"
                 className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:shadow-lg transition-all"
-                type="submit"
               >
                 {mode === "login" ? t("signIn") : t("createAccount")}
               </button>
             </form>
             <p className="mt-7 text-sm text-on-surface-variant">
               {mode === "login" ? t("noAccount") : t("hasAccount")}{" "}
-              <button
-                onClick={toggle}
-                type="button"
+              <button onClick={toggle} type="button"
                 className="text-primary font-bold hover:underline"
               >
                 {mode === "login" ? t("register") : t("signIn")}

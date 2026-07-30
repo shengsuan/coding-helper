@@ -24,14 +24,8 @@ export default function Layout({
   onLanguageChange,
   onLogout,
 }: LayoutProps) {
-  const navClass = (page: Page) =>
-    `w-full flex items-center gap-3 ${currentPage === page || (page === "dashboard" && currentPage === "edit") ? "text-[#2E5BFF] dark:text-white font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff] dark:bg-slate-800" : "text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800"} transition-all duration-300 hover:translate-x-1`;
-  const initials = user.name
-    .split(/\s+/)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const navClass = (page: Page) => `w-full flex items-center gap-3 ${currentPage === page || (page === "dashboard" && currentPage === "edit") ? "text-[#2E5BFF] dark:text-white font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff] dark:bg-slate-800" : "text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800"} transition-all duration-300 hover:translate-x-1`;
+  const initials = user.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div className="bg-surface font-body text-on-surface antialiased">
       <aside className="h-screen w-64 fixed left-0 top-0 z-50 bg-[#f2f3ff] dark:bg-slate-900 flex flex-col py-6">
@@ -44,50 +38,15 @@ export default function Layout({
           </p>
         </div>
         <nav className="flex-1 space-y-1">
-          <Nav
-            icon="dashboard"
-            label={t("dashboard")}
-            page="dashboard"
-            className={navClass("dashboard")}
-            onNavigate={onNavigate}
-          />
-          <Nav
-            icon="neurology"
-            label={t("models")}
-            page="models"
-            className={navClass("models")}
-            onNavigate={onNavigate}
-          />
-          <Nav
-            icon="rocket_launch"
-            label={t("tools")}
-            page="tools"
-            className={navClass("tools")}
-            onNavigate={onNavigate}
-          />
-          <Nav
-            icon="key"
-            label={t("apiKeys")}
-            page="api-keys"
-            className={navClass("api-keys")}
-            onNavigate={onNavigate}
-          />
+          <Nav icon="dashboard" label={t("dashboard")} page="dashboard" className={navClass("dashboard")} onNavigate={onNavigate}/>
+          {/* <Nav icon="neurology" label={t("models")} page="models" className={navClass("models")} onNavigate={onNavigate}/> */}
+          <Nav icon="rocket_launch" label={t("tools")} page="tools" className={navClass("tools")} onNavigate={onNavigate}/>
+          <Nav icon="key" label={t("apiKeys")} page="api-keys" className={navClass("api-keys")} onNavigate={onNavigate}/>
         </nav>
         <div className="px-4 mt-auto space-y-5">
-          <button
-            onClick={() => onNavigate("tools")}
-            className="w-full bg-[linear-gradient(135deg,#0040e0_0%,#2e5bff_100%)] text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-sm">add</span>
-            {t("newTool")}
-          </button>
+
           <div className="pt-5 border-t border-outline-variant/10">
-            <label className="block px-5 text-xs font-semibold text-on-surface-variant mb-2">
-              {t("language")}
-            </label>
-            <select
-              value={language}
-              onChange={(event) =>
+            <select value={language} onChange={(event) =>
                 onLanguageChange(event.target.value as Language)
               }
               className="w-full bg-surface-container-low rounded-lg px-3 py-2 text-sm"
@@ -96,8 +55,7 @@ export default function Layout({
               <option value="en_US">English</option>
             </select>
           </div>
-          <button
-            onClick={onLogout}
+          <button onClick={onLogout}
             className="w-full flex items-center gap-3 text-[#434656] dark:text-slate-400 px-3 py-2 hover:bg-[#eaedff] rounded-lg"
           >
             <span className="material-symbols-outlined">logout</span>
@@ -111,10 +69,8 @@ export default function Layout({
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">
               search
             </span>
-            <input
-              placeholder={t("search")}
+            <input placeholder={t("search")} type="text"
               className="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary text-sm font-medium"
-              type="text"
             />
           </div>
           <div className="flex items-center gap-5">
