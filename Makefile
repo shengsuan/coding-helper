@@ -1,4 +1,4 @@
-BIN := bin/coding-helper
+BIN := bin/ch
 
 .PHONY: build test vet clean npm-package npm-publish
 

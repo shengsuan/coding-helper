@@ -40,6 +40,7 @@ type guiToolView struct {
 	Runtime        string  `json:"runtime"`
 	Installed      bool    `json:"installed"`
 	ConfiguredPlan *string `json:"configuredPlan"`
+	ConfiguredKey  *string `json:"configuredKey"`
 }
 
 type guiOverview struct {
@@ -125,6 +126,10 @@ func (a *Application) guiTools() []guiToolView {
 		if current := a.settings.CurrentPlan(id); current != "" {
 			plan = &current
 		}
+		var keyLabel *string
+		if current := a.settings.CurrentKeyLabel(id); current != "" {
+			keyLabel = &current
+		}
 		out = append(out, guiToolView{
 			Name:           t.Name,
 			Command:        t.Command,
@@ -134,6 +139,7 @@ func (a *Application) guiTools() []guiToolView {
 			Runtime:        t.Runtime,
 			Installed:      a.tools.Installed(tool.ToolID(id)),
 			ConfiguredPlan: plan,
+			ConfiguredKey:  keyLabel,
 		})
 	}
 	return out

@@ -27,7 +27,7 @@ func (a *Adapter) Requirements() tool.Requirements {
 	switch a.Kind {
 	case "claude", "opencodereview":
 		p = models.ProtocolAnthropic
-	case "codex", "grok-build":
+	case "codex", "grok":
 		p = models.ProtocolOpenAIResponses
 	case "opencode", "openclaw":
 		all = true
@@ -174,7 +174,7 @@ func (a *Adapter) Apply(_ context.Context, r tool.ApplyRequest) error {
 		}
 		c["llm"] = map[string]any{"url": strings.TrimRight(p.BaseURL, "/") + "/v1/messages", "auth_token": r.APIKey, "model": m, "use_anthropic": true}
 		return j.Save(path, c)
-	case "grok-build":
+	case "grok":
 		c, e := t.Load(path)
 		if e != nil {
 			return e
@@ -286,7 +286,7 @@ func (a *Adapter) Clear(_ context.Context) error {
 			c["agents"] = ag
 			return j.Save(path, c)
 		}
-	case "grok-build":
+	case "grok":
 		c, e = t.Load(path)
 		if e == nil {
 			providers := obj(c["model"])

@@ -21,6 +21,7 @@ export interface Tool {
   minPythonVersion?: string;
   installed: boolean;
   configuredPlan: string | null;
+  configuredKey: string | null;
 }
 
 export interface Overview {

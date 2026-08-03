@@ -86,6 +86,16 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
                       {plan?.name_zh || t("notConfigured")}
                     </span>
                   </div>
+                  {plan && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-on-surface-variant">
+                        {t("keyLabel")}
+                      </span>
+                      <span className="font-semibold">
+                        {tool.configuredKey || t("notConfigured")}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between gap-2">
                     <span className="text-on-surface-variant">
                       {t("runtime")}

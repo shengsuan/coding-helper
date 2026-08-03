@@ -19,7 +19,7 @@ import (
 	"github.com/shengsuan/coding-helper/internal/tool"
 )
 
-const version = "1.8.1"
+const version = "v1.8.1"
 
 type Application struct {
 	settings *Settings
@@ -120,7 +120,7 @@ func (a *Application) help() {
 }
 
 func (a *Application) overview() error {
-	fmt.Fprintln(a.out, "Coding Helper")
+	fmt.Fprintln(a.out, "Coding Helper", version)
 	a.printPlans()
 	fmt.Fprintln(a.out)
 	a.printTools()
@@ -163,8 +163,36 @@ func (a *Application) printTools() {
 		if a.tools.Installed(tool.ToolID(id)) {
 			state = "已安装"
 		}
-		fmt.Fprintf(a.out, "  %s  (%s)  %s\n", id, t.DisplayName, state)
+		config := "未配置"
+		if planID := a.settings.CurrentPlan(id); planID != "" {
+			if p, ok := a.settings.GetPlan(planID); ok {
+				label := a.settings.CurrentKeyLabel(id)
+				if label == "" {
+					label = firstKeyLabel(p)
+				}
+				if len(p.APIKey) > 0 {
+					config = fmt.Sprintf("已配置: plan=%s key=%s", planID, labelOrNone(label))
+				} else {
+					config = fmt.Sprintf("已配置: plan=%s key=未配置", planID)
+				}
+			}
+		}
+		fmt.Fprintf(a.out, "  %s  (%s)  %s  %s\n", id, t.DisplayName, state, config)
 	}
+}
+
+func firstKeyLabel(p Plan) string {
+	if len(p.APIKey) > 0 {
+		return p.APIKey[0].Label
+	}
+	return ""
+}
+
+func labelOrNone(label string) string {
+	if label == "" {
+		return "(默认)"
+	}
+	return label
 }
 
 func (a *Application) cfg(args []string) error {
@@ -383,7 +411,7 @@ func (a *Application) applyPlan(toolName, planID, keyLabel, preferredModel strin
 	if err := a.tools.Apply(context.Background(), tool.ToolID(toolName), planID, plan, key.Key, model); err != nil {
 		return err
 	}
-	if err := a.settings.SetToolPlan(toolName, planID); err != nil {
+	if err := a.settings.SetToolPlan(toolName, planID, keyLabel); err != nil {
 		return fmt.Errorf("已写入 %s 配置，但无法保存套餐映射：%w", descriptor.DisplayName, err)
 	}
 	fmt.Fprintf(a.out, "✓ 已将 %s 配置为使用 %s\n", descriptor.DisplayName, plan.Label)

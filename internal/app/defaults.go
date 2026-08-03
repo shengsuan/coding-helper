@@ -21,7 +21,7 @@ func DefaultTools(home string) (*tool.Registry, error) {
 		d("hermes", "curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash", "hermes", "Hermes Agent", "python", filepath.Join(home, ".hermes", "config.yaml"), "curl", "-fsSL", "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh"),
 		d("deepseek", "npm install -g deepseek-tui", "deepseek", "DeepSeek TUI", "rust", filepath.Join(home, ".deepseek", "config.toml"), "npm", "install", "-g", "deepseek-tui"),
 		d("opencodereview", "npm install -g @alibaba-group/open-code-review", "ocr", "OpenCodeReview", "go", filepath.Join(home, ".opencodereview", "config.json"), "npm", "install", "-g", "@alibaba-group/open-code-review"),
-		d("grok-build", "curl -fsSL https://x.ai/cli/install.sh | bash", "grok", "Grok Build", "rust", filepath.Join(home, ".grok", "config.toml"), "curl", "-fsSL", "https://x.ai/cli/install.sh")}
+		d("grok", "curl -fsSL https://x.ai/cli/install.sh | bash", "grok", "Grok Build", "rust", filepath.Join(home, ".grok", "config.toml"), "curl", "-fsSL", "https://x.ai/cli/install.sh")}
 
 	for i := range defs {
 		defs[i].Adapter =adapter.New(string(defs[i].Descriptor.ID), home, defs[i].Descriptor.ConfigPath, nil)  

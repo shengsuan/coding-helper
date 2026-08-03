@@ -80,7 +80,7 @@ func NewSettings(configDir string, catalog *tool.Registry) (*Settings, error) {
 	s := &Settings{
 		path:      filepath.Join(configDir, "config.json"),
 		catalog:   catalog,
-		data:      Config{Lang: "zh_CN", Plans: map[string]Plan{}, Tools: map[string]Tool{}, ToolPlans: map[string]string{}},
+		data:      Config{Lang: "zh_CN", Plans: map[string]Plan{}, Tools: map[string]Tool{}, ToolPlans: map[string]string{}, ToolKeys: map[string]string{}},
 		encrypted: true,
 	}
 	b, err := os.ReadFile(s.path)
@@ -125,6 +125,9 @@ func NewSettings(configDir string, catalog *tool.Registry) (*Settings, error) {
 	}
 	if s.data.ToolPlans == nil {
 		s.data.ToolPlans = map[string]string{}
+	}
+	if s.data.ToolKeys == nil {
+		s.data.ToolKeys = map[string]string{}
 	}
 	s.patch()
 	return s, nil
@@ -231,9 +234,20 @@ func (s *Settings) CurrentPlan(toolName string) string {
 	return s.data.ToolPlans[toolName]
 }
 
-func (s *Settings) SetToolPlan(toolName, planID string) error {
+// CurrentKeyLabel returns the API key label recorded for a tool, if any.
+func (s *Settings) CurrentKeyLabel(toolName string) string {
+	if s.data.ToolKeys == nil {
+		return ""
+	}
+	return s.data.ToolKeys[toolName]
+}
+
+func (s *Settings) SetToolPlan(toolName, planID, keyLabel string) error {
 	if s.data.ToolPlans == nil {
 		s.data.ToolPlans = map[string]string{}
+	}
+	if s.data.ToolKeys == nil {
+		s.data.ToolKeys = map[string]string{}
 	}
 	if _, ok := s.data.Tools[toolName]; !ok {
 		return fmt.Errorf("未知工具：%s", toolName)
@@ -242,6 +256,11 @@ func (s *Settings) SetToolPlan(toolName, planID string) error {
 		return fmt.Errorf("未知套餐：%s", planID)
 	}
 	s.data.ToolPlans[toolName] = planID
+	if keyLabel != "" {
+		s.data.ToolKeys[toolName] = keyLabel
+	} else {
+		delete(s.data.ToolKeys, toolName)
+	}
 	return s.Save()
 }
 
@@ -250,6 +269,9 @@ func (s *Settings) ClearToolPlan(toolName string) error {
 		return nil
 	}
 	delete(s.data.ToolPlans, toolName)
+	if s.data.ToolKeys != nil {
+		delete(s.data.ToolKeys, toolName)
+	}
 	return s.Save()
 }
 
@@ -328,6 +350,9 @@ func (s *Settings) DeletePlan(id string) error {
 	for toolName, planID := range s.data.ToolPlans {
 		if planID == id {
 			delete(s.data.ToolPlans, toolName)
+			if s.data.ToolKeys != nil {
+				delete(s.data.ToolKeys, toolName)
+			}
 		}
 	}
 	return s.Save()
@@ -357,6 +382,14 @@ func (s *Settings) EditKey(planID, matchKey string, newKey, newLabel *string) er
 				p.APIKey[i].Label = *newLabel
 			}
 			s.data.Plans[planID] = p
+			// If a key label was changed, update any tool references to it.
+			if newLabel != nil && s.data.ToolKeys != nil {
+				for toolName, label := range s.data.ToolKeys {
+					if label == k.Label {
+						s.data.ToolKeys[toolName] = *newLabel
+					}
+				}
+			}
 			return s.Save()
 		}
 	}
@@ -369,10 +402,12 @@ func (s *Settings) DeleteKey(planID, key, label string) error {
 		return fmt.Errorf("未知套餐：%s", planID)
 	}
 	idx := -1
+	deletedLabel := ""
 	if key != "" {
 		for i, k := range p.APIKey {
 			if k.Key == key {
 				idx = i
+				deletedLabel = k.Label
 				break
 			}
 		}
@@ -380,6 +415,7 @@ func (s *Settings) DeleteKey(planID, key, label string) error {
 		for i, k := range p.APIKey {
 			if k.Label == label {
 				idx = i
+				deletedLabel = k.Label
 				break
 			}
 		}
@@ -389,6 +425,14 @@ func (s *Settings) DeleteKey(planID, key, label string) error {
 	}
 	p.APIKey = append(p.APIKey[:idx], p.APIKey[idx+1:]...)
 	s.data.Plans[planID] = p
+	// If a key was deleted, clear any tool references to it.
+	if s.data.ToolKeys != nil {
+		for toolName, toolLabel := range s.data.ToolKeys {
+			if toolLabel == deletedLabel {
+				delete(s.data.ToolKeys, toolName)
+			}
+		}
+	}
 	return s.Save()
 }
 

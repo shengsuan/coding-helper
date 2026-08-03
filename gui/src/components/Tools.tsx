@@ -58,6 +58,14 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
                   <span className="text-on-surface-variant">{t("plan")}: </span>
                   {plan?.name_zh || t("notApplied")}
                 </p>
+                {tool.configuredPlan && (
+                  <p>
+                    <span className="text-on-surface-variant">
+                      {t("keyLabel")}:{" "}
+                    </span>
+                    {tool.configuredKey || t("notApplied")}
+                  </p>
+                )}
                 <p>
                   <span className="text-on-surface-variant">
                     {t("config")}:{" "}

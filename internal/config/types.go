@@ -20,6 +20,7 @@ type Config struct {
 	Plans     map[string]Plan   `json:"plans"`
 	Tools     map[string]Tool   `json:"tools,omitempty"`
 	ToolPlans map[string]string `json:"tool_plans,omitempty"`
+	ToolKeys  map[string]string `json:"tool_keys,omitempty"`
 }
 
 type Tool struct {
