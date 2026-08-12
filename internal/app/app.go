@@ -13,13 +13,17 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/99designs/keyring"
 	"github.com/shengsuan/coding-helper/internal/models"
 	"github.com/shengsuan/coding-helper/internal/tool"
 )
 
-const version = "v1.8.1"
+// version 默认值仅用于未通过 -ldflags 注入版本号时的兜底（例如直接 go run）。
+// 正式构建时会通过 Makefile 从项目根目录的 package.json 读取版本号，
+// 并使用 `-ldflags "-X .../internal/app.version=vX.Y.Z"` 注入。
+var version = "dev"
 
 type Application struct {
 	settings *Settings
@@ -149,14 +153,17 @@ func (a *Application) show(args []string) error {
 
 func (a *Application) printPlans() {
 	fmt.Fprintln(a.out, "Plans:")
+	w := tabwriter.NewWriter(a.out, 0, 0, 2, ' ', 0)
 	for _, id := range a.settings.PlanIDs() {
 		p := a.settings.Plans()[id]
-		fmt.Fprintf(a.out, "  %s  label=%s  base_url=%s  model=%s  keys=%d\n", id, p.Label, p.BaseURL, p.Model, len(p.APIKey))
+		fmt.Fprintf(w, "  %s\tlabel=%s\tbase_url=%s\tmodel=%s\tkeys=%d\n", id, p.Label, p.BaseURL, p.Model, len(p.APIKey))
 	}
+	w.Flush()
 }
 
 func (a *Application) printTools() {
 	fmt.Fprintln(a.out, "Tools:")
+	w := tabwriter.NewWriter(a.out, 0, 0, 2, ' ', 0)
 	for _, id := range a.settings.ToolIDs() {
 		t := a.settings.Tools()[id]
 		state := "未安装"
@@ -177,8 +184,9 @@ func (a *Application) printTools() {
 				}
 			}
 		}
-		fmt.Fprintf(a.out, "  %s  (%s)  %s  %s\n", id, t.DisplayName, state, config)
+		fmt.Fprintf(w, "  %s (%s)\t%s\t%s\n", id, t.DisplayName, state, config)
 	}
+	w.Flush()
 }
 
 func firstKeyLabel(p Plan) string {

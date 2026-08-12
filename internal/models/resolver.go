@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/shengsuan/coding-helper/internal/config"
 )
@@ -46,8 +47,13 @@ func endpoint(ps []Protocol) string {
 	if len(ps) == 0 {
 		return ""
 	}
-	return ps[0].Endpoint()
+	eps := make([]string, len(ps))
+	for i, p := range ps {
+		eps[i] = p.Endpoint()
+	}
+	return strings.Join(eps, " 或 ")
 }
+
 func supportsAny(m Model, ps []Protocol) bool {
 	for _, p := range ps {
 		for _, api := range m.SupportAPIs {

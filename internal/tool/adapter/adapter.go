@@ -1,13 +1,13 @@
 package adapter
 
 import (
-	"fmt"
 	"context"
-	"strings"
-	"path/filepath"
+	"fmt"
 	"github.com/shengsuan/coding-helper/internal/models"
 	"github.com/shengsuan/coding-helper/internal/tool"
 	"github.com/shengsuan/coding-helper/internal/tool/configfile"
+	"path/filepath"
+	"strings"
 )
 
 type Adapter struct {
@@ -27,8 +27,13 @@ func (a *Adapter) Requirements() tool.Requirements {
 	switch a.Kind {
 	case "claude", "opencodereview":
 		p = models.ProtocolAnthropic
-	case "codex", "grok":
+	case "codex":
 		p = models.ProtocolOpenAIResponses
+	case "grok":
+		// Grok Build 的 config.toml 支持 api_backend = chat_completions | responses |
+		// messages 三种协议（见 ~/.grok/config.toml 的 [model.<id>] 段），因此只要模型
+		// 支持其中任意一种即可，具体使用哪种由 Apply() 按优先级选取。
+		return tool.Requirements{Protocols: []models.Protocol{models.ProtocolOpenAIResponses, models.ProtocolOpenAIChat, models.ProtocolAnthropic}, NeedsModel: true}
 	case "opencode", "openclaw":
 		all = true
 	}
@@ -182,7 +187,7 @@ func (a *Adapter) Apply(_ context.Context, r tool.ApplyRequest) error {
 		ends := obj(c["endpoints"])
 		ends["models_base_url"] = p.BaseURL
 		providers := obj(c["model"])
-		providers["shengsuanyun"] = map[string]any{"api_key": r.APIKey, "model": m, "base_url": p.BaseURL}
+		providers["shengsuanyun"] = map[string]any{"api_key": r.APIKey, "model": m, "base_url": p.BaseURL, "api_backend": grokAPIBackend(r.Model.SupportAPIs)}
 		ms := obj(c["models"])
 		ms["default"] = "shengsuanyun"
 		c["endpoints"], c["model"], c["models"] = ends, providers, ms
@@ -390,4 +395,25 @@ func short(s string) string {
 		return s[i+1:]
 	}
 	return s
+}
+
+func grokAPIBackend(supportAPIs []string) string {
+	has := func(endpoint string) bool {
+		for _, api := range supportAPIs {
+			if api == endpoint {
+				return true
+			}
+		}
+		return false
+	}
+	switch {
+	case has(models.ProtocolOpenAIResponses.Endpoint()):
+		return "responses"
+	case has(models.ProtocolOpenAIChat.Endpoint()):
+		return "chat_completions"
+	case has(models.ProtocolAnthropic.Endpoint()):
+		return "messages"
+	default:
+		return "chat_completions"
+	}
 }
