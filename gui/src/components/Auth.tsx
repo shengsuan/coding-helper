@@ -14,7 +14,7 @@ export default function Auth({ t, onLogin, onRegister }: AuthProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const submit = (event: React.FormEvent) => {
+  const submit = (event: React.SubmitEvent) => {
     event.preventDefault();
     setError("");
     if (mode === "register" && password !== confirmPassword) {

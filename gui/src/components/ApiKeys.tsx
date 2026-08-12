@@ -18,7 +18,7 @@ export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }:
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
   const [busy, setBusy] = useState(false);
-  const createPlan = async (event: React.FormEvent) => {
+  const createPlan = async (event: React.SubmitEvent) => {
     event.preventDefault();
     setBusy(true);
     try {

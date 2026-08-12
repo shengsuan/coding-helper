@@ -1,5 +1,10 @@
 import { invoke } from '@tauri-apps/api/core';
 
+export interface PlanKey {
+  label: string;
+  key: string;
+}
+
 export interface Plan {
   id: string;
   name: string;
@@ -8,6 +13,7 @@ export interface Plan {
   model?: string;
   api_key_name?: string;
   apiKeyConfigured: boolean;
+  keys: PlanKey[];
   removable: boolean;
 }
 
@@ -44,7 +50,12 @@ export const core = {
   addPlan: (label: string, baseUrl: string, model?: string) =>
     action<Plan>('add-plan', { label, baseUrl, model }),
   deletePlan: (planId: string) => action<string>('delete-plan', { planId }),
-  applyTool: (toolName: string, planId: string) => action<Tool>('apply-tool', { toolName, planId }),
+  applyTool: (toolName: string, planId: string, keyLabel?: string) =>
+    action<Tool>('apply-tool', { toolName, planId, keyLabel }),
   removeToolConfig: (toolName: string) => action<Tool>('remove-tool-config', { toolName }),
+  addKey: (planId: string, key: string, label?: string) =>
+    action<Plan>('add-key', { planId, key, label }),
+  deleteKey: (planId: string, key?: string, label?: string) =>
+    action<Plan>('delete-key', { planId, key, label }),
   binaryPath: () => invoke<string>('core_binary_path'),
 };

@@ -97,7 +97,9 @@ func (a *Application) help() {
   (无参数)                              显示 Plan 列表、Tool 列表及帮助提示
   -h, --help, help                      显示帮助信息
   -v, --version, version                显示版本号
-  -s, --show, show [plan|tool]          显示 Plan/Tool 列表；指定 plan 或 tool 时只显示对应列表
+  -s, --show, show [plan|tool] [名称]    显示 Plan/Tool 列表；指定 plan 或 tool 时只显示对应列表
+                                         再指定名称（如 show tool grok）可查看该 plan/tool 的详情
+                                         （tool 详情包含安装状态、安装命令、配置文件、当前套餐与 API Key）
   -c, --cfg, cfg <子命令>                管理 config.json 中的 Plan（增/删/改/查）
       cfg [list]                        列出所有 Plan
       cfg show <plan>                   显示指定 Plan 详情
@@ -142,11 +144,86 @@ func (a *Application) show(args []string) error {
 	}
 	switch args[0] {
 	case "plan", "Plan", "plans", "Plans":
+		if len(args) > 1 {
+			return a.showPlanDetail(args[1])
+		}
 		a.printPlans()
 	case "tool", "Tool", "tools", "Tools":
+		if len(args) > 1 {
+			return a.showToolDetail(args[1])
+		}
 		a.printTools()
 	default:
-		return fmt.Errorf("用法：coding-helper show [plan|tool]")
+		return fmt.Errorf("用法：coding-helper show [plan|tool] [名称]")
+	}
+	return nil
+}
+
+func (a *Application) showPlanDetail(id string) error {
+	p, ok := a.settings.GetPlan(id)
+	if !ok {
+		return fmt.Errorf("未知套餐：%s", id)
+	}
+	fmt.Fprintf(a.out, "%s\n", id)
+	fmt.Fprintf(a.out, "  label: %s\n", p.Label)
+	fmt.Fprintf(a.out, "  base_url: %s\n", p.BaseURL)
+	fmt.Fprintf(a.out, "  model: %s\n", p.Model)
+	fmt.Fprintln(a.out, "  keys:")
+	if len(p.APIKey) == 0 {
+		fmt.Fprintln(a.out, "    (无)")
+	}
+	for _, k := range p.APIKey {
+		fmt.Fprintf(a.out, "    - label=%s key=%s\n", labelOrNone(k.Label), maskKey(k.Key))
+	}
+	var usedBy []string
+	for _, toolName := range a.settings.ToolIDs() {
+		if a.settings.CurrentPlan(toolName) == id {
+			usedBy = append(usedBy, toolName)
+		}
+	}
+	fmt.Fprintln(a.out, "  使用此套餐的工具:")
+	if len(usedBy) == 0 {
+		fmt.Fprintln(a.out, "    (无)")
+	}
+	for _, toolName := range usedBy {
+		fmt.Fprintf(a.out, "    - %s\n", toolName)
+	}
+	return nil
+}
+
+func (a *Application) showToolDetail(name string) error {
+	t, ok := a.settings.Tools()[name]
+	if !ok {
+		return fmt.Errorf("未知工具：%s", name)
+	}
+	installed := "未安装"
+	if a.tools.Installed(tool.ToolID(name)) {
+		installed = "已安装"
+	}
+	fmt.Fprintf(a.out, "%s (%s)\n", name, t.DisplayName)
+	fmt.Fprintf(a.out, "  状态: %s\n", installed)
+	fmt.Fprintf(a.out, "  安装命令: %s\n", t.InstallCommand)
+	fmt.Fprintf(a.out, "  配置文件: %s\n", t.ConfigPath)
+	if t.Runtime != "" {
+		fmt.Fprintf(a.out, "  运行环境: %s\n", t.Runtime)
+	}
+	planID := a.settings.CurrentPlan(name)
+	if planID == "" {
+		fmt.Fprintln(a.out, "  配置: 未配置")
+		return nil
+	}
+	p, ok := a.settings.GetPlan(planID)
+	if !ok {
+		fmt.Fprintf(a.out, "  配置: plan=%s（未知套餐）\n", planID)
+		return nil
+	}
+	fmt.Fprintf(a.out, "  套餐: %s (label=%s, base_url=%s, model=%s)\n", planID, p.Label, p.BaseURL, p.Model)
+	keyLabel := a.settings.CurrentKeyLabel(name)
+	key, hasKey := a.settings.FindKey(planID, keyLabel)
+	if hasKey {
+		fmt.Fprintf(a.out, "  API Key: label=%s key=%s\n", labelOrNone(key.Label), maskKey(key.Key))
+	} else {
+		fmt.Fprintln(a.out, "  API Key: 未配置")
 	}
 	return nil
 }
@@ -531,7 +608,7 @@ func randomLabel() string {
 
 func maskKey(key string) string {
 	if len(key) > 6 {
-		return key[:6] + "…"
+		return key[:6] + "*****" + key[len(key)-5:]
 	}
 	if key == "" {
 		return "未配置"

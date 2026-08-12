@@ -4,7 +4,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import GlobalApiKeys from "./components/ApiKeys";
 import Tools from "./components/Tools";
-import Auth from "./components/Auth";
+// import Auth from "./components/Auth";
 import { getSession, login, logout, register, type User } from "./auth";
 import { core, type Overview } from "./core";
 import { translate, type Language } from "./i18n";
@@ -52,15 +52,15 @@ function App() {
       reportError(reason);
     }
   };
-  if (!user)
-    return (
-      <Auth t={t}
-        onLogin={(email, password) => setUser(login(email, password))}
-        onRegister={(name, email, password) =>
-          setUser(register(name, email, password))
-        }
-      />
-    );
+  // if (!user)
+  //   return (
+  //     <Auth t={t}
+  //       onLogin={(email, password) => setUser(login(email, password))}
+  //       onRegister={(name, email, password) =>
+  //         setUser(register(name, email, password))
+  //       }
+  //     />
+  //   );
   const configureTool = (toolName: string) => {
     setSelectedTool(toolName);
     setSelectedPlan(undefined);

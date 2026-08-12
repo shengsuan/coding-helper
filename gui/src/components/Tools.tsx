@@ -45,9 +45,8 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
                   </p>
                 </div>
                 <span className={
-                    tool.installed
-                      ? "text-emerald-600 font-semibold text-sm"
-                      : "text-tertiary font-semibold text-sm"
+                    tool.installed? "text-emerald-600 font-semibold text-sm": 
+                    "text-tertiary font-semibold text-sm"
                   }
                 >
                   {tool.installed ? t("installed") : t("notInstalled")}

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"slices"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -45,7 +46,7 @@ func GetModels(plan Plan, key string) ([]Model, error) {
 
 func ValidateModel(models []Model, selected, endpoint string) (string, error) {
 	for _, m := range models {
-		if m.ID == selected && supports(m, endpoint) {
+		if m.ID == selected && slices.Contains(m.SupportAPIs, endpoint) {
 			return selected, nil
 		}
 	}
@@ -53,18 +54,9 @@ func ValidateModel(models []Model, selected, endpoint string) (string, error) {
 		return "", fmt.Errorf("模型 %s 不支持 %s", selected, endpoint)
 	}
 	for _, m := range models {
-		if supports(m, endpoint) {
+		if slices.Contains(m.SupportAPIs, endpoint){
 			return m.ID, nil
 		}
 	}
 	return "", fmt.Errorf("没有模型支持 %s", endpoint)
-}
-
-func supports(m Model, endpoint string) bool {
-	for _, api := range m.SupportAPIs {
-		if api == endpoint {
-			return true
-		}
-	}
-	return false
 }

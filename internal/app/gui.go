@@ -19,16 +19,22 @@ type GuiRequest struct {
 	Payload json.RawMessage `json:"payload"`
 }
 
+type guiKeyView struct {
+	Label string `json:"label"`
+	Key   string `json:"key"`
+}
+
 type guiPlanView struct {
-	ID               string `json:"id"`
-	Name             string `json:"name"`
-	NameZH           string `json:"name_zh"`
-	BaseURL          string `json:"base_url,omitempty"`
-	Model            string `json:"model,omitempty"`
-	Label            string `json:"label,omitempty"`
-	APIKeyName       string `json:"api_key_name,omitempty"`
-	APIKeyConfigured bool   `json:"apiKeyConfigured"`
-	Removable        bool   `json:"removable"`
+	ID               string       `json:"id"`
+	Name             string       `json:"name"`
+	NameZH           string       `json:"name_zh"`
+	BaseURL          string       `json:"base_url,omitempty"`
+	Model            string       `json:"model,omitempty"`
+	Label            string       `json:"label,omitempty"`
+	APIKeyName       string       `json:"api_key_name,omitempty"`
+	APIKeyConfigured bool         `json:"apiKeyConfigured"`
+	Keys             []guiKeyView `json:"keys"`
+	Removable        bool         `json:"removable"`
 }
 
 type guiToolView struct {
@@ -91,9 +97,13 @@ func (a *Application) dispatchGui(req GuiRequest) (any, error) {
 	case "delete-plan":
 		return a.guiDeletePlan(str(payload["planId"]))
 	case "apply-tool":
-		return a.guiApplyTool(str(payload["toolName"]), str(payload["planId"]))
+		return a.guiApplyTool(str(payload["toolName"]), str(payload["planId"]), str(payload["keyLabel"]))
 	case "remove-tool-config":
 		return a.guiRemoveToolConfig(str(payload["toolName"]))
+	case "add-key":
+		return a.guiAddKey(str(payload["planId"]), str(payload["key"]), str(payload["label"]))
+	case "delete-key":
+		return a.guiDeleteKey(str(payload["planId"]), str(payload["key"]), str(payload["label"]))
 	default:
 		return nil, fmt.Errorf("未知 GUI 操作：%s", req.Action)
 	}
@@ -263,13 +273,13 @@ func isDefaultPlan(id string) bool {
 	return ok
 }
 
-func (a *Application) guiApplyTool(toolName, planID string) (guiToolView, error) {
+func (a *Application) guiApplyTool(toolName, planID, keyLabel string) (guiToolView, error) {
 	// applyPlan already validates the tool/plan/key and installs the tool
 	// automatically when missing; the GUI reuses that path verbatim so
 	// behavior matches the `set <tool> <plan>` CLI command exactly.
 	prev := a.out
 	a.out = io.Discard
-	err := a.applyPlan(toolName, planID, "", "")
+	err := a.applyPlan(toolName, planID, keyLabel, "")
 	a.out = prev
 	if err != nil {
 		return guiToolView{}, err
@@ -300,6 +310,35 @@ func (a *Application) guiRemoveToolConfig(toolName string) (guiToolView, error) 
 	return guiToolView{}, fmt.Errorf("清除成功但无法读取工具状态：%s", toolName)
 }
 
+func (a *Application) guiAddKey(planID, key, label string) (guiPlanView, error) {
+	if _, ok := a.settings.GetPlan(planID); !ok {
+		return guiPlanView{}, fmt.Errorf("未知套餐：%s", planID)
+	}
+	key = strings.TrimSpace(key)
+	if key == "" {
+		return guiPlanView{}, fmt.Errorf("API 密钥不能为空")
+	}
+	if err := a.settings.AddKey(planID, ApiKey{Key: key, Label: strings.TrimSpace(label)}); err != nil {
+		return guiPlanView{}, err
+	}
+	p, _ := a.settings.GetPlan(planID)
+	return toGuiPlan(planID, p), nil
+}
+
+func (a *Application) guiDeleteKey(planID, key, label string) (guiPlanView, error) {
+	if _, ok := a.settings.GetPlan(planID); !ok {
+		return guiPlanView{}, fmt.Errorf("未知套餐：%s", planID)
+	}
+	if strings.TrimSpace(key) == "" && strings.TrimSpace(label) == "" {
+		return guiPlanView{}, fmt.Errorf("必须提供 key 或 label")
+	}
+	if err := a.settings.DeleteKey(planID, key, label); err != nil {
+		return guiPlanView{}, err
+	}
+	p, _ := a.settings.GetPlan(planID)
+	return toGuiPlan(planID, p), nil
+}
+
 func toGuiPlan(id string, p Plan) guiPlanView {
 	name := p.Label
 	if name == "" {
@@ -308,6 +347,10 @@ func toGuiPlan(id string, p Plan) guiPlanView {
 	nameZH := p.Label
 	if nameZH == "" {
 		nameZH = id
+	}
+	keys := make([]guiKeyView, 0, len(p.APIKey))
+	for _, k := range p.APIKey {
+		keys = append(keys, guiKeyView{Label: k.Label, Key: k.Key})
 	}
 	return guiPlanView{
 		ID:               id,
@@ -318,6 +361,7 @@ func toGuiPlan(id string, p Plan) guiPlanView {
 		Label:            p.Label,
 		APIKeyName:       "API Key",
 		APIKeyConfigured: len(p.APIKey) > 0,
+		Keys:             keys,
 		Removable:        !isDefaultPlan(id),
 	}
 }

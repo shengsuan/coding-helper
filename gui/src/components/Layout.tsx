@@ -8,7 +8,7 @@ interface LayoutProps {
   currentPage: string;
   language: Language;
   t: Translator;
-  user: User;
+  user: User | null;
   onNavigate: (page: Page) => void;
   onLanguageChange: (language: Language) => void;
   onLogout: () => void;
@@ -25,7 +25,7 @@ export default function Layout({
   onLogout,
 }: LayoutProps) {
   const navClass = (page: Page) => `w-full flex items-center gap-3 ${currentPage === page || (page === "dashboard" && currentPage === "edit") ? "text-[#2E5BFF] dark:text-white font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff] dark:bg-slate-800" : "text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800"} transition-all duration-300 hover:translate-x-1`;
-  const initials = user.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const initials = user?.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div className="bg-surface font-body text-on-surface antialiased">
       <aside className="h-screen w-64 fixed left-0 top-0 z-50 bg-[#f2f3ff] dark:bg-slate-900 flex flex-col py-6">
@@ -83,9 +83,9 @@ export default function Layout({
             <div className="h-8 w-px bg-outline-variant/30" />
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-sm font-bold leading-tight">{user.name}</p>
+                <p className="text-sm font-bold leading-tight">{user?.name}</p>
                 <p className="text-[10px] text-on-surface-variant font-medium">
-                  {user.email}
+                  {user?.email}
                 </p>
               </div>
               <div className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center border-2 border-primary/10">

@@ -33,16 +33,8 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Stat icon="key" label={t("configuredApiKeys")} value={keys} />
-        <Stat
-          icon="terminal"
-          label={t("installedTools")}
-          value={tools.filter((tool) => tool.installed).length}
-        />
-        <Stat
-          icon="check_circle"
-          label={t("appliedConfigurations")}
-          value={configured}
-        />
+        <Stat icon="terminal" label={t("installedTools")} value={tools.filter((tool) => tool.installed).length}/>
+        <Stat icon="check_circle" label={t("appliedConfigurations")} value={configured}/>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {loading ? (
@@ -77,12 +69,7 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
                     <span className="text-on-surface-variant">
                       {t("configuration")}
                     </span>
-                    <span className={
-                        plan
-                          ? "font-semibold text-primary"
-                          : "font-medium text-outline"
-                      }
-                    >
+                    <span className={plan? "font-semibold text-primary": "font-medium text-outline"}>
                       {plan?.name_zh || t("notConfigured")}
                     </span>
                   </div>

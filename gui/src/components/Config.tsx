@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
 
+const NEW_KEY = "__new__";
+
 interface ConfigurationProps {
   tool: Tool | null;
   plans: Plan[];
@@ -22,29 +24,48 @@ export default function Config({
   const [planId, setPlanId] = useState(
     initialPlanId || tool?.configuredPlan || plans[0]?.id || "",
   );
-  const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("");
   const [models, setModels] = useState<string[]>([]);
-  const [showKey, setShowKey] = useState(false);
+  const [keyLabel, setKeyLabel] = useState(tool?.configuredKey || "");
+  const [newKeyLabel, setNewKeyLabel] = useState("");
+  const [newKeyValue, setNewKeyValue] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const plan = plans.find((item) => item.id === planId);
   useEffect(() => {
     setModel(plan?.model || "");
-    setApiKey("");
     if (!planId) return;
     core.models(planId)
-      .then((items) => setModels(items.map((item) => item.id)))
+      .then((items) => {
+        setModels(items.map((item) => item.id))
+      })
       .catch(() => setModels([]));
   }, [planId, plan?.model]);
-  const save = async (event: React.FormEvent) => {
+  useEffect(() => {
+    if (!tool || !plan) return;
+    if (keyLabel === NEW_KEY) return;
+    if (plan.keys?.some((item) => item.label === keyLabel)) return;
+    setKeyLabel(plan.keys?.[0]?.label ?? NEW_KEY);
+  }, [plan, keyLabel, tool]);
+  const save = async (event: React.SubmitEvent) => {
     event.preventDefault();
     setBusy(true);
     setMessage("");
     try {
-      if (apiKey || model !== plan?.model)
-        await core.savePlan(planId, apiKey || undefined, model || undefined);
-      if (tool) await core.applyTool(tool.name, planId);
+      if (model !== (plan?.model || ""))
+        await core.savePlan(planId, undefined, model || undefined);
+      if (tool) {
+        let labelToApply = keyLabel;
+        if (keyLabel === NEW_KEY) {
+          if (!newKeyValue.trim()) throw new Error(t("keyValuePlaceholder"));
+          labelToApply = newKeyLabel.trim();
+          await core.addKey(planId, newKeyValue.trim(), labelToApply || undefined);
+          setKeyLabel(labelToApply);
+          setNewKeyLabel("");
+          setNewKeyValue("");
+        }
+        await core.applyTool(tool.name, planId, labelToApply || undefined);
+      }
       setMessage(t("saved"));
       onSaved();
     } catch (error) {
@@ -76,9 +97,8 @@ export default function Config({
           <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm">
             <form className="space-y-7" onSubmit={save}>
               <Field label={t("servicePlan")}>
-                <select value={planId}
+                <select value={planId} className="input"
                   onChange={(event) => setPlanId(event.target.value)}
-                  className="input"
                 >
                   {plans.map((item) => (
                     <option key={item.id} value={item.id}>
@@ -86,26 +106,6 @@ export default function Config({
                     </option>
                   ))}
                 </select>
-              </Field>
-              <Field label={plan?.api_key_name || t("apiKey")}>
-                <div className="relative">
-                  <input value={apiKey}
-                    onChange={(event) => setApiKey(event.target.value)}
-                    className="input"
-                    placeholder={
-                      plan?.apiKeyConfigured ? t("keepConfiguredKey") : t("enterApiKey")
-                    }
-                    type={showKey ? "text" : "password"}
-                  />
-                  <button type="button"
-                    onClick={() => setShowKey(!showKey)}
-                    className="absolute right-4 top-3 text-primary"
-                  >
-                    <span className="material-symbols-outlined">
-                      {showKey ? "visibility_off" : "visibility"}
-                    </span>
-                  </button>
-                </div>
               </Field>
               <Field label={t("defaultModel")}>
                 <input list="models" value={model} className="input"
@@ -116,6 +116,39 @@ export default function Config({
                   {models.map((item) => <option key={item} value={item} />)}
                 </datalist>
               </Field>
+              {tool && (
+                <>
+                  <Field label={t("keyToApply")}>
+                    <select value={keyLabel} className="input"
+                      onChange={(event) => setKeyLabel(event.target.value)}
+                    >
+                      <option value={NEW_KEY}>{t("createNewKey")}</option>
+                      {plan?.keys?.map((item) => (
+                        <option key={item.label} value={item.label}>
+                          {item.label || t("defaultLabel")}
+                          {tool?.configuredKey === item.label
+                            ? ` (${t("currentlyUsed")})`
+                            : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  {keyLabel === NEW_KEY && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Field label={t("keyLabelPlaceholder")}>
+                        <input value={newKeyLabel} className="input"
+                          onChange={(event) => setNewKeyLabel(event.target.value)}
+                        />
+                      </Field>
+                      <Field label={t("keyValuePlaceholder")}>
+                        <input value={newKeyValue} className="input"
+                          onChange={(event) => setNewKeyValue(event.target.value)}
+                        />
+                      </Field>
+                    </div>
+                  )}
+                </>
+              )}
               {message && (
                 <p className={
                     message === t("saved") ? "text-emerald-600" : "text-error"
@@ -125,8 +158,7 @@ export default function Config({
                 </p>
               )}
               <div className="flex justify-end">
-                <button disabled={busy}
-                  type="submit"
+                <button disabled={busy} type="submit"
                   className="bg-primary text-white font-bold px-8 py-3 rounded-xl disabled:opacity-50"
                 >
                   {busy ? t("saving") : tool ? t("saveAndApply") : t("saveChanges")}
@@ -152,6 +184,14 @@ export default function Config({
                   </span>
                   {tool.command}
                 </p>
+                {tool.configuredKey && (
+                  <p>
+                    <span className="text-on-surface-variant">
+                      {t("currentKey")}:{" "}
+                    </span>
+                    {tool.configuredKey || t("defaultLabel")}
+                  </p>
+                )}
                 {!tool.installed && (
                   <p className="text-on-surface-variant">
                     {t("installBeforeApplyingAuto")}
