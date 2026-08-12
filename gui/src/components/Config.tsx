@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
-
-const NEW_KEY = "__new__";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 
 interface ConfigurationProps {
   tool: Tool | null;
@@ -26,12 +32,19 @@ export default function Config({
   );
   const [model, setModel] = useState("");
   const [models, setModels] = useState<string[]>([]);
-  const [keyLabel, setKeyLabel] = useState(tool?.configuredKey || "");
-  const [newKeyLabel, setNewKeyLabel] = useState("");
-  const [newKeyValue, setNewKeyValue] = useState("");
+  const [keyText, setKeyText] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const plan = plans.find((item) => item.id === planId);
+  const keyOptions = plan?.keys?.map((item) => ({
+    value: item.key,
+    label:
+      (item.label || maskKey(item.key)) +
+      (tool?.configuredKey === item.label ? ` (${t("currentlyUsed")})` : ""),
+  })) ?? [];
+  const selectedKeyOption =
+    keyOptions.find((item) => item.value === keyText) ??
+    (keyText.trim() ? { value: keyText, label: maskKey(keyText) } : null);
   useEffect(() => {
     setModel(plan?.model || "");
     if (!planId) return;
@@ -42,11 +55,16 @@ export default function Config({
       .catch(() => setModels([]));
   }, [planId, plan?.model]);
   useEffect(() => {
-    if (!tool || !plan) return;
-    if (keyLabel === NEW_KEY) return;
-    if (plan.keys?.some((item) => item.label === keyLabel)) return;
-    setKeyLabel(plan.keys?.[0]?.label ?? NEW_KEY);
-  }, [plan, keyLabel, tool]);
+    if (!tool || planId !== tool.configuredPlan) {
+      setKeyText("");
+      return;
+    }
+    const label = tool.configuredKey || "";
+    const match = label
+      ? plan?.keys?.find((item) => item.label === label)
+      : plan?.keys?.[0];
+    setKeyText(match?.key ?? "");
+  }, [planId, tool, plan]);
   const save = async (event: React.SubmitEvent) => {
     event.preventDefault();
     setBusy(true);
@@ -55,14 +73,13 @@ export default function Config({
       if (model !== (plan?.model || ""))
         await core.savePlan(planId, undefined, model || undefined);
       if (tool) {
-        let labelToApply = keyLabel;
-        if (keyLabel === NEW_KEY) {
-          if (!newKeyValue.trim()) throw new Error(t("keyValuePlaceholder"));
-          labelToApply = newKeyLabel.trim();
-          await core.addKey(planId, newKeyValue.trim(), labelToApply || undefined);
-          setKeyLabel(labelToApply);
-          setNewKeyLabel("");
-          setNewKeyValue("");
+        const trimmedKey = keyText.trim();
+        if (!trimmedKey) throw new Error(t("keyValuePlaceholder"));
+        const existing = plan?.keys?.find((item) => item.key === trimmedKey);
+        let labelToApply = existing?.label ?? "";
+        if (!existing) {
+          await core.addKey(planId, trimmedKey, trimmedKey);
+          labelToApply = trimmedKey;
         }
         await core.applyTool(tool.name, planId, labelToApply || undefined);
       }
@@ -117,37 +134,28 @@ export default function Config({
                 </datalist>
               </Field>
               {tool && (
-                <>
-                  <Field label={t("keyToApply")}>
-                    <select value={keyLabel} className="input"
-                      onChange={(event) => setKeyLabel(event.target.value)}
-                    >
-                      <option value={NEW_KEY}>{t("createNewKey")}</option>
-                      {plan?.keys?.map((item) => (
-                        <option key={item.label} value={item.label}>
-                          {item.label || t("defaultLabel")}
-                          {tool?.configuredKey === item.label
-                            ? ` (${t("currentlyUsed")})`
-                            : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  {keyLabel === NEW_KEY && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Field label={t("keyLabelPlaceholder")}>
-                        <input value={newKeyLabel} className="input"
-                          onChange={(event) => setNewKeyLabel(event.target.value)}
-                        />
-                      </Field>
-                      <Field label={t("keyValuePlaceholder")}>
-                        <input value={newKeyValue} className="input"
-                          onChange={(event) => setNewKeyValue(event.target.value)}
-                        />
-                      </Field>
-                    </div>
-                  )}
-                </>
+                <Field label={t("keyToApply")}>
+                  <Combobox
+                    items={keyOptions}
+                    value={selectedKeyOption}
+                    onValueChange={(item) => setKeyText(item?.value ?? "")}
+                    inputValue={keyText}
+                    onInputValueChange={(text) => setKeyText(text)}
+                    itemToStringLabel={(item: { value: string }) => item.value}
+                  >
+                    <ComboboxInput placeholder={t("keyValuePlaceholder")} />
+                    <ComboboxContent>
+                      <ComboboxEmpty>{t("noMatches")}</ComboboxEmpty>
+                      <ComboboxList>
+                        {(item: { value: string; label: string }) => (
+                          <ComboboxItem key={item.value} value={item}>
+                            {item.label}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                </Field>
               )}
               {message && (
                 <p className={
@@ -225,4 +233,9 @@ function Field({
       {children}
     </label>
   );
+}
+
+function maskKey(key: string) {
+  if (key.length <= 8) return key;
+  return `${key.slice(0, 4)}…${key.slice(-4)}`;
 }

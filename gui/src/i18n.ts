@@ -55,10 +55,8 @@ const messages = {
     configDescription:"Credentials and models are stored through the same core used by the CLI.",
     servicePlan: "Service plan",
     apiKey: "API key",
-    keyLabelPlaceholder: "Label (optional)",
     keyValuePlaceholder: "Enter new API key",
     keyToApply: "Key to apply",
-    createNewKey: "Create new API key",
     currentlyUsed: "in use",
     currentKey: "Current key",
     defaultLabel: "(default)",
@@ -102,6 +100,7 @@ const messages = {
     planCreated: "Plan created.",
     planDeleted: "Plan deleted.",
     installBeforeApplyingAuto: "Not installed yet — saving will install it automatically.",
+    noMatches: "No matches found.",
   },
   zh_CN: {
     desktopConfiguration: "桌面配置",
@@ -156,10 +155,8 @@ const messages = {
     configDescription: "凭证和模型通过与 CLI 相同的核心代码保存。",
     servicePlan: "服务套餐",
     apiKey: "API 密钥",
-    keyLabelPlaceholder: "标签（可选）",
     keyValuePlaceholder: "输入新的 API 密钥",
     keyToApply: "应用时使用的密钥",
-    createNewKey: "新建 API Key",
     currentlyUsed: "使用中",
     currentKey: "当前使用的密钥",
     defaultLabel: "（默认）",
@@ -202,6 +199,7 @@ const messages = {
     planCreated: "套餐已创建。",
     planDeleted: "套餐已删除。",
     installBeforeApplyingAuto: "尚未安装，保存时将自动安装。",
+    noMatches: "未找到匹配项。",
   },
 } as const;
 
