@@ -12,6 +12,7 @@ interface ToolsProps {
 
 export default function Tools({ tools, plans, t, onChanged, onConfigure }: ToolsProps) {
   const [message, setMessage] = useState("");
+  const [installing, setInstalling] = useState<string | null>(null);
   const remove = async (tool: Tool) => {
     try {
       await core.removeToolConfig(tool.name);
@@ -19,6 +20,18 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
       onChanged();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : String(error));
+    }
+  };
+  const install = async (tool: Tool) => {
+    setInstalling(tool.name);
+    setMessage("");
+    try {
+      await core.installTool(tool.name);
+      onChanged();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setInstalling(null);
     }
   };
   return (
@@ -44,13 +57,17 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
                     {tool.command}
                   </p>
                 </div>
-                <span className={
-                    tool.installed? "text-emerald-600 font-semibold text-sm": 
-                    "text-tertiary font-semibold text-sm"
-                  }
-                >
-                  {tool.installed ? t("installed") : t("notInstalled")}
-                </span>
+                {tool.installed ? (
+                  <span className="text-emerald-600 font-semibold text-sm">
+                    {t("installed")}
+                  </span>
+                ) : (
+                  <button onClick={() => install(tool)} disabled={installing === tool.name}
+                    className="text-tertiary font-semibold text-sm disabled:opacity-50"
+                  >
+                    {installing === tool.name ? t("installing") : t("installNow")}
+                  </button>
+                )}
               </div>
               <div className="mt-6 text-sm space-y-2">
                 <p>

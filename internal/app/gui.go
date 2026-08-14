@@ -44,6 +44,7 @@ type guiToolView struct {
 	ConfigPath     string  `json:"configPath"`
 	DisplayName    string  `json:"displayName"`
 	Runtime        string  `json:"runtime"`
+	Description    string  `json:"description,omitempty"`
 	Installed      bool    `json:"installed"`
 	ConfiguredPlan *string `json:"configuredPlan"`
 	ConfiguredKey  *string `json:"configuredKey"`
@@ -100,8 +101,12 @@ func (a *Application) dispatchGui(req GuiRequest) (any, error) {
 		return a.guiApplyTool(str(payload["toolName"]), str(payload["planId"]), str(payload["keyLabel"]))
 	case "remove-tool-config":
 		return a.guiRemoveToolConfig(str(payload["toolName"]))
+	case "install-tool":
+		return a.guiInstallTool(str(payload["toolName"]))
 	case "add-key":
 		return a.guiAddKey(str(payload["planId"]), str(payload["key"]), str(payload["label"]))
+	case "edit-key":
+		return a.guiEditKey(str(payload["planId"]), str(payload["key"]), str(payload["newKey"]))
 	case "delete-key":
 		return a.guiDeleteKey(str(payload["planId"]), str(payload["key"]), str(payload["label"]))
 	default:
@@ -147,6 +152,7 @@ func (a *Application) guiTools() []guiToolView {
 			ConfigPath:     t.ConfigPath,
 			DisplayName:    t.DisplayName,
 			Runtime:        t.Runtime,
+			Description:    t.Description,
 			Installed:      a.tools.Installed(tool.ToolID(id)),
 			ConfiguredPlan: plan,
 			ConfiguredKey:  keyLabel,
@@ -310,6 +316,21 @@ func (a *Application) guiRemoveToolConfig(toolName string) (guiToolView, error) 
 	return guiToolView{}, fmt.Errorf("清除成功但无法读取工具状态：%s", toolName)
 }
 
+func (a *Application) guiInstallTool(toolName string) (guiToolView, error) {
+	if _, ok := a.settings.Tools()[toolName]; !ok {
+		return guiToolView{}, fmt.Errorf("未知工具：%s", toolName)
+	}
+	if err := a.tools.Install(context.Background(), tool.ToolID(toolName)); err != nil {
+		return guiToolView{}, err
+	}
+	for _, t := range a.guiTools() {
+		if t.Name == toolName {
+			return t, nil
+		}
+	}
+	return guiToolView{}, fmt.Errorf("安装成功但无法读取工具状态：%s", toolName)
+}
+
 func (a *Application) guiAddKey(planID, key, label string) (guiPlanView, error) {
 	if _, ok := a.settings.GetPlan(planID); !ok {
 		return guiPlanView{}, fmt.Errorf("未知套餐：%s", planID)
@@ -319,6 +340,21 @@ func (a *Application) guiAddKey(planID, key, label string) (guiPlanView, error) 
 		return guiPlanView{}, fmt.Errorf("API 密钥不能为空")
 	}
 	if err := a.settings.AddKey(planID, ApiKey{Key: key, Label: strings.TrimSpace(label)}); err != nil {
+		return guiPlanView{}, err
+	}
+	p, _ := a.settings.GetPlan(planID)
+	return toGuiPlan(planID, p), nil
+}
+
+func (a *Application) guiEditKey(planID, matchKey, newKey string) (guiPlanView, error) {
+	if _, ok := a.settings.GetPlan(planID); !ok {
+		return guiPlanView{}, fmt.Errorf("未知套餐：%s", planID)
+	}
+	newKey = strings.TrimSpace(newKey)
+	if newKey == "" {
+		return guiPlanView{}, fmt.Errorf("API 密钥不能为空")
+	}
+	if err := a.settings.EditKey(planID, matchKey, &newKey, nil); err != nil {
 		return guiPlanView{}, err
 	}
 	p, _ := a.settings.GetPlan(planID)

@@ -30,4 +30,5 @@ type Tool struct {
 	ConfigPath     string `json:"configPath"`
 	DisplayName    string `json:"displayName"`
 	Runtime        string `json:"runtime,omitempty"`
+	Description    string `json:"description,omitempty"`
 }

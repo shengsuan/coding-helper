@@ -24,6 +24,7 @@ export interface Tool {
   configPath: string;
   displayName: string;
   runtime: string;
+  description?: string;
   minPythonVersion?: string;
   installed: boolean;
   configuredPlan: string | null;
@@ -53,8 +54,11 @@ export const core = {
   applyTool: (toolName: string, planId: string, keyLabel?: string) =>
     action<Tool>('apply-tool', { toolName, planId, keyLabel }),
   removeToolConfig: (toolName: string) => action<Tool>('remove-tool-config', { toolName }),
+  installTool: (toolName: string) => action<Tool>('install-tool', { toolName }),
   addKey: (planId: string, key: string, label?: string) =>
     action<Plan>('add-key', { planId, key, label }),
+  editKey: (planId: string, key: string, newKey: string) =>
+    action<Plan>('edit-key', { planId, key, newKey }),
   deleteKey: (planId: string, key?: string, label?: string) =>
     action<Plan>('delete-key', { planId, key, label }),
   binaryPath: () => invoke<string>('core_binary_path'),

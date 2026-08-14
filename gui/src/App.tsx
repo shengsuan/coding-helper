@@ -100,6 +100,7 @@ function App() {
       <Dashboard tools={overview.tools} plans={overview.plans} loading={loading} t={t}
         onConfigureTool={configureTool}
         onNavigateTools={() => setCurrentPage("tools")}
+        onChanged={() => void refresh()}
       />
     ) : currentPage === "tools" ? (
       <Tools tools={overview.tools} plans={overview.plans} t={t} onChanged={() => void refresh()}

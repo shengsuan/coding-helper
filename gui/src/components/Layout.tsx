@@ -28,9 +28,9 @@ export default function Layout({
   const initials = user?.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div className="bg-surface font-body text-on-surface antialiased">
-      <aside className="h-screen w-64 fixed left-0 top-0 z-50 bg-[#f2f3ff] dark:bg-slate-900 flex flex-col py-6">
+      <aside className="h-screen w-64 fixed left-0 top-0 z-50 bg-surface-container-low dark:bg-slate-900 flex flex-col py-6">
         <div className="px-6 mb-10">
-          <h1 className="font-headline font-extrabold text-[#131b2e] dark:text-white text-2xl tracking-tight">
+          <h1 className="font-headline font-extrabold text-on-surface dark:text-white text-2xl tracking-tight">
             Coding Helper
           </h1>
           <p className="text-xs text-on-surface-variant font-medium mt-1">
@@ -55,12 +55,12 @@ export default function Layout({
               <option value="en_US">English</option>
             </select>
           </div>
-          <button onClick={onLogout}
-            className="w-full flex items-center gap-3 text-[#434656] dark:text-slate-400 px-3 py-2 hover:bg-[#eaedff] rounded-lg"
+          {/* <button onClick={onLogout}
+            className="w-full flex items-center gap-3 text-on-surface-variant dark:text-slate-400 px-3 py-2 hover:bg-surface-container rounded-lg"
           >
             <span className="material-symbols-outlined">logout</span>
             <span className="text-sm font-medium">{t("signOut")}</span>
-          </button>
+          </button> */}
         </div>
       </aside>
       <main className="ml-64 min-h-screen">
@@ -74,14 +74,14 @@ export default function Layout({
             />
           </div>
           <div className="flex items-center gap-5">
-            <button className="p-2 text-on-surface-variant hover:bg-[#eaedff] rounded-full">
+            <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">
               <span className="material-symbols-outlined">notifications</span>
             </button>
-            <button className="p-2 text-on-surface-variant hover:bg-[#eaedff] rounded-full">
+            <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">
               <span className="material-symbols-outlined">settings</span>
             </button>
             <div className="h-8 w-px bg-outline-variant/30" />
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-bold leading-tight">{user?.name}</p>
                 <p className="text-[10px] text-on-surface-variant font-medium">
@@ -91,7 +91,7 @@ export default function Layout({
               <div className="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center border-2 border-primary/10">
                 {initials}
               </div>
-            </div>
+            </div> */}
           </div>
         </header>
         {children}

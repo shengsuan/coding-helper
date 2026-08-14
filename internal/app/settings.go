@@ -216,7 +216,7 @@ func (s *Settings) patch() {
 	}
 	tools := make(map[string]Tool, len(s.catalog.Descriptors()))
 	for _, d := range s.catalog.Descriptors() {
-		tools[string(d.ID)] = Tool{Name: string(d.ID), Command: d.Command, InstallCommand: d.Installer.Display, ConfigPath: d.ConfigPath, DisplayName: d.DisplayName, Runtime: d.Runtime}
+		tools[string(d.ID)] = Tool{Name: string(d.ID), Command: d.Command, InstallCommand: d.Installer.Display, ConfigPath: d.ConfigPath, DisplayName: d.DisplayName, Runtime: d.Runtime, Description: d.Description}
 	}
 	s.data.Tools = tools
 }

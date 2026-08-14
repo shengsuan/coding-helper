@@ -16,7 +16,7 @@ Coding Helper is a cross-platform CLI for configuring [ShengSuanYun](https://she
 | [Aider](https://github.com/Aider-AI/aider) | AI 结对编程工具 | `~/.aider.conf.yml` |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | AI Agent | `~/.hermes/config.yaml` |
 | [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | 终端 AI 助手 | `~/.deepseek/config.toml` |
-| [OpenCodeReview](https://github.com/alibaba-group/open-code-review) | AI 代码评审工具 | `~/.opencodereview/config.json` |
+| [OpenCodeReview](https://github.com/alibaba/open-code-review) | AI 代码评审工具 | `~/.opencodereview/config.json` |
 | [Grok Build](https://github.com/xai-org/grok-build) | AI 编程工具 | `~/.grok/config.toml` |
 
 ## 支持的方案 / Supported plans

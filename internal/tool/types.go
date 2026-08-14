@@ -13,9 +13,9 @@ type InstallSpec struct {
 	Display string
 }
 type Descriptor struct {
-	ID                                        ToolID
-	DisplayName, Command, Runtime, ConfigPath string
-	Installer                                 InstallSpec
+	ID                                        				ToolID
+	DisplayName, Command, Runtime, ConfigPath, Description 	string
+	Installer                                 				InstallSpec
 }
 type Definition struct {
 	Descriptor Descriptor

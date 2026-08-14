@@ -1,5 +1,7 @@
-import { type Plan, type Tool } from "../core";
+import { useState } from "react";
+import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
+import { ProviderAvatar } from "./ui/provider-avatar";
 
 interface DashboardProps {
   tools: Tool[];
@@ -8,11 +10,22 @@ interface DashboardProps {
   t: Translator;
   onConfigureTool: (toolName: string) => void;
   onNavigateTools: () => void;
+  onChanged: () => void;
 }
 
-export default function Dashboard({ tools, plans, loading, t, onConfigureTool, onNavigateTools }: DashboardProps) {
+export default function Dashboard({ tools, plans, loading, t, onConfigureTool, onNavigateTools, onChanged }: DashboardProps) {
+  const [installing, setInstalling] = useState<string | null>(null);
   const configured = tools.filter((tool) => tool.configuredPlan).length;
   const keys = plans.filter((plan) => plan.apiKeyConfigured).length;
+  const install = async (tool: Tool) => {
+    setInstalling(tool.name);
+    try {
+      await core.installTool(tool.name);
+      onChanged();
+    } finally {
+      setInstalling(null);
+    }
+  };
   return (
     <div className="p-8">
       <div className="flex justify-between items-end mb-8">
@@ -44,50 +57,54 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
             const plan = plans.find((item) => item.id === tool.configuredPlan);
             return (
               <div key={tool.name}
-                className="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-primary-container/20 hover:shadow-[0_12px_40px_rgba(19,27,46,0.06)] transition-all duration-300"
+                className="bg-surface-container-lowest p-6 rounded-xl border border-transparent hover:border-primary-container/20 hover:shadow-[0_12px_40px_rgba(19,27,46,0.06)] transition-all duration-300 flex flex-col justify-between"
               >
                 <div className="flex justify-between gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <span className="material-symbols-outlined text-primary">
-                      terminal
+                  <ProviderAvatar provider={tool.name} />
+                  {tool.installed ? (
+                    <span className="text-xs font-semibold h-fit px-2 py-1 rounded-full bg-emerald-50 text-emerald-600">
+                      {t("installed")}
                     </span>
-                  </div>
-                  <span
-                    className={`text-xs font-semibold h-fit px-2 py-1 rounded-full ${tool.installed ? "bg-emerald-50 text-emerald-600" : "bg-surface-container text-on-surface-variant"}`}
-                  >
-                    {tool.installed ? t("installed") : t("notInstalled")}
-                  </span>
+                  ) : (
+                    <button onClick={() => install(tool)} disabled={installing === tool.name}
+                      className="text-xs font-semibold h-fit px-2 py-1 rounded-full bg-surface-container text-on-surface-variant hover:bg-primary hover:text-white disabled:opacity-50"
+                    >
+                      {installing === tool.name ? t("installing") : t("installNow")}
+                    </button>
+                  )}
                 </div>
-                <h3 className="font-headline font-bold text-lg mb-1">
-                  {tool.displayName}
-                </h3>
-                <p className="text-sm text-on-surface-variant mb-5">
-                  {tool.command}
-                </p>
-                <div className="space-y-2 mb-6 text-sm">
-                  <div className="flex justify-between gap-2">
-                    <span className="text-on-surface-variant">
-                      {t("configuration")}
-                    </span>
-                    <span className={plan? "font-semibold text-primary": "font-medium text-outline"}>
-                      {plan?.name_zh || t("notConfigured")}
-                    </span>
-                  </div>
-                  {plan && (
+                <div className="flex-1">
+                  <h3 className="font-headline font-bold text-lg mb-1">
+                    {tool.displayName}
+                  </h3>
+                  <p className="text-sm text-on-surface-variant mb-5">
+                    {tool.command}
+                  </p>
+                  <div className="space-y-2 mb-6 text-sm">
                     <div className="flex justify-between gap-2">
                       <span className="text-on-surface-variant">
-                        {t("keyLabel")}
+                        {t("configuration")}
                       </span>
-                      <span className="font-semibold">
-                        {tool.configuredKey || t("notConfigured")}
+                      <span className={plan? "font-semibold text-primary": "font-medium text-outline"}>
+                        {plan?.name_zh || t("notConfigured")}
                       </span>
                     </div>
-                  )}
-                  <div className="flex justify-between gap-2">
-                    <span className="text-on-surface-variant">
-                      {t("runtime")}
-                    </span>
-                    <span className="font-semibold">{tool.runtime}</span>
+                    {plan && (
+                      <div className="flex justify-between gap-2">
+                        <span className="text-on-surface-variant">
+                          {t("keyLabel")}
+                        </span>
+                        <span className="font-semibold">
+                          {tool.configuredKey || t("notConfigured")}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between gap-2">
+                      <span className="text-on-surface-variant">
+                        {t("runtime")}
+                      </span>
+                      <span className="font-semibold">{tool.runtime}</span>
+                    </div>
                   </div>
                 </div>
                 <button onClick={() => onConfigureTool(tool.name)}

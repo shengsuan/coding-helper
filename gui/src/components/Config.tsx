@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
 import {
@@ -33,6 +33,10 @@ export default function Config({
   const [model, setModel] = useState("");
   const [models, setModels] = useState<string[]>([]);
   const [keyText, setKeyText] = useState("");
+  const [keyEntries, setKeyEntries] = useState<
+    { id: number; original: string | null; value: string }[]
+  >([]);
+  const keyIdRef = useRef(0);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const plan = plans.find((item) => item.id === planId);
@@ -55,7 +59,18 @@ export default function Config({
       .catch(() => setModels([]));
   }, [planId, plan?.model]);
   useEffect(() => {
-    if (!tool || planId !== tool.configuredPlan) {
+    if (!tool) {
+      setKeyText(plan?.keys?.[0]?.key ?? "");
+      setKeyEntries(
+        plan?.keys?.map((item) => ({
+          id: keyIdRef.current++,
+          original: item.key,
+          value: item.key,
+        })) ?? [],
+      );
+      return;
+    }
+    if (planId !== tool.configuredPlan) {
       setKeyText("");
       return;
     }
@@ -82,6 +97,24 @@ export default function Config({
           labelToApply = trimmedKey;
         }
         await core.applyTool(tool.name, planId, labelToApply || undefined);
+      } else {
+        const originalKeys = plan?.keys?.map((item) => item.key) ?? [];
+        const keptOriginals = keyEntries
+          .map((entry) => entry.original)
+          .filter((key): key is string => key !== null);
+        for (const oldKey of originalKeys) {
+          if (!keptOriginals.includes(oldKey))
+            await core.deleteKey(planId, oldKey);
+        }
+        for (const entry of keyEntries) {
+          const value = entry.value.trim();
+          if (entry.original !== null) {
+            if (value && value !== entry.original)
+              await core.editKey(planId, entry.original, value);
+          } else if (value) {
+            await core.addKey(planId, value);
+          }
+        }
       }
       setMessage(t("saved"));
       onSaved();
@@ -91,12 +124,32 @@ export default function Config({
       setBusy(false);
     }
   };
+  const keyCombobox = (
+    <Combobox
+      items={keyOptions}
+      value={selectedKeyOption}
+      onValueChange={(item) => setKeyText(item?.value ?? "")}
+      inputValue={keyText}
+      onInputValueChange={(text) => setKeyText(text)}
+      itemToStringLabel={(item: { value: string }) => item.value}
+    >
+      <ComboboxInput placeholder={t("keyValuePlaceholder")} />
+      <ComboboxContent>
+        <ComboboxEmpty>{t("noMatches")}</ComboboxEmpty>
+        <ComboboxList>
+          {(item: { value: string; label: string }) => (
+            <ComboboxItem key={item.value} value={item}>
+              {item.label}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  );
   return (
     <div className="p-10 max-w-5xl mx-auto">
       <section className="mb-10 flex items-start gap-6 bg-surface-container-low p-8 rounded-xl">
-        <button onClick={onBack}
-          className="p-2 hover:bg-surface-container rounded-lg"
-        >
+        <button onClick={onBack} className="p-2 hover:bg-surface-container rounded-lg">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <div>
@@ -105,7 +158,7 @@ export default function Config({
               : t("configurePlanTitle")}
           </h2>
           <p className="text-on-surface-variant mt-2">
-            {t("configDescription")}
+            {tool?.description || t("configDescription")}
           </p>
         </div>
       </section>
@@ -133,28 +186,54 @@ export default function Config({
                   {models.map((item) => <option key={item} value={item} />)}
                 </datalist>
               </Field>
-              {tool && (
-                <Field label={t("keyToApply")}>
-                  <Combobox
-                    items={keyOptions}
-                    value={selectedKeyOption}
-                    onValueChange={(item) => setKeyText(item?.value ?? "")}
-                    inputValue={keyText}
-                    onInputValueChange={(text) => setKeyText(text)}
-                    itemToStringLabel={(item: { value: string }) => item.value}
-                  >
-                    <ComboboxInput placeholder={t("keyValuePlaceholder")} />
-                    <ComboboxContent>
-                      <ComboboxEmpty>{t("noMatches")}</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item: { value: string; label: string }) => (
-                          <ComboboxItem key={item.value} value={item}>
-                            {item.label}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
+              {tool ? (
+                <Field label={t("keyToApply")}>{keyCombobox}</Field>
+              ) : (
+                <Field label={t("apiKey")}>
+                  <div className="space-y-3">
+                    {keyEntries.map((entry) => (
+                      <div key={entry.id} className="flex gap-2">
+                        <input
+                          value={entry.value}
+                          className="input flex-1"
+                          placeholder={t("keyValuePlaceholder")}
+                          onChange={(event) =>
+                            setKeyEntries((current) =>
+                              current.map((item) =>
+                                item.id === entry.id
+                                  ? { ...item, value: event.target.value }
+                                  : item,
+                              ),
+                            )
+                          }
+                        />
+                        <button
+                          type="button"
+                          title={t("deleteKey")}
+                          onClick={() =>
+                            setKeyEntries((current) =>
+                              current.filter((item) => item.id !== entry.id),
+                            )
+                          }
+                          className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error"
+                        >
+                          <span className="material-symbols-outlined">delete</span>
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setKeyEntries((current) => [
+                          ...current,
+                          { id: keyIdRef.current++, original: null, value: "" },
+                        ])
+                      }
+                      className="px-4 py-2 rounded-xl bg-surface-container-high text-primary font-bold text-sm"
+                    >
+                      {t("addKey")}
+                    </button>
+                  </div>
                 </Field>
               )}
               {message && (
@@ -218,10 +297,7 @@ export default function Config({
   );
 }
 
-function Field({
-  label,
-  children,
-}: {
+function Field({ label, children }: {
   label: string;
   children: React.ReactNode;
 }) {
