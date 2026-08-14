@@ -21,6 +21,7 @@ export default function ApiKeys({ plans, t, filter = "", onEdit, onRevoke, onAdd
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
   const [busy, setBusy] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Plan | null>(null);
   const createPlan = async (event: React.SubmitEvent) => {
     event.preventDefault();
     setBusy(true);
@@ -35,7 +36,7 @@ export default function ApiKeys({ plans, t, filter = "", onEdit, onRevoke, onAdd
     }
   };
   const deletePlan = (plan: Plan) => {
-    if (window.confirm(t("confirmDeletePlan", { plan: plan.name_zh }))) onDelete(plan.id);
+    setPendingDelete(plan);
   };
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -164,6 +165,29 @@ export default function ApiKeys({ plans, t, filter = "", onEdit, onRevoke, onAdd
           </tbody>
         </table>
       </div>
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setPendingDelete(null)} />
+          <div className="relative w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-2xl p-8">
+            <h3 className="font-headline font-bold text-xl">{t("deletePlan")}</h3>
+            <p className="mt-3 text-sm text-on-surface-variant">
+              {t("confirmDeletePlan", { plan: pendingDelete.name_zh })}
+            </p>
+            <div className="mt-8 flex justify-end gap-3">
+              <button onClick={() => setPendingDelete(null)}
+                className="px-4 py-2 font-bold text-on-surface-variant rounded-lg hover:bg-surface-container"
+              >
+                {t("cancel")}
+              </button>
+              <button onClick={() => { onDelete(pendingDelete.id); setPendingDelete(null); }}
+                className="px-5 py-2 font-bold text-white bg-error rounded-lg hover:opacity-90"
+              >
+                {t("deletePlan")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
