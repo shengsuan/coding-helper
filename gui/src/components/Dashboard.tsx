@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
+import { matchesPlan, matchesTool } from "../search";
 import { ProviderAvatar } from "./ui/provider-avatar";
 
 interface DashboardProps {
@@ -8,13 +9,18 @@ interface DashboardProps {
   plans: Plan[];
   loading: boolean;
   t: Translator;
+  filter?: string;
   onConfigureTool: (toolName: string) => void;
+  onConfigurePlan: (planId: string) => void;
   onNavigateTools: () => void;
   onChanged: () => void;
 }
 
-export default function Dashboard({ tools, plans, loading, t, onConfigureTool, onNavigateTools, onChanged }: DashboardProps) {
+export default function Dashboard({ tools, plans, loading, t, filter = "", onConfigureTool, onConfigurePlan, onNavigateTools, onChanged }: DashboardProps) {
   const [installing, setInstalling] = useState<string | null>(null);
+  const q = filter.trim().toLowerCase();
+  const visiblePlans = plans.filter((plan) => matchesPlan(plan, filter));
+  const visibleTools = tools.filter((tool) => matchesTool(tool, filter));
   const configured = tools.filter((tool) => tool.configuredPlan).length;
   const keys = plans.filter((plan) => plan.apiKeyConfigured).length;
   const install = async (tool: Tool) => {
@@ -44,16 +50,83 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
           {t("manageTools")}
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Stat icon="key" label={t("configuredApiKeys")} value={keys} />
-        <Stat icon="terminal" label={t("installedTools")} value={tools.filter((tool) => tool.installed).length}/>
-        <Stat icon="check_circle" label={t("appliedConfigurations")} value={configured}/>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {loading ? (
-          <p className="text-on-surface-variant">{t("loading")}</p>
-        ) : (
-          tools.map((tool) => {
+      {q === "" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Stat icon="key" label={t("configuredApiKeys")} value={keys} />
+          <Stat icon="terminal" label={t("installedTools")} value={tools.filter((tool) => tool.installed).length}/>
+          <Stat icon="check_circle" label={t("appliedConfigurations")} value={configured}/>
+        </div>
+      )}
+      {q !== "" && visiblePlans.length > 0 && (
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-5">
+            <span className="material-symbols-outlined text-primary text-xl">key</span>
+            <h3 className="font-headline font-bold text-xl">{t("plans")}</h3>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+              {visiblePlans.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visiblePlans.map((plan) => (
+              <div key={plan.id}
+                className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10"
+              >
+                <div className="flex justify-between gap-3 mb-3">
+                  <div>
+                    <h3 className="font-headline font-bold text-lg">{plan.name_zh}</h3>
+                    <p className="text-xs font-mono text-on-surface-variant mt-1">{plan.id}</p>
+                  </div>
+                  <span className={
+                      plan.apiKeyConfigured
+                        ? "text-emerald-600 font-semibold text-xs h-fit"
+                        : "text-on-surface-variant font-semibold text-xs h-fit"
+                    }
+                  >
+                    {plan.apiKeyConfigured ? t("configured") : t("notConfigured")}
+                  </span>
+                </div>
+                <div className="space-y-2 mb-5 text-sm">
+                  {plan.model && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-on-surface-variant">{t("defaultModel")}</span>
+                      <span className="font-semibold">{plan.model}</span>
+                    </div>
+                  )}
+                  {plan.keys.length > 0 && (
+                    <div className="flex justify-between gap-2">
+                      <span className="text-on-surface-variant shrink-0">{t("keyLabel")}</span>
+                      <span className="font-semibold text-right min-w-0 break-all">
+                        {plan.keys.map((k) => k.label || t("defaultLabel")).join(", ")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => onConfigurePlan(plan.id)}
+                  className="w-full font-bold py-2 rounded-lg bg-surface-container-low text-primary hover:bg-primary hover:text-white transition-all"
+                >
+                  {t("edit")}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+      {(q === "" || visibleTools.length > 0) && (
+        <section>
+          {q !== "" && (
+            <div className="flex items-center gap-2 mb-5">
+              <span className="material-symbols-outlined text-primary text-xl">rocket_launch</span>
+              <h3 className="font-headline font-bold text-xl">{t("tools")}</h3>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+                {visibleTools.length}
+              </span>
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {loading ? (
+              <p className="text-on-surface-variant">{t("loading")}</p>
+            ) : (
+              visibleTools.map((tool) => {
             const plan = plans.find((item) => item.id === tool.configuredPlan);
             return (
               <div key={tool.name}
@@ -116,7 +189,9 @@ export default function Dashboard({ tools, plans, loading, t, onConfigureTool, o
             );
           })
         )}
-      </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -4,18 +4,21 @@ import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import GlobalApiKeys from "./components/ApiKeys";
 import Tools from "./components/Tools";
+import SearchResults from "./components/SearchResults";
 // import Auth from "./components/Auth";
 import { getSession, login, logout, register, type User } from "./auth";
 import { core, type Overview } from "./core";
 import { translate, type Language } from "./i18n";
 
-export type Page =| "dashboard"| "models"| "api-keys"| "usage"| "edit"| "tools";
+export type Page =| "dashboard"| "models"| "api-keys"| "usage"| "edit"| "tools"| "search";
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("dashboard");
   const [overview, setOverview] = useState<Overview>({ plans: [], tools: [], language: "zh_CN" });
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchScope, setSearchScope] = useState<"all" | "tools" | "plans">("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [diagnostics, setDiagnostics] = useState("");
@@ -98,17 +101,28 @@ function App() {
   const selected = overview.tools.find((tool) => tool.name === selectedTool) || null;
   const page = currentPage === "dashboard" ? (
       <Dashboard tools={overview.tools} plans={overview.plans} loading={loading} t={t}
+        filter={searchQuery}
         onConfigureTool={configureTool}
+        onConfigurePlan={configurePlan}
         onNavigateTools={() => setCurrentPage("tools")}
         onChanged={() => void refresh()}
       />
     ) : currentPage === "tools" ? (
-      <Tools tools={overview.tools} plans={overview.plans} t={t} onChanged={() => void refresh()}
+      <Tools tools={overview.tools} plans={overview.plans} t={t} filter={searchQuery} onChanged={() => void refresh()}
         onConfigure={configureTool}
       />
     ) : currentPage === "api-keys" || currentPage === "models" ? (
-      <GlobalApiKeys plans={overview.plans} t={t} onEdit={configurePlan} onRevoke={(planId) => void revokePlan(planId)}
+      <GlobalApiKeys plans={overview.plans} t={t} filter={searchQuery} onEdit={configurePlan} onRevoke={(planId) => void revokePlan(planId)}
         onAdd={addPlan} onDelete={(planId) => void deletePlan(planId)}
+      />
+    ) : currentPage === "search" ? (
+      <SearchResults query={searchQuery} scope={searchScope}
+        tools={overview.tools} plans={overview.plans} t={t}
+        onConfigureTool={configureTool}
+        onConfigurePlan={configurePlan}
+        onNavigateTools={() => setCurrentPage("tools")}
+        onNavigateApiKeys={() => setCurrentPage("api-keys")}
+        onChanged={() => void refresh()}
       />
     ) : (
       <Config tool={selected} plans={overview.plans} initialPlanId={selectedPlan} t={t}
@@ -120,6 +134,20 @@ function App() {
     <Layout currentPage={currentPage} language={language} t={t} user={user} onNavigate={setCurrentPage}
       onLanguageChange={(nextLanguage) => void changeLanguage(nextLanguage)}
       onLogout={() => {logout();setUser(null);}}
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      onSearchSubmit={() => {
+        if (!searchQuery.trim()) return;
+        setSearchScope(
+          currentPage === "tools"
+            ? "tools"
+            : currentPage === "api-keys" || currentPage === "models"
+              ? "plans"
+              : "all",
+        );
+        setCurrentPage("search");
+      }}
+      onSearchClear={() => setSearchQuery("")}
     >
       {error && (
         <div className="mx-8 mt-6 p-4 bg-error-container text-error rounded-lg">

@@ -12,6 +12,10 @@ interface LayoutProps {
   onNavigate: (page: Page) => void;
   onLanguageChange: (language: Language) => void;
   onLogout: () => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
+  onSearchSubmit: () => void;
+  onSearchClear: () => void;
 }
 
 export default function Layout({
@@ -23,6 +27,10 @@ export default function Layout({
   onNavigate,
   onLanguageChange,
   onLogout,
+  searchQuery,
+  onSearchQueryChange,
+  onSearchSubmit,
+  onSearchClear,
 }: LayoutProps) {
   const navClass = (page: Page) => `w-full flex items-center gap-3 ${currentPage === page || (page === "dashboard" && currentPage === "edit") ? "text-[#2E5BFF] dark:text-white font-bold border-l-4 border-[#2E5BFF] pl-4 py-3 bg-[#eaedff] dark:bg-slate-800" : "text-[#434656] dark:text-slate-400 pl-5 py-3 hover:bg-[#eaedff] dark:hover:bg-slate-800"} transition-all duration-300 hover:translate-x-1`;
   const initials = user?.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
@@ -69,9 +77,22 @@ export default function Layout({
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">
               search
             </span>
-            <input placeholder={t("search")} type="text"
-              className="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary text-sm font-medium"
+            <input placeholder={t("search")} type="text" value={searchQuery}
+              onChange={(event) => onSearchQueryChange(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") onSearchSubmit();
+                if (event.key === "Escape") onSearchClear();
+              }}
+              className="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-10 focus:ring-2 focus:ring-primary text-sm font-medium"
             />
+            {searchQuery && (
+              <button onClick={onSearchClear}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface"
+                aria-label={t("cancel")}
+              >
+                <span className="material-symbols-outlined text-base">close</span>
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-5">
             <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">

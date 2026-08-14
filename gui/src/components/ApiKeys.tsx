@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { type Plan } from "../core";
 import { type Translator } from "../i18n";
+import { matchesPlan } from "../search";
 
 interface ApiKeysProps {
   plans: Plan[];
   t: Translator;
+  filter?: string;
   onEdit: (planId: string) => void;
   onRevoke: (planId: string) => void;
   onAdd: (label: string, baseUrl: string, model: string) => Promise<void>;
   onDelete: (planId: string) => void;
 }
 
-export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }: ApiKeysProps) {
+export default function ApiKeys({ plans, t, filter = "", onEdit, onRevoke, onAdd, onDelete }: ApiKeysProps) {
   const configured = plans.filter((plan) => plan.apiKeyConfigured);
+  const visiblePlans = plans.filter((plan) => matchesPlan(plan, filter));
   const [showAdd, setShowAdd] = useState(false);
   const [label, setLabel] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
@@ -101,7 +104,14 @@ export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }:
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant/5">
-            {plans.map((plan) => (
+            {visiblePlans.length === 0 ? (
+              <tr>
+                <td className="px-8 py-10 text-center text-on-surface-variant" colSpan={5}>
+                  {t("noMatches")}
+                </td>
+              </tr>
+            ) : (
+              visiblePlans.map((plan) => (
               <tr key={plan.id}
                 className="hover:bg-surface-container-highest/30"
               >
@@ -149,7 +159,8 @@ export default function ApiKeys({ plans, t, onEdit, onRevoke, onAdd, onDelete }:
                   </div>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>

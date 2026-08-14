@@ -147,7 +147,7 @@ export default function Config({
     </Combobox>
   );
   return (
-    <div className="p-10 max-w-5xl mx-auto">
+    <div className="p-8">
       <section className="mb-10 flex items-start gap-6 bg-surface-container-low p-8 rounded-xl">
         <button onClick={onBack} className="p-2 hover:bg-surface-container rounded-lg">
           <span className="material-symbols-outlined">arrow_back</span>

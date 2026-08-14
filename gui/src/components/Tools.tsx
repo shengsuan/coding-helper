@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { core, type Plan, type Tool } from "../core";
 import { type Translator } from "../i18n";
+import { matchesTool } from "../search";
 
 interface ToolsProps {
   tools: Tool[];
   plans: Plan[];
   t: Translator;
+  filter?: string;
   onChanged: () => void;
   onConfigure: (name: string) => void;
 }
 
-export default function Tools({ tools, plans, t, onChanged, onConfigure }: ToolsProps) {
+export default function Tools({ tools, plans, t, filter = "", onChanged, onConfigure }: ToolsProps) {
   const [message, setMessage] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
+  const visibleTools = tools.filter((tool) => matchesTool(tool, filter));
   const remove = async (tool: Tool) => {
     try {
       await core.removeToolConfig(tool.name);
@@ -44,7 +47,10 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
       </div>
       {message && <p className="mb-5 text-on-surface-variant">{message}</p>}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {tools.map((tool) => {
+        {visibleTools.length === 0 ? (
+          <p className="text-on-surface-variant col-span-full">{t("noMatches")}</p>
+        ) : (
+          visibleTools.map((tool) => {
           const plan = plans.find((item) => item.id === tool.configuredPlan);
           return (
             <div key={tool.name}
@@ -110,7 +116,8 @@ export default function Tools({ tools, plans, t, onChanged, onConfigure }: Tools
               </div>
             </div>
           );
-        })}
+        })
+        )}
       </div>
     </div>
   );

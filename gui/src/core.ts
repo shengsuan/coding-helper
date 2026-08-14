@@ -9,6 +9,7 @@ export interface Plan {
   id: string;
   name: string;
   name_zh: string;
+  label?: string;
   base_url?: string;
   model?: string;
   api_key_name?: string;
