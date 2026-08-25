@@ -24,30 +24,6 @@ export interface Plan {
 }
 
 export const PLANS: Record<string, Plan> = {
-  "ssy_cp_lite": {
-    id: "ssy_cp_lite",
-    name: "Lite Plan",
-    name_zh: "精简计划",
-    baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
-    apiKeyName: "Lite Plan API Key",
-  },
-  "ssy_cp_pro": {
-    id: "ssy_cp_pro",
-    name: "Pro Plan",
-    name_zh: "专业计划",
-    baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
-    apiKeyName: "Pro Plan API Key",
-  },
-  "ssy_cp_enterprise": {
-    id: "ssy_cp_enterprise",
-    name: "Enterprise Plan",
-    name_zh: "企业计划",
-    baseUrl: "https://router.shengsuanyun.com/api/cp/v1",
-    anthropicBaseUrl: "https://router.shengsuanyun.com/api/cp",
-    apiKeyName: "Enterprise Plan API Key",
-  },
   "pay_as_you_go": {
     id: "pay_as_you_go",
     name: "Pay as You Go",
@@ -84,6 +60,14 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
     configPath: join(homedir(), ".codex", "config.toml"),
     displayName: "Codex",
     runtime: "rust",
+  },
+  pi: {
+    name: "pi",
+    command: "pi",
+    installCommand: "npm install -g @mariozechner/pi-coding-agent",
+    configPath: join(homedir(), ".pi", "agent", "models.json"),
+    displayName: "Pi",
+    runtime: "node",
   },
   claude: {
     name: "claude",

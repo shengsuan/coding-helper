@@ -558,6 +558,7 @@ export class SetupFlow {
       'opencode': 'Open-source coding tool',
       'picoclaw': 'AI coding tool',
       'codex': 'AI coding tool',
+      'pi': 'AI coding agent',
       'aider': 'AI pair programming',
       'hermes': 'AI agent framework',
       'nanobot': 'AI agent framework',

@@ -20,6 +20,7 @@ CLI tool for configuring [ShengSuanYun](https://shengsuanyun.com/) Coding Plan A
 | [DeepSeek TUI](https://github.com/Hmbown/DeepSeek-TUI) | rust | AI 编程网关 / AI coding gateway |
 | [OpenCodeReview](https://github.com/alibaba-group/open-code-review) | go | AI 代码评审工具 / AI code review tool |
 | [Grok Build](https://github.com/xai-org/grok-build) | rust | 开源 AI 编程工具 / AI code tool |
+| [Pi](https://github.com/earendil-works/pi) | Node.js | AI 编程代理 / AI coding agent |
 
 
 ## 支持的方案 / Supported Plans
@@ -170,6 +171,7 @@ Config is stored at `~/.coding-helper/config.yaml`. Each tool gets its credentia
 | DeepSeek TUI | `~/.deepseek/config.toml` |
 | OpenCodeReview | `~/.opencodereview/config.json` |
 | Grok Build | `~/.grok/config.toml` |
+| Pi | `~/.pi/agent/models.json` |
 
 ### Grok Build 配置示例
 

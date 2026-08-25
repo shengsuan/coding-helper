@@ -63,8 +63,11 @@ export async function configCommand(args: string[]): Promise<void> {
     case 'grok-build':
       await wizard['showToolMenu']('grok-build');
       break;
+    case 'pi':
+      await wizard['showToolMenu']('pi');
+      break;
     default:
       console.log(chalk.red(`未知选项: ${option}`));
-      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude, openclaw, nanobot, picoclaw, codex, hermes, deepseek, grok-build'));
+      console.log(chalk.gray('可用选项: lang, plan, apikey, opencode, claude, openclaw, nanobot, picoclaw, codex, hermes, deepseek, grok-build, pi'));
   }
 }
