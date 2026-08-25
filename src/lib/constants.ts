@@ -64,7 +64,7 @@ export const SUPPORTED_TOOLS: Record<string, Tool> = {
   pi: {
     name: "pi",
     command: "pi",
-    installCommand: "npm install -g @mariozechner/pi-coding-agent",
+    installCommand: "npm install -g --ignore-scripts @earendil-works/pi-coding-agent",
     configPath: join(homedir(), ".pi", "agent", "models.json"),
     displayName: "Pi",
     runtime: "node",
@@ -150,9 +150,6 @@ export const CONFIG_DIR = join(homedir(), ".coding-helper");
 export const CONFIG_PATH = join(CONFIG_DIR, "config.json");
 
 export const API_KEY_URLS = {
-  "ssy_cp_lite": "https://console.shengsuanyun.com/user/keys",
-  "ssy_cp_pro": "https://console.shengsuanyun.com/user/keys",
-  "ssy_cp_enterprise": "https://console.shengsuanyun.com/user/keys",
   "pay_as_you_go": "https://console.shengsuanyun.com/user/keys",
 };
 
